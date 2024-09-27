@@ -52,10 +52,10 @@ export default {
             },
             {
               "path": "/check",
-              "name": "attendanceInformation",
-              "label": "考勤信息",
-              "icon": "Timer",  // 对应 Timer 图标
-              "url": "Check/Information",
+              "name": "attendanceManagement",
+              "label": "考勤管理",
+              "icon": "Tools",  // 对应 Tools 图标
+              "url": "Check",
               "children": [
                 {
                   "path": "/check/message",
@@ -70,34 +70,41 @@ export default {
                       "label": "可视化界面",
                       "icon": "DataAnalysis",  // 对应 DataAnalysis 图标
                       "url": "Check/Message/Echart",
-                      "children": [
-                        {
-                          "path": "/check/message/echart/unitfx",
-                          "name": "unitfx",
-                          "label": "单元分析",
-                          "icon": "PieChart",  // 对应 PieChart 图标
-                          "url": "Check/Message/Echart/Unitfx",
-                          "children": [
-                            {
-                              "path": "/check/message/echart/unitfx/test1",
-                              "name": "test1",
-                              "label": "测试测试测试测试1",
-                              "icon": "DataBoard",  // 对应 DataBoard 图标
-                              "url": "Check/Message/Echart/Unitfx/Test1",
-                              "children": [],
-                            }
-                          ]
-                        }
-                      ]
+                      "children": [],
+                    },
+                    {
+                      "path": "/check/message/calendar",
+                      "name": "checkCalendar",
+                      "label": "打卡日历",
+                      "icon": "Calendar",  // 对应 DocumentChecked 图标
+                      "url": "Attendance/AttendanceCalendar",
+                      "children": [],
                     }
                   ]
                 },
                 {
-                  "path": "/check/controller",
-                  "name": "attendanceManagement",
-                  "label": "考勤管理",
-                  "icon": "Tools",  // 对应 Tools 图标
-                  "url": "Check/Controller",
+                  "path": "/check/info",
+                  "name": "attendanceInformation",
+                  "label": "考勤信息",
+                  "icon": "Timer",  // 对应 Timer 图标
+                  "url": "Check/Info",
+                  "children": [],
+                },
+              ]
+            },
+            {
+              "path": "/unitfx",
+              "name": "unitfx",
+              "label": "单元分析",
+              "icon": "PieChart",  // 对应 PieChart 图标
+              "url": "Unitfx",
+              "children": [
+                {
+                  "path": "/unitfx/test1",
+                  "name": "test1",
+                  "label": "测试测试测试测试1",
+                  "icon": "DataBoard",  // 对应 DataBoard 图标
+                  "url": "Unitfx/Test1",
                   "children": [],
                 }
               ]

@@ -1,74 +1,165 @@
 <template>
-  <el-form :model="loginForm" class="login-container">
-    <h3>系统登录</h3>
-    <el-form-item>
-      <el-input
-          type="input"
-          placeholder="请输入账号"
-          v-model="loginForm.username"
-      >
-      </el-input>
-    </el-form-item>
-    <el-form-item>
-      <el-input
-          type="password"
-          placeholder="请输入密码"
-          v-model="loginForm.password"
-      >
-      </el-input>
-    </el-form-item>
-    <el-form-item>
-      <el-button type="primary" @click="login"> 登录 </el-button>
-    </el-form-item>
-  </el-form>
+  <div class="background"> <!-- 添加背景容器 -->
+    <el-form :model="formData" :rules="rules" ref="formRef" class="form-container">
+      <h3>富辰方舟 OA 系统欢迎您！</h3>
+      <h3 v-if="isLogin">请登录</h3>
+      <h3 v-else>请注册</h3>
+
+      <el-form-item prop="username">
+        <el-input
+            type="input"
+            placeholder="请输入账号"
+            v-model="formData.username"
+        >
+        </el-input>
+      </el-form-item>
+
+      <el-form-item prop="password">
+        <el-input
+            type="password"
+            placeholder="请输入密码"
+            v-model="formData.password"
+        >
+        </el-input>
+      </el-form-item>
+
+      <!-- 注册时额外的输入项 -->
+      <el-form-item v-if="!isLogin" prop="confirmPassword">
+        <el-input
+            type="password"
+            placeholder="请确认密码"
+            v-model="formData.confirmPassword"
+        >
+        </el-input>
+      </el-form-item>
+
+      <el-form-item>
+        <el-button type="primary" @click="handleSubmit"> {{ isLogin ? '登录' : '注册' }} </el-button>
+        <el-button type="text" @click="toggleForm"> {{ isLogin ? '前往注册' : '前往登录' }} </el-button>
+      </el-form-item>
+    </el-form>
+  </div>
 </template>
+
 <script>
-import { reactive } from "vue-demi";
+import { reactive, ref } from "vue-demi";
 import { getCurrentInstance } from "vue-demi";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+
 export default {
   setup() {
-    const loginForm = reactive({
+    const formRef = ref(null); // 用于表单引用
+    const formData = reactive({
       username: "admin",
       password: "admin",
+      confirmPassword: "", // 注册时需要确认密码
     });
+    const isLogin = ref(true); // 控制当前显示的表单
     const { proxy } = getCurrentInstance();
     const store = useStore();
     const router = useRouter();
-    const login = async () => {
-      const res = await proxy.$api.getMenu(loginForm);
-      // console.log(res);
-      store.commit("setMenu", res.menu);
-      store.commit("addMenu", router);
-      store.commit("setToken", res.token);
-      await router.push({
-        name: "index",
+
+    const rules = {
+      username: [
+        { required: true, message: "请输入账号", trigger: "blur" },
+      ],
+      password: [
+        { required: true, message: "请输入密码", trigger: "blur" },
+      ],
+      confirmPassword: [
+        {
+          required: !isLogin.value,
+          message: "请确认密码",
+          trigger: "blur"
+        },
+        {
+          validator: (rule, value, callback) => {
+            if(!value) {
+              callback(new Error("请二次确认密码"));
+            }
+            if (value !== formData.password) {
+              callback(new Error("两次密码输入不一致"));
+            } else {
+              callback();
+            }
+          },
+          trigger: "blur",
+        }
+      ],
+    };
+
+    const handleSubmit = async () => {
+      // 手动触发校验
+      formRef.value.validate(async (valid) => {
+        if (valid) {
+          if (isLogin.value) {
+            // 登录逻辑
+            const res = await proxy.$api.getMenu(formData);
+            store.commit("setMenu", res.menu);
+            store.commit("addMenu", router);
+            store.commit("setToken", res.token);
+            await router.push({ name: "index" });
+          } else {
+            // 注册逻辑
+            const res = await proxy.$api.register(formData); // 假设有一个注册的 API
+            if (res.success) {
+              alert("注册成功，请登录！");
+              toggleForm(); // 注册成功后切换到登录表单
+            } else {
+              alert(res.message || "注册失败，请重试。");
+            }
+          }
+        } else {
+          console.log("校验失败");
+        }
       });
     };
+
+    const toggleForm = () => {
+      isLogin.value = !isLogin.value; // 切换表单
+      // 清空输入框
+      formData.password = "";
+      formData.confirmPassword = "";
+    };
+
     return {
-      loginForm,
-      login,
+      formData,
+      handleSubmit,
+      toggleForm,
+      isLogin, // 返回状态变量
+      rules,   // 返回校验规则
+      formRef, // 返回表单引用
     };
   },
 };
 </script>
+
 <style lang="less" scoped>
-.login-container {
-  width: 350px;
-  background-color: #fff;
+.background {
+  background: linear-gradient(to bottom, #289eea, #add8e6); /* 从上到下的渐变背景 */
+  height: 100vh; /* 让背景覆盖整个视口 */
+  display: flex;
+  align-items: center; /* 垂直居中 */
+  justify-content: center; /* 水平居中 */
+}
+
+.form-container {
+  width: 500px;
+  background-color: #eeeeee; /* 保持表单背景为白色 */
   border: 1px solid #eaeaea;
   border-radius: 15px;
   padding: 35px 35px 15px 35px;
   box-shadow: 0 0 25px #cacaca;
-  margin: 180px auto;
-  h3 {
-    text-align: center;
-    margin-bottom: 20px;
-    color: #505450;
-  }
-  :deep(.el-form-item__content) {
-    justify-content: center;
-  }
+}
+
+h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #505450;
+}
+
+:deep(.el-form-item__content) {
+  justify-content: center;
 }
 </style>
