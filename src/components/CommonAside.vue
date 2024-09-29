@@ -9,7 +9,7 @@
         :collapse-transition="false"
         popper-offset="0"
     >
-      <h3 v-show="!$store.state.isCollapse">我的 OA 系统</h3>
+      <h3 v-show="!$store.state.isCollapse">富辰方舟 OA 系统</h3>
       <h3 v-show="$store.state.isCollapse"> O A </h3>
       <menu-item v-for="item in $store.state.menu" :key="item.path" :item="item" />
     </el-menu>

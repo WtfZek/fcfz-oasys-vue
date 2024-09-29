@@ -33,9 +33,20 @@
         </el-input>
       </el-form-item>
 
+      <el-form-item prop="captcha">
+        <el-input
+            type="input"
+            placeholder="请输入验证码"
+            v-model="formData.captcha"
+            class="captcha-input"
+        >
+        </el-input>
+        <img class="captcha" :src="captchaUrl" alt="验证码" @click="refreshCaptcha"/>
+      </el-form-item>
+
       <el-form-item>
         <el-button type="primary" @click="handleSubmit"> {{ isLogin ? '登录' : '注册' }} </el-button>
-        <el-button type="text" @click="toggleForm"> {{ isLogin ? '前往注册' : '前往登录' }} </el-button>
+        <el-button type="text" @click="toggleForm"> {{ isLogin ? '去注册' : '去登录' }} </el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -46,6 +57,8 @@ import { reactive, ref } from "vue-demi";
 import { getCurrentInstance } from "vue-demi";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
+import axios from "axios";
+
 
 export default {
   setup() {
@@ -54,11 +67,13 @@ export default {
       username: "admin",
       password: "admin",
       confirmPassword: "", // 注册时需要确认密码
+      captcha: "", // 验证码
     });
     const isLogin = ref(true); // 控制当前显示的表单
     const { proxy } = getCurrentInstance();
     const store = useStore();
     const router = useRouter();
+    const captchaUrl = ref(""); // 用于存储验证码URL
 
     const rules = {
       username: [
@@ -87,12 +102,25 @@ export default {
           trigger: "blur",
         }
       ],
+      captcha: [{ required: true, message: "请输入验证码", trigger: "blur" }],
     };
 
     const handleSubmit = async () => {
       // 手动触发校验
       formRef.value.validate(async (valid) => {
         if (valid) {
+          // // 验证码校验
+          // const captchaResponse = await axios.post("http://localhost:8088/validate-captcha", {
+          //   captcha: formData.captcha,
+          //   key: ""
+          // });
+          //
+          // if (captchaResponse.data.data.code !== "200") {
+          //   ElMessage.error("验证码无效，请重新输入。");
+          //   await refreshCaptcha(); // 刷新验证码
+          //   return;
+          // }
+
           if (isLogin.value) {
             // 登录逻辑
             const res = await proxy.$api.getMenu(formData);
@@ -100,18 +128,19 @@ export default {
             store.commit("addMenu", router);
             store.commit("setToken", res.token);
             await router.push({ name: "index" });
+            ElMessage.success("登录成功！");
           } else {
             // 注册逻辑
             const res = await proxy.$api.register(formData); // 假设有一个注册的 API
             if (res.success) {
-              alert("注册成功，请登录！");
+              ElMessage.success("注册成功，请登录！");
               toggleForm(); // 注册成功后切换到登录表单
             } else {
-              alert(res.message || "注册失败，请重试。");
+              ElMessage.error(res.message || "注册失败，请重试。");
             }
           }
         } else {
-          console.log("校验失败");
+          ElMessage.error("校验失败！");
         }
       });
     };
@@ -123,13 +152,23 @@ export default {
       formData.confirmPassword = "";
     };
 
+    const refreshCaptcha = async () => {
+      captchaUrl.value = `http://localhost:8088/captcha?${new Date().getTime()}`;
+      console.log(captchaUrl)
+    };
+
+    // 在组件加载时获取验证码
+    refreshCaptcha();
+
     return {
       formData,
-      handleSubmit,
-      toggleForm,
       isLogin, // 返回状态变量
       rules,   // 返回校验规则
       formRef, // 返回表单引用
+      captchaUrl,
+      handleSubmit,
+      toggleForm,
+      refreshCaptcha,
     };
   },
 };
@@ -161,5 +200,20 @@ h3 {
 
 :deep(.el-form-item__content) {
   justify-content: center;
+}
+
+//.captcha-item {
+//  display: flex;
+//  align-items: center; /* 垂直居中对齐 */
+//}
+
+.captcha-input {
+  flex: 1; /* 让输入框占据剩余空间 */
+  margin-right: 10px; /* 输入框和验证码图片之间的间距 */
+}
+
+.captcha {
+  height: 40px; /* 统一高度 */
+  cursor: pointer;
 }
 </style>

@@ -2,6 +2,8 @@ import axios from 'axios'
 import config from '../config'
 import { ElMessage } from 'element-plus'
 const NETWORK_ERROR = '网络请求异常,请稍后重试.....'
+
+axios.defaults.withCredentials = true;
 // 创建一个axios实例对象
 const service = axios.create({
   baseURL: config.baseApi
