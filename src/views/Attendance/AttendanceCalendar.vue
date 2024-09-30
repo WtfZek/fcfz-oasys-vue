@@ -291,7 +291,7 @@ export default {
         "timeOut": "2024-09-12T09:08:25.000+00:00",
         "date": "2024-09-20",
         "status": "打卡成功",
-        "address": "867 2nd Zhongshan Road, Yuexiu District",
+        "address": "867 2nd Zhongshan Road, Yuexiu District wuwuwuwuwuwuwwwwuwuuw",
         "type": "上班打卡"
       },
       {
@@ -458,17 +458,18 @@ export default {
 }
 
 .attendance-records-wrapper {
-  display: flex;               /* Use flexbox for layout */
-  flex-wrap: wrap;            /* Allow wrapping */
-  justify-content: center;     /* Center the cards horizontally */
-  overflow-x: auto;           /* Allow horizontal scrolling if needed */
-  max-width: 100%;
+  display: flex;
+  flex-wrap: wrap;            /* 允许换行 */
+  justify-content: space-between;  /* 让卡片两端对齐 */
+  overflow-x: auto;           /* 当卡片过多时允许横向滚动 */
+  max-width: 100%;            /* 限制容器的宽度 */
 }
 
 .punch-info {
   margin-top: 20px;
-  margin-right: 20px;         /* Optional: to space out cards */
-  min-width: 300px;
+  margin-right: 20px;         /* 卡片之间的间距 */
+  /*flex-basis: 30%;            !* 让每个卡片占据一定宽度，保持对齐 *!*/
+  min-width: 300px;           /* 保证卡片的最小宽度 */
 }
 
 .punch-info h3 {
@@ -479,5 +480,6 @@ export default {
 
 }
 </style>
+
 
 

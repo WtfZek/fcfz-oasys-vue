@@ -109,13 +109,12 @@ export default {
       // 手动触发校验
       formRef.value.validate(async (valid) => {
         if (valid) {
+
           // 验证码校验，使用 axios 死活不带 cookie
           // await axios.post("http://localhost:8088/validate-captcha", {
           //   captcha: formData.captcha,
           //   key: ""
           // }, {withCredentials: true});
-
-
 
           await axios.get("http://localhost:8088/captcha", { withCredentials: true });
 
@@ -169,6 +168,7 @@ export default {
 
     const refreshCaptcha = async () => {
       captchaUrl.value = `http://localhost:8088/captcha?${new Date().getTime()}`;
+      formData.captcha = ""; // 清空验证码输入框
       console.log(captchaUrl)
     };
 
