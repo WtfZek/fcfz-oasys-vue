@@ -6,7 +6,9 @@ const NETWORK_ERROR = '网络请求异常,请稍后重试.....'
 axios.defaults.withCredentials = true;
 // 创建一个axios实例对象
 const service = axios.create({
-  baseURL: config.baseApi
+  baseURL: config.baseApi,
+  withCredentials: true, // 直接在实例中配置跨域携带凭证
+  timeout: 10000, // 设置超时时间
 })
 
 // 在请求之前做一些事情

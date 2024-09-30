@@ -14,7 +14,7 @@ const EnvConfig = {
         mockApi: '',
     },
     test: {
-        baseApi: 'http://localhost:8088/api',
+        baseApi: 'http://localhost:8088',
         mockApi: '',
     },
     prod: {
@@ -26,7 +26,7 @@ const EnvConfig = {
 export default {
     env,
     // mock的总开关,
-    mock: true,
+    mock: false,
     ...EnvConfig[env]
 }
 

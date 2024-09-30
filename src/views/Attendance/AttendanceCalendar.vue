@@ -12,18 +12,27 @@
       </el-calendar>
     </el-card>
 
-    <!-- 打卡信息卡片 -->
-    <el-card v-if="filteredAttendanceRecords.length > 0" class="punch-info">
-      <h3>{{ selectedDateString }} 的打卡记录</h3>
-      <div v-for="record in filteredAttendanceRecords" :key="record.attendanceId" class="attendance-record">
-        <p><strong>签到时间:</strong> {{ formatTime(record.timeIn) }}</p>
-        <p><strong>签退时间:</strong> {{ formatTime(record.timeOut) }}</p>
-        <p><strong>打卡地址:</strong> {{ record.address }}</p>
-        <p><strong>打卡类型:</strong> {{ record.type }}</p>
-        <p><strong>打卡状态:</strong> {{ record.status }}</p>
-        <el-divider></el-divider>
-      </div>
-    </el-card>
+    <div class="attendance-records-wrapper">
+      <!-- 打卡信息卡片 -->
+      <el-card v-if="filteredAttendanceRecords.length > 0" v-for="record in filteredAttendanceRecords" :key="record.attendanceId" class="punch-info">
+        <h3>{{ selectedDateString }} 的打卡记录</h3>
+        <div class="attendance-record">
+          <p><strong>签到时间:</strong> {{ formatTime(record.timeIn) }}</p>
+          <p><strong>签退时间:</strong> {{ formatTime(record.timeOut) }}</p>
+          <p><strong>打卡地址:</strong> {{ record.address }}</p>
+          <p><strong>打卡类型:</strong> {{ record.type }}</p>
+          <p><strong>打卡状态:</strong> {{ record.status }}</p>
+          <el-divider></el-divider>
+        </div>
+      </el-card>
+      <el-card v-if="filteredAttendanceRecords.length <= 0" class="punch-info">
+        <h3>{{ selectedDateString }} 的打卡记录</h3>
+        <div class="attendance-record">
+          <p><strong>今日未打卡</strong></p>
+          <el-divider></el-divider>
+        </div>
+      </el-card>
+    </div>
   </div>
 </template>
 
@@ -448,12 +457,27 @@ export default {
   padding: 20px;
 }
 
+.attendance-records-wrapper {
+  display: flex;               /* Use flexbox for layout */
+  flex-wrap: wrap;            /* Allow wrapping */
+  justify-content: center;     /* Center the cards horizontally */
+  overflow-x: auto;           /* Allow horizontal scrolling if needed */
+  max-width: 100%;
+}
+
 .punch-info {
   margin-top: 20px;
-  width: 300px;
+  margin-right: 20px;         /* Optional: to space out cards */
+  min-width: 300px;
 }
 
 .punch-info h3 {
   margin-bottom: 10px;
 }
+
+.attendance-record {
+
+}
 </style>
+
+

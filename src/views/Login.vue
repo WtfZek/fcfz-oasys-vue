@@ -58,7 +58,7 @@ import { getCurrentInstance } from "vue-demi";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import axios from "axios";
-
+axios.defaults.withCredentials = true;
 
 export default {
   setup() {
@@ -105,21 +105,36 @@ export default {
       captcha: [{ required: true, message: "请输入验证码", trigger: "blur" }],
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (url, config) => {
       // 手动触发校验
       formRef.value.validate(async (valid) => {
         if (valid) {
-          // // 验证码校验
-          // const captchaResponse = await axios.post("http://localhost:8088/validate-captcha", {
+          // 验证码校验，使用 axios 死活不带 cookie
+          // await axios.post("http://localhost:8088/validate-captcha", {
           //   captcha: formData.captcha,
           //   key: ""
-          // });
-          //
-          // if (captchaResponse.data.data.code !== "200") {
-          //   ElMessage.error("验证码无效，请重新输入。");
-          //   await refreshCaptcha(); // 刷新验证码
-          //   return;
-          // }
+          // }, {withCredentials: true});
+
+
+
+          await axios.get("http://localhost:8088/captcha", { withCredentials: true });
+
+          const captchaResponse = await fetch('http://localhost:8088/validate-captcha', {
+            method: 'POST',
+            credentials: 'include', // 确保携带 cookie
+            body: JSON.stringify({captcha: formData.captcha}),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+
+          const captchaResult = await captchaResponse.json(); // 解析 JSON 响应
+
+          if (captchaResult.code !== "200") { // 验证码校验失败
+            ElMessage.error("验证码无效，请重新输入。");
+            await refreshCaptcha(); // 刷新验证码
+            return;
+          }
 
           if (isLogin.value) {
             // 登录逻辑

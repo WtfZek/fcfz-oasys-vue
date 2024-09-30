@@ -74,6 +74,16 @@ export default {
       mock: false,
       data: params
     })
+  },
+
+  validateCaptcha(params) {
+    return request({
+      url: '/validate-captcha',
+      method: 'post',
+      // 这个mock如果是true的话 用的就是线上fastmock的数据
+      mock: false,
+      data: params
+    })
   }
 
 }
