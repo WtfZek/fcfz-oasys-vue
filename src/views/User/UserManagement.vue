@@ -43,8 +43,8 @@
     <!-- 右侧按钮区域 -->
     <div class="right-container">
       <el-button type="info" @click="handleSearch">搜索</el-button>
-      <div style="display: flex; margin-top: 15px">
-        <el-button type="danger" @click="handleDeleteAll" style="margin-right: 8px;">× 批量删除</el-button>
+      <div style="display: flex; margin-top: 12px">
+        <el-button type="danger" @click="handleDeleteAll">× 批量删除</el-button>
         <el-button type="primary" @click="handleAdd">+ 新增</el-button>
       </div>
     </div>
