@@ -1,5 +1,5 @@
 <template>
-  <el-aside :style="{ width: $store.state.isCollapse ? '64px' : 'auto', minWidth: $store.state.isCollapse ? '64px' : '200px' }">
+  <el-aside :style="{ width: $store.state.isCollapse ? '64px' : 'auto', minWidth: $store.state.isCollapse ? '64px' : '180px' }">
     <el-menu
         class="el-menu-vertical-demo"
         active-text-color="#ffd04b"
@@ -158,9 +158,9 @@ export default defineComponent({
   border-right: none;
   h3 {
     line-height: 60px;
-    color: #fff;
+    color: #ffd04b;
     text-align: center;
   }
 }
 
-</style>
+</style>说

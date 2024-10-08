@@ -41,8 +41,8 @@
       </el-form-item>
     </el-form>
     <!-- 右侧按钮区域 -->
-    <div style="display: flex; flex-direction: column; align-items: flex-end;">
-      <el-button type="primary" @click="handleSearch">搜索</el-button>
+    <div class="right-container">
+      <el-button type="info" @click="handleSearch">搜索</el-button>
       <div style="display: flex; margin-top: 15px">
         <el-button type="danger" @click="handleDeleteAll" style="margin-right: 8px;">× 批量删除</el-button>
         <el-button type="primary" @click="handleAdd">+ 新增</el-button>
@@ -69,16 +69,14 @@
             >
           </template>
         </el-table-column>
-        <el-table-column class="last-column" fixed="right" label="操作" min-width="180" header-align="center" align="right">
+        <el-table-column class="last-column" fixed="right" label="操作" min-width="180" header-align="center" align="center">
           <template #default="scope">
-            <div style="margin-right: 25px;">
-              <el-button size="small" @click="handleEdit(scope.row)">
-                编辑
-              </el-button>
-              <el-button type="danger" size="small" @click="handleDelete(scope.row)">
-                删除
-              </el-button>
-            </div>
+            <el-button size="small" @click="handleEdit(scope.row)">
+              编辑
+            </el-button>
+            <el-button type="danger" size="small" @click="handleDelete(scope.row)">
+              删除
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -743,6 +741,20 @@ export default defineComponent({
 .user-header {
   display: flex;
   justify-content: space-between;
+
+  .el-form-item {
+    margin-right: 18px;
+    margin-bottom: 12px;
+  }
+  .right-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+
+    .el-button {
+      min-width: 75px;
+    }
+  }
 }
 
 </style>
