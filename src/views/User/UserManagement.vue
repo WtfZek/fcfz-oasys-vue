@@ -4,52 +4,84 @@
       <el-form-item label="用户名">
         <el-input v-model="formSearch.userName" placeholder="请输入用户名" />
       </el-form-item>
-      <el-form-item label="年龄">
-        <el-input v-model="formSearch.userName" placeholder="请输入年龄" />
+      <el-form-item label="工号">
+        <el-input v-model="formSearch.userAddress" placeholder="请输入工号" />
+      </el-form-item>
+      <el-form-item label="部门">
+        <el-input v-model="formSearch.userAddress" placeholder="请选择部门" />
       </el-form-item>
       <el-form-item label="出生日期">
 <!--        <el-input v-model="formSearch.userName" placeholder="请选择出生日期" />-->
         <el-date-picker
-            v-model="formSearch.birth"
+            v-model="formSearch.userBirth"
             type="date"
             label="出生日期"
             placeholder="请输入出生日期"
             style="width: 100%"
         />
       </el-form-item>
-      <el-form-item label="地址">
-        <el-input v-model="formSearch.userName" placeholder="请输入地址" />
+      <el-form-item label="入职日期">
+        <!--        <el-input v-model="formSearch.userName" placeholder="请选择出生日期" />-->
+        <el-date-picker
+            v-model="formSearch.userJoinDate"
+            type="date"
+            label="入职日期"
+            placeholder="请输入入职日期"
+            style="width: 100%"
+        />
       </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="handleSerch">搜索</el-button>
+      <el-form-item label="地址">
+        <el-input v-model="formSearch.userAddress" placeholder="请输入地址" />
+      </el-form-item>
+      <el-form-item label="手机号">
+        <el-input v-model="formSearch.userAddress" placeholder="请输入手机号" />
+      </el-form-item>
+      <el-form-item label="邮箱">
+        <el-input v-model="formSearch.userAddress" placeholder="请输入邮箱" />
       </el-form-item>
     </el-form>
-    <el-button type="danger" @click="handleDeleteAll">× 批量删除</el-button>
-    <el-button type="primary" @click="handleAdd">+ 新增</el-button>
+    <!-- 右侧按钮区域 -->
+    <div style="display: flex; flex-direction: column; align-items: flex-end;">
+      <el-button type="primary" @click="handleSearch">搜索</el-button>
+      <div style="display: flex; margin-top: 15px">
+        <el-button type="danger" @click="handleDeleteAll" style="margin-right: 8px;">× 批量删除</el-button>
+        <el-button type="primary" @click="handleAdd">+ 新增</el-button>
+      </div>
+    </div>
   </div>
   <div class="table">
-    <el-table :data="list" style="width: 100%" height="100%" table-layout="fixed">
-      <el-table-column
-          v-for="item in tableLabel"
-          :key="item.prop"
-          :label="item.label"
-          :prop="item.prop"
-          :width="item.width ? item.width : auto"
-          align="center"
-      />
-      <el-table-column class="last-column" fixed="right" label="操作" min-width="180" header-align="center" align="right">
-        <template #default="scope">
-          <div style="margin-right: 40px;">
-            <el-button size="small" @click="handleEdit(scope.row)">
-              编辑
-            </el-button>
-            <el-button type="danger" size="small" @click="handleDelete(scope.row)">
-              删除
-            </el-button>
-          </div>
-        </template>
-      </el-table-column>
-    </el-table>
+    <el-table :data="list" style="width: 100%" table-layout="fixed" @selection-change="handleSelectionChange" >
+        <el-table-column fixed type="selection" width="55" align="center"/>
+        <el-table-column
+            v-for="item in tableLabel"
+            :key="item.prop"
+            :label="item.label"
+            :prop="item.prop"
+            :width="item.width ? item.width : auto"
+            align="center"
+            :fixed="item.fixed ? item.fixed : false"
+        >
+          <template v-if ="item.prop === 'status'" #default="scope">
+            <el-tag
+                :type="scope.row.status === '在职' ? 'primary' : 'info'"
+                disable-transitions
+            >{{ scope.row.status }}</el-tag
+            >
+          </template>
+        </el-table-column>
+        <el-table-column class="last-column" fixed="right" label="操作" min-width="180" header-align="center" align="right">
+          <template #default="scope">
+            <div style="margin-right: 25px;">
+              <el-button size="small" @click="handleEdit(scope.row)">
+                编辑
+              </el-button>
+              <el-button type="danger" size="small" @click="handleDelete(scope.row)">
+                删除
+              </el-button>
+            </div>
+          </template>
+        </el-table-column>
+      </el-table>
     <el-pagination
         small
         background
@@ -152,8 +184,9 @@ import {
   getCurrentInstance,
   onMounted,
   ref,
-  reactive,
+  reactive, computed,
 } from "vue";
+import { formatDateTime } from '@/utils/format';
 
 export default defineComponent({
   setup() {
@@ -164,27 +197,32 @@ export default defineComponent({
       {
         prop: "userName",
         label: "姓名",
+        fixed: 'left',
       },
       {
         prop: "roleName",
         label: "系统角色",
+        fixed: '',
       },
       {
         prop: "departmentName",
         label: "部门",
+        fixed: 'left',
       },
       {
         prop: "userImage",
         label: "员工头像",
-        width: 200,
+        width: 150,
       },
       {
         prop: "empNum",
         label: "工号",
+        width: 150,
       },
       {
         prop: "telephone",
         label: "手机号",
+        width: 150,
       },
       {
         prop: "email",
@@ -198,12 +236,15 @@ export default defineComponent({
       {
         prop: "ctTime",
         label: "创建时间",
+        width: 220,
       },
       {
         prop: "upTime",
         label: "更新时间",
+        width: 220,
       },
     ]);
+    const selectedIds = ref([]);
 
     const userDataTest = ref ({
       records: [
@@ -247,29 +288,55 @@ export default defineComponent({
           upTime: null
         },
         {
-          userId: 4,
-          userName: "sadas",
+          userId: 1,
+          userName: "梁震南",
+          roleName: "boss",
+          departmentName: "销售部",
+          userImage: "1yeWOPS3Kd",
+          empNum: "5938189848",
+          telephone: "192-0151-2897",
+          email: "liangzhenn8@qq.com",
+          status: 0,
+          ctTime: "2024-09-10T07:13:01.000+00:00",
+          upTime: "2024-09-10T07:13:01.000+00:00"
+        },
+        {
+          userId: 7,
+          userName: "涂子航",
           roleName: "admin",
-          departmentName: "财务部",
-          userImage: "sadas",
-          empNum: "sdad",
-          telephone: "asdas",
-          email: "asdas",
+          departmentName: "人事部",
+          userImage: "ssss",
+          empNum: "20221107040",
+          telephone: "13094295529",
+          email: "3109702282@qq.com",
           status: 1,
-          ctTime: "2024-09-26T06:05:56.000+00:00",
+          ctTime: "2024-09-30T02:01:21.000+00:00",
+          upTime: "2024-09-30T02:01:22.000+00:00"
+        },
+        {
+          userId: 8,
+          userName: "小尹",
+          roleName: "admin",
+          departmentName: "综合部",
+          userImage: "sdasdsa",
+          empNum: "2424389790",
+          telephone: "2313231",
+          email: "swz2424389790@gmail.com",
+          status: 1,
+          ctTime: "2024-09-26T06:06:01.000+00:00",
           upTime: null
         },
         {
-          userId: 3,
-          userName: "何子异",
-          roleName: "admin",
-          departmentName: "综合部",
-          userImage: "3StKs8VbER",
-          empNum: "9917916138",
-          telephone: "760-771-3163",
-          email: "ziyih@qq.com",
-          status: 0,
-          ctTime: "2024-09-10T08:39:59.000+00:00",
+          userId: 6,
+          userName: "黄岚",
+          roleName: "user",
+          departmentName: "销售部",
+          userImage: "SHhufLveRR",
+          empNum: "5855972111",
+          telephone: "760-6340-3641",
+          email: "huang12@qq.com",
+          status: 1,
+          ctTime: "2024-09-26T06:05:57.000+00:00",
           upTime: null
         },
         {
@@ -286,33 +353,164 @@ export default defineComponent({
           upTime: "2024-09-10T07:13:01.000+00:00"
         },
         {
-          userId: 5,
-          userName: "曹岚",
+          userId: 7,
+          userName: "涂子航",
           roleName: "admin",
-          departmentName: "技术部",
-          userImage: "EiwJyvOFW4",
-          empNum: "6418582407",
-          telephone: "28-460-1738",
-          email: "lancao@qq.com",
-          status: 0,
-          ctTime: "2024-09-10T03:07:28.000+00:00",
+          departmentName: "人事部",
+          userImage: "ssss",
+          empNum: "20221107040",
+          telephone: "13094295529",
+          email: "3109702282@qq.com",
+          status: 1,
+          ctTime: "2024-09-30T02:01:21.000+00:00",
+          upTime: "2024-09-30T02:01:22.000+00:00"
+        },
+        {
+          userId: 8,
+          userName: "小尹",
+          roleName: "admin",
+          departmentName: "综合部",
+          userImage: "sdasdsa",
+          empNum: "2424389790",
+          telephone: "2313231",
+          email: "swz2424389790@gmail.com",
+          status: 1,
+          ctTime: "2024-09-26T06:06:01.000+00:00",
+          upTime: null
+        },
+
+        {
+          userId: 7,
+          userName: "涂子航",
+          roleName: "admin",
+          departmentName: "人事部",
+          userImage: "ssss",
+          empNum: "20221107040",
+          telephone: "13094295529",
+          email: "3109702282@qq.com",
+          status: 1,
+          ctTime: "2024-09-30T02:01:21.000+00:00",
+          upTime: "2024-09-30T02:01:22.000+00:00"
+        },
+        {
+          userId: 8,
+          userName: "小尹",
+          roleName: "admin",
+          departmentName: "综合部",
+          userImage: "sdasdsa",
+          empNum: "2424389790",
+          telephone: "2313231",
+          email: "swz2424389790@gmail.com",
+          status: 1,
+          ctTime: "2024-09-26T06:06:01.000+00:00",
           upTime: null
         },
         {
-          userId: 2,
-          userName: "萧璐",
+          userId: 6,
+          userName: "黄岚",
+          roleName: "user",
+          departmentName: "销售部",
+          userImage: "SHhufLveRR",
+          empNum: "5855972111",
+          telephone: "760-6340-3641",
+          email: "huang12@qq.com",
+          status: 1,
+          ctTime: "2024-09-26T06:05:57.000+00:00",
+          upTime: null
+        },
+        {
+          userId: 1,
+          userName: "梁震南",
+          roleName: "boss",
+          departmentName: "销售部",
+          userImage: "1yeWOPS3Kd",
+          empNum: "5938189848",
+          telephone: "192-0151-2897",
+          email: "liangzhenn8@qq.com",
+          status: 0,
+          ctTime: "2024-09-10T07:13:01.000+00:00",
+          upTime: "2024-09-10T07:13:01.000+00:00"
+        },
+        {
+          userId: 7,
+          userName: "涂子航",
           roleName: "admin",
           departmentName: "人事部",
-          userImage: "q8fX9ms3FS",
-          empNum: "0640707652",
-          telephone: "155-6121-6220",
-          email: "luxiao@qq.com",
-          status: 0,
-          ctTime: "2024-09-10T03:07:21.000+00:00",
+          userImage: "ssss",
+          empNum: "20221107040",
+          telephone: "13094295529",
+          email: "3109702282@qq.com",
+          status: 1,
+          ctTime: "2024-09-30T02:01:21.000+00:00",
+          upTime: "2024-09-30T02:01:22.000+00:00"
+        },
+        {
+          userId: 8,
+          userName: "小尹",
+          roleName: "admin",
+          departmentName: "综合部",
+          userImage: "sdasdsa",
+          empNum: "2424389790",
+          telephone: "2313231",
+          email: "swz2424389790@gmail.com",
+          status: 1,
+          ctTime: "2024-09-26T06:06:01.000+00:00",
           upTime: null
-        }
+        },
+        {
+          userId: 6,
+          userName: "黄岚",
+          roleName: "user",
+          departmentName: "销售部",
+          userImage: "SHhufLveRR",
+          empNum: "5855972111",
+          telephone: "760-6340-3641",
+          email: "huang12@qq.com",
+          status: 1,
+          ctTime: "2024-09-26T06:05:57.000+00:00",
+          upTime: null
+        },
+        {
+          userId: 1,
+          userName: "梁震南",
+          roleName: "boss",
+          departmentName: "销售部",
+          userImage: "1yeWOPS3Kd",
+          empNum: "5938189848",
+          telephone: "192-0151-2897",
+          email: "liangzhenn8@qq.com",
+          status: 0,
+          ctTime: "2024-09-10T07:13:01.000+00:00",
+          upTime: "2024-09-10T07:13:01.000+00:00"
+        },
+        {
+          userId: 7,
+          userName: "涂子航",
+          roleName: "admin",
+          departmentName: "人事部",
+          userImage: "ssss",
+          empNum: "20221107040",
+          telephone: "13094295529",
+          email: "3109702282@qq.com",
+          status: 1,
+          ctTime: "2024-09-30T02:01:21.000+00:00",
+          upTime: "2024-09-30T02:01:22.000+00:00"
+        },
+        {
+          userId: 8,
+          userName: "小李",
+          roleName: "admin",
+          departmentName: "综合部",
+          userImage: "sdasdsa",
+          empNum: "2424389790",
+          telephone: "2313231",
+          email: "swz2424389790@gmail.com",
+          status: 1,
+          ctTime: "2024-09-26T06:06:01.000+00:00",
+          upTime: null
+        },
       ],
-      total: 8,
+      total: 15,
       size: 10,
       current: 1,
       pages: 1
@@ -324,21 +522,33 @@ export default defineComponent({
     const config = reactive({
       total: 0,
       page: 1,
-      name: "",
+      userName: "",
+      userSex: "",
+      userBirth: "",
+      userAddress: "",
     });
     const getUserData = async (config) => {
+      // 通过 mock 或请求获取用户数据
       // let res = await proxy.$api.getUserData(config);
-      // // console.log(res);
       // config.total = res.count;
       // list.value = res.list.map((item) => {
       //   item.sexLabel = item.sex === 0 ? "女" : "男";
       //   return item;
       // });
+
+      // 保持 userDataTest 的数据不变
       config.total = userDataTest.value.total;
+
+      // 创建一个新的数据集合，不直接修改 userDataTest
       list.value = userDataTest.value.records.map((item) => {
-        // item.roleName = item.roleName === "user" ? "用户" : "管理员";
-        item.status = item.status === 1 ? "在职" : "离职";
-        return item;
+        let newItem = { ...item }; // 克隆一份数据
+        newItem.roleName = newItem.roleName === "admin" ? "管理员" :
+            (newItem.roleName === "boss" ? "老板" :
+                (newItem.roleName === "user" ? "普通用户" : "其他用户"));
+        newItem.ctTime = newItem.ctTime ? formatDateTime(newItem.ctTime) : '-'; // 格式化创建时间
+        newItem.upTime = newItem.upTime ? formatDateTime(newItem.upTime) : '-'; // 格式化更新时间
+        newItem.status = newItem.status === 1 ? "在职" : "离职"; // 格式化状态
+        return newItem; // 返回新的对象
       });
     };
     const changePage = (page) => {
@@ -348,12 +558,13 @@ export default defineComponent({
     };
     const formSearch = reactive({
       userName: "",
-      userAge: "",
+      userSex: "",
       userBirth: "",
       userAddress: "",
+      userJoinDate: "",
     });
-    const handleSerch = () => {
-      config.name = formSearch.userName;
+    const handleSearch = () => {
+      config.userName = formSearch.userName;
       getUserData(config);
     };
     // 控制模态框的显示隐藏
@@ -461,6 +672,13 @@ export default defineComponent({
             // catch error
           });
     };
+
+    // 复选框勾选状态改变时的处理函数
+    const handleSelectionChange = (selectedItems) => {
+      selectedIds.value = selectedItems.map(item => item.userId); // 提取选中的userId
+      console.log(selectedIds.value)
+    };
+
     return {
       list,
       tableLabel,
@@ -468,7 +686,7 @@ export default defineComponent({
       config,
       changePage,
       formSearch,
-      handleSerch,
+      handleSearch,
       dialogVisible,
       handleClose,
       formUser,
@@ -478,6 +696,8 @@ export default defineComponent({
       handleEdit,
       handleAdd,
       handleDelete,
+      handleSelectionChange,
+      // formatDateTime,
       // handleDeleteAll,
     };
   },
@@ -486,16 +706,37 @@ export default defineComponent({
 
 <style lang="less" scoped>
 .table {
+  background-color: #fafafa;
   position: relative;
-  height: 87%;
-  table-layout: fixed;
+  height: 80%;
+  //max-height: 80%;
+  .el-table {
+    --el-table-border-color: #c1c1c1b0;
+    --el-table-row-hover-bg-color: #fff3df;
+    --el-table-header-text-color: #333;
+    --el-table-header-bg-color: #e5e5e5;
+    --el-table-tr-bg-color: #f3f3f3;
+    --el-table-fixed-left-column: inset 10px 0 10px -10px rgba(0,0,0,0.15);
+    --el-table-fixed-right-column: inset -10px 0 10px -10px rgba(0,0,0,0.15);
+    color: #454545;
+    //min-height: auto !important;
+    height: 100%;
+    /* 滚动条样式，确保滚动 */
+    //overflow-y: auto;
+  }
 
 
+  .el-table-column {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
 
   .pager {
     position: absolute;
     right: 0;
-    bottom: -35px;
+    padding-top: 10px;
+    padding-bottom: 10px;
   }
 }
 
@@ -503,4 +744,5 @@ export default defineComponent({
   display: flex;
   justify-content: space-between;
 }
+
 </style>
