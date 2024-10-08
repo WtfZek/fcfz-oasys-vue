@@ -57,6 +57,7 @@ export default {
 
 <style lang="less" scoped>
 .tags {
+  background-color: #eeeeee;
   padding: 20px;
   width: 100%;
   .el-tag {

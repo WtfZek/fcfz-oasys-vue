@@ -456,7 +456,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
+  /*padding: 20px;*/
 }
 
 .attendance-records-wrapper {

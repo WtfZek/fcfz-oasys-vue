@@ -111,12 +111,10 @@ export default {
         if (valid) {
 
           // 验证码校验，使用 axios 死活不带 cookie
-          // await axios.post("http://localhost:8088/validate-captcha", {
+          // const captchaResponse = await axios.post("http://localhost:8088/validate-captcha", {
           //   captcha: formData.captcha,
           //   key: ""
           // }, {withCredentials: true});
-
-          await axios.get("http://localhost:8088/captcha", { withCredentials: true });
 
           const captchaResponse = await fetch('http://localhost:8088/validate-captcha', {
             method: 'POST',
