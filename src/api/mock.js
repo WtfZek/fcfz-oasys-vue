@@ -22,5 +22,5 @@ if (config.env === 'development') {
 
     console.log('Mock.js 拦截已启用');
 } else {
-    console.log('非 test 环境，Mock.js 拦截未启用');
+    console.log('非 development 环境，Mock.js 拦截未启用');
 }

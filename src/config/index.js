@@ -14,7 +14,7 @@ const EnvConfig = {
         mockApi: '',
     },
     test: {
-        baseApi: 'http://localhost:8088',
+        baseApi: '/api',
         mockApi: '',
     },
     prod: {

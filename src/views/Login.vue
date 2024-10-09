@@ -5,11 +5,11 @@
       <h3 v-if="isLogin">请登录</h3>
       <h3 v-else>请注册</h3>
 
-      <el-form-item prop="username">
+      <el-form-item prop="empNum">
         <el-input
             type="input"
             placeholder="请输入账号"
-            v-model="formData.username"
+            v-model="formData.empNum"
         >
         </el-input>
       </el-form-item>
@@ -57,15 +57,13 @@ import { reactive, ref } from "vue-demi";
 import { getCurrentInstance } from "vue-demi";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import axios from "axios";
-axios.defaults.withCredentials = true;
 
 export default {
   setup() {
     const formRef = ref(null); // 用于表单引用
     const formData = reactive({
-      username: "admin",
-      password: "admin",
+      empNum: "2424389790",
+      password: "123456",
       confirmPassword: "", // 注册时需要确认密码
       captcha: "", // 验证码
     });
@@ -76,7 +74,7 @@ export default {
     const captchaUrl = ref(""); // 用于存储验证码URL
 
     const rules = {
-      username: [
+      empNum: [
         { required: true, message: "请输入账号", trigger: "blur" },
       ],
       password: [
@@ -116,26 +114,40 @@ export default {
           //   key: ""
           // }, {withCredentials: true});
 
-          const captchaResponse = await fetch('http://localhost:8088/validate-captcha', {
-            method: 'POST',
-            credentials: 'include', // 确保携带 cookie
-            body: JSON.stringify({captcha: formData.captcha}),
-            headers: {
-              'Content-Type': 'application/json',
-            },
+          const captchaResponseData = await proxy.$api.validateCaptcha( {
+            captcha: formData.captcha,
           });
 
-          const captchaResult = await captchaResponse.json(); // 解析 JSON 响应
-
-          if (captchaResult.code !== "200") { // 验证码校验失败
+          if (!captchaResponseData) { // 验证码校验失败
             ElMessage.error("验证码无效，请重新输入。");
             await refreshCaptcha(); // 刷新验证码
             return;
           }
 
           if (isLogin.value) {
-            // 登录逻辑
-            const res = await proxy.$api.getMenu(formData);
+            // mock 的登录逻辑
+            // const res = await proxy.$api.getMenu(formData);
+            // store.commit("setMenu", res.menu);
+            // store.commit("addMenu", router);
+            // store.commit("setToken", res.token);
+            // await router.push({ name: "index" });
+            // ElMessage.success("登录成功！");
+
+            // 正常登录逻辑
+            const loginResponseData = await proxy.$api.login(formData);
+
+            // 假设登录响应中包含 tokenName 和 tokenValue
+            const tokenName = loginResponseData.tokenName;
+            const tokenValue = loginResponseData.tokenValue;
+
+            // 将 token 信息存入 localStorage
+            localStorage.setItem('tokenKey', tokenName);
+            localStorage.setItem('tokenValue', tokenValue);
+
+            const res = await proxy.$api.getMenu({
+              username: "admin",
+              password: "admin"
+            });
             store.commit("setMenu", res.menu);
             store.commit("addMenu", router);
             store.commit("setToken", res.token);
@@ -165,7 +177,7 @@ export default {
     };
 
     const refreshCaptcha = async () => {
-      captchaUrl.value = `http://localhost:8088/captcha?${new Date().getTime()}`;
+      captchaUrl.value = `api/captcha/get?${new Date().getTime()}`;
       formData.captcha = ""; // 清空验证码输入框
       console.log(captchaUrl)
     };

@@ -76,14 +76,43 @@ export default {
     })
   },
 
+  // 登录验证逻辑
+  login(params) {
+    return request({
+      url: '/user/login',
+      method: 'post',
+      mock: false,
+      // params: 将 params 中所有字段作为查询参数
+      params: {
+        ...params
+      },
+    });
+  },
+
+  // 验证码校验逻辑
   validateCaptcha(params) {
     return request({
-      url: '/validate-captcha',
+      url: '/captcha/validate',
       method: 'post',
-      // 这个mock如果是true的话 用的就是线上fastmock的数据
       mock: false,
-      data: params
-    })
-  }
+      // params: 将 params 中所有字段作为查询参数
+      data: {
+        ...params
+      },
+    });
+  },
+
+  // 获取个人信息逻辑
+  getUserInfo(params) {
+    return request({
+      url: '/user/info',
+      method: 'get',
+      mock: false,
+      // params: 将 params 中所有字段作为查询参数
+      data: {
+        ...params
+      },
+    });
+  },
 
 }

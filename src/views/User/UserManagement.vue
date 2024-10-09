@@ -50,7 +50,7 @@
     </div>
   </div>
   <div class="table">
-    <el-table :data="list" style="width: 100%" table-layout="fixed" @selection-change="handleSelectionChange" >
+    <el-table :data="list" style="width: 100%" table-layout="fixed" :default-sort="{ prop: 'ctTime', order: 'descending' }" @selection-change="handleSelectionChange" >
         <el-table-column fixed type="selection" width="55" align="center"/>
         <el-table-column
             v-for="item in tableLabel"
@@ -60,7 +60,29 @@
             :width="item.width ? item.width : auto"
             align="center"
             :fixed="item.fixed ? item.fixed : false"
+            :filters="item.filters ? item.filters : false"
+            :filter-method="item.filters ? filterMethod : false"
+            :sortable="item.sortable ? item.sortable : false"
         >
+          <template #header="scope">
+            <span>{{ item.label }}</span>
+            <!-- 切换锁定状态按钮 -->
+            <el-tooltip :content="item.fixed ? '取消固定' : '将该列固定到左侧'" placement="top">
+              <el-button
+                  circle
+                  size="small"
+                  @click="toggleFixed(item)"
+                  style="margin-left: 5px;"
+              >
+                <el-icon v-if="item.fixed"> <!-- 如果已固定，显示Unlock图标 -->
+                  <Unlock />
+                </el-icon>
+                <el-icon v-else> <!-- 如果未固定，显示Lock图标 -->
+                  <Lock />
+                </el-icon>
+              </el-button>
+            </el-tooltip>
+          </template>
           <template v-if ="item.prop === 'status'" #default="scope">
             <el-tag
                 :type="scope.row.status === '在职' ? 'primary' : 'info'"
@@ -190,61 +212,89 @@ export default defineComponent({
   setup() {
     // const tableLayout = ref<TableInstance['tableLayout']>('fixed')
     const { proxy } = getCurrentInstance();
-    const list = ref([]);
+    const list = reactive([]);
     const tableLabel = reactive([
       {
         prop: "userName",
         label: "姓名",
+        width: 100,
         fixed: 'left',
       },
       {
         prop: "roleName",
         label: "系统角色",
-        fixed: '',
+        width: 115,
+        fixed: false,
       },
       {
         prop: "departmentName",
         label: "部门",
+        width: 150,
         fixed: 'left',
+        filters: [
+          { text: '销售部', value: '销售部'},
+          { text: '人事部', value: '人事部'},
+          { text: '综合部', value: '综合部'},
+          { text: '财务部', value: '财务部'},
+          { text: '行政部', value: '行政部'},
+          { text: '技术部', value: '技术部'},
+          { text: '市场部', value: '市场部'},
+          { text: '运营部', value: '运营部'},
+        ]
       },
       {
         prop: "userImage",
         label: "员工头像",
         width: 150,
+        fixed: false,
       },
       {
         prop: "empNum",
         label: "工号",
         width: 150,
+        fixed: false,
+        sortable: true,
       },
       {
         prop: "telephone",
         label: "手机号",
         width: 150,
+        fixed: false,
       },
       {
         prop: "email",
         label: "邮箱",
         width: 220,
+        fixed: false,
       },
       {
         prop: "status",
         label: "状态",
+        width: 110,
+        fixed: false,
+        filters: [
+            { text: '在职', value: '在职' },
+            { text: '离职', value: '离职' },
+        ]
       },
       {
         prop: "ctTime",
         label: "创建时间",
         width: 220,
+        fixed: false,
+        sortable: true,
       },
       {
         prop: "upTime",
         label: "更新时间",
         width: 220,
+        fixed: false,
+        sortable: true,
       },
     ]);
     const selectedIds = ref([]);
 
-    const userDataTest = ref ({
+    const userDataTest = reactive ({
       records: [
         {
           userId: 7,
@@ -534,11 +584,13 @@ export default defineComponent({
       //   return item;
       // });
 
+      let res = await proxy.$api.getUserData(config);
+
       // 保持 userDataTest 的数据不变
-      config.total = userDataTest.value.total;
+      config.total = userDataTest.total;
 
       // 创建一个新的数据集合，不直接修改 userDataTest
-      list.value = userDataTest.value.records.map((item) => {
+      let userListData = userDataTest.records.map((item) => {
         let newItem = { ...item }; // 克隆一份数据
         newItem.roleName = newItem.roleName === "admin" ? "管理员" :
             (newItem.roleName === "boss" ? "老板" :
@@ -548,6 +600,7 @@ export default defineComponent({
         newItem.status = newItem.status === 1 ? "在职" : "离职"; // 格式化状态
         return newItem; // 返回新的对象
       });
+      Object.assign(list, userListData);
     };
     const changePage = (page) => {
       // console.log(page);
@@ -677,6 +730,20 @@ export default defineComponent({
       console.log(selectedIds.value)
     };
 
+    const filterMethod = (value, row, column) => {
+      const property = column['property']
+      return row[property] === value
+    }
+
+    // 切换固定列的状态
+    const toggleFixed = (item) => {
+      if (item.fixed) {
+        item.fixed = false; // 取消固定
+      } else {
+        item.fixed = 'left'; // 固定到左侧
+      }
+    };
+
     return {
       list,
       tableLabel,
@@ -695,6 +762,8 @@ export default defineComponent({
       handleAdd,
       handleDelete,
       handleSelectionChange,
+      filterMethod,
+      toggleFixed,
       // formatDateTime,
       // handleDeleteAll,
     };
@@ -721,14 +790,14 @@ export default defineComponent({
     height: 100%;
     /* 滚动条样式，确保滚动 */
     //overflow-y: auto;
+
+    /* 发现样式在f12中修改成功，但是代码中修改失败时可以使用深选择器穿透 /deep/ 和 :: v-deep 在 vue3 中过时了*/
+    :deep .el-table__column-filter-trigger {
+      margin-left: 5px; /* 这将应用到子组件中的样式 */
+    }
   }
 
 
-  .el-table-column {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
-  }
 
   .pager {
     position: absolute;
@@ -737,6 +806,7 @@ export default defineComponent({
     padding-bottom: 10px;
   }
 }
+
 
 .user-header {
   display: flex;

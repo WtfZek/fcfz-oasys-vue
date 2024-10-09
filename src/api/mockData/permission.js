@@ -10,7 +10,7 @@ export default {
         data: {
           menu: [
             {
-              "path": "/home",
+              "path": "/",
               "name": "index",
               "label": "首页",
               "icon": "House",  // 对应 Element Plus 的 House 图标

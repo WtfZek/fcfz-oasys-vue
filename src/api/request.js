@@ -7,13 +7,17 @@ axios.defaults.withCredentials = true;
 // 创建一个axios实例对象
 const service = axios.create({
   baseURL: config.baseApi,
-  withCredentials: true, // 直接在实例中配置跨域携带凭证
   timeout: 10000, // 设置超时时间
 })
 
 // 在请求之前做一些事情
 service.interceptors.request.use((req) => {
   // 可以自定义header
+  const key = localStorage.getItem('tokenKey'); // 一般都是 satoken
+  const value = localStorage.getItem('tokenValue'); // uuid 形式
+  if (key && value) {
+    req.headers[key] = value;
+  }
   // jwt-token认证的时候 
   return req
 })
@@ -50,6 +54,7 @@ function request(options) {
     service.defaults.baseURL = isMock ? config.mockApi : config.baseApi
   }
 
+  // 这样外部 .service 也是 .request
   return service(options)
 }
 export default request

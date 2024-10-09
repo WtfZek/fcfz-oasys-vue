@@ -2,28 +2,28 @@
   <div class="personal-info">
     <el-card shadow="hover" class="info-card">
       <div class="header">
-        <el-avatar :src="userData.userImageUrl" size="large" />
+        <el-avatar :src="userInfoData.userImageUrl" size="large" />
         <div class="header-info">
-          <h3>{{ userData.userName }}</h3>
-          <p>{{ userData.roleName }} - {{ userData.departmentName }}</p>
+          <h3>{{ userInfoData.userName }} - {{ userInfoData.sex === "1" ? '男' : '女'}}</h3>
+          <p style="margin-top: 10px">{{ userInfoData.roleName }} - {{ userInfoData.departmentName }}</p>
         </div>
       </div>
-      <el-form :model="userData" label-width="120px" class="info-form">
+      <el-form :model="userInfoData" label-width="120px" class="info-form">
         <el-form-item label="工号">
-          <el-input v-model="userData.empNum" disabled></el-input>
+          <el-input v-model="userInfoData.empNum" disabled></el-input>
         </el-form-item>
         <el-form-item label="电话">
-          <el-input v-model="userData.telephone" disabled></el-input>
+          <el-input v-model="userInfoData.telephone" disabled></el-input>
         </el-form-item>
         <el-form-item label="电子邮箱">
-          <el-input v-model="userData.email" disabled></el-input>
+          <el-input v-model="userInfoData.email" disabled></el-input>
         </el-form-item>
         <el-form-item label="状态">
-          <el-tag :type="userData.status === 0 ? 'success' : 'warning'">
-            {{ userData.status === 0 ? '在职' : '离职' }}
+          <el-tag :type="userInfoData.status === 0 ? 'success' : 'info'">
+            {{ userInfoData.status === 0 ? '在职' : '离职' }}
           </el-tag>
         </el-form-item>
-        <el-form-item label="创建时间">
+        <el-form-item label="入职时间">
           <el-input v-model="formattedCtTime" disabled></el-input> <!-- 使用计算属性 -->
         </el-form-item>
       </el-form>
@@ -37,28 +37,41 @@
 
 <script>
 import { reactive, computed } from 'vue';
+import { getCurrentInstance } from "vue-demi";
 // import { ElMessage } from 'element-plus';
 
 export default {
   name: 'PersonalInfo',
   setup() {
-    const userData = reactive({
-      userId: 2,
-      userName: '萧璐',
-      roleName: 'admin',
-      departmentName: '人事部',
-      userImageUrl: 'https://via.placeholder.com/150', // 默认头像或图片路径
-      empNum: '0640707652',
-      telephone: '155-6121-6220',
-      email: 'luxiao@qq.com',
-      status: 0,
-      ctTime: '2024-09-10T03:07:21.000+00:00',
+    const userInfoData = reactive({
+      // "userId": 8,
+      // "userName": "小尹",
+      // "roleName": "admin",
+      // "departmentName": "综合部",
+      // "userImage": "sdasdsa",
+      // "empNum": "2424389790",
+      // "telephone": "15791798943",
+      // "email": "231231232",
+      // "status": 0,
+      // "sex": "0",
+      // "birth": "2002-09-14",
+      // "timeIn": "2024-09-02T03:07:19.000+00:00",
+      // "ctTime": "2024-10-08T03:07:27.000+00:00",
+      // "upTime": null
     });
+
+    const { proxy } = getCurrentInstance();
+
+    const getUserInfo = async () => {
+      const userInfoResData = await proxy.$api.getUserInfo();
+      Object.assign(userInfoData, userInfoResData);
+      console.log(userInfoData.value)
+    }
 
     // 计算属性格式化日期
     const formattedCtTime = computed(() => {
       const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
-      return new Date(userData.ctTime).toLocaleDateString(undefined, options);
+      return new Date(userInfoData.timeIn).toLocaleDateString(undefined, options);
     });
 
     const handleEdit = () => {
@@ -75,8 +88,10 @@ export default {
       });
     };
 
+    getUserInfo();
+
     return {
-      userData,
+      userInfoData,
       formattedCtTime, // 使用计算属性
       handleEdit,
       handleLogout,
