@@ -12,7 +12,7 @@ if (config.env === 'development') {
     Mock.mock('/home/getChartData', 'get', homeApi.getChartData());
 
     // 本地获取user的数据，正则表达式写法
-    Mock.mock(/user\/getUser/, 'get', userApi.getUserList);
+    // Mock.mock(/user\/getUser/, 'get', userApi.getUserList);
     Mock.mock(/user\/add/, 'post', userApi.createUser);
     Mock.mock(/user\/edit/, 'post', userApi.updateUser);
     Mock.mock(/user\/delete/, 'get', userApi.deleteUser);
