@@ -39,21 +39,21 @@ export default {
    * @param name, page, limit
    * @return {{code: number, count: number, data: *[]}}
    */
-  getUserList: config => {
-    const { name, page = 1, limit = 20 } = param2Obj(config.url)
-    const mockList = List.filter(user => {
-      if (name && user.name.indexOf(name) === -1 && user.addr.indexOf(name) === -1) return false
-      return true
-    })
-    const pageList = mockList.filter((item, index) => index < limit * page && index >= limit * (page - 1))
-    return {
-      code: 200,
-      data: {
-        list: pageList,
-        count: mockList.length,
-      }
-    }
-  },
+  // getUserList: config => {
+  //   const { name, page = 1, limit = 20 } = param2Obj(config.url)
+  //   const mockList = List.filter(user => {
+  //     if (name && user.name.indexOf(name) === -1 && user.addr.indexOf(name) === -1) return false
+  //     return true
+  //   })
+  //   const pageList = mockList.filter((item, index) => index < limit * page && index >= limit * (page - 1))
+  //   return {
+  //     code: 200,
+  //     data: {
+  //       list: pageList,
+  //       count: mockList.length,
+  //     }
+  //   }
+  // },
   /**
    * 增加用户
    * @param name, addr, age, birth, sex

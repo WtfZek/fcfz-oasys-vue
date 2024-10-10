@@ -1,52 +1,111 @@
 <template>
   <div class="user-header">
     <el-form :inline="true" :model="formSearch">
-      <el-form-item label="用户名">
-        <el-input v-model="formSearch.userName" placeholder="请输入用户名" />
+<!--      <el-form-item label="用户名">-->
+<!--        <el-input clearable v-model="formSearch.userName" placeholder="请输入用户名" />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="工号">-->
+<!--        <el-input clearable v-model="formSearch.empNum" placeholder="请输入工号" />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="部门">-->
+<!--        <el-input clearable v-model="formSearch.departmentName" placeholder="请选择部门" />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="出生日期">-->
+<!--        <el-date-picker-->
+<!--            clearable-->
+<!--            v-model="formSearch.birth"-->
+<!--            type="date"-->
+<!--            label="出生日期"-->
+<!--            placeholder="请输入出生日期"-->
+<!--            style="width: 100%"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="入职日期">-->
+<!--        &lt;!&ndash;        <el-input v-model="formSearch.userName" placeholder="请选择出生日期" />&ndash;&gt;-->
+<!--        <el-date-picker-->
+<!--            clearable-->
+<!--            v-model="formSearch.timeIn"-->
+<!--            type="date"-->
+<!--            label="入职日期"-->
+<!--            placeholder="请输入入职日期"-->
+<!--            style="width: 100%"-->
+<!--        />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="地址">-->
+<!--        <el-input clearable v-model="formSearch.userAddress" placeholder="请输入地址" />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="手机号">-->
+<!--        <el-input clearable v-model="formSearch.telephone" placeholder="请输入手机号" />-->
+<!--      </el-form-item>-->
+<!--      <el-form-item label="邮箱">-->
+<!--        <el-input clearable v-model="formSearch.email" placeholder="请输入邮箱" />-->
+<!--      </el-form-item>-->
+      <el-form-item label="请选择查找的类型">
+        <el-input
+            clearable
+            v-model="formSearch[selectedField]"
+            placeholder="请输入查询内容"
+            class="input-with-select"
+        >
+          <template #prepend>
+            <el-select v-model="selectedField" placeholder="Select" style="width: 120px">
+              <el-option label="用户名" value="userName" />
+              <el-option label="工号" value="empNum" />
+              <el-option label="部门" value="departmentName" />
+              <el-option label="入职日期" value="timeIn" />
+            </el-select>
+          </template>
+          <template #append>
+            <el-button>
+              <el-icon ><Search/></el-icon>
+            </el-button>
+          </template>
+        </el-input>
       </el-form-item>
-      <el-form-item label="工号">
-        <el-input v-model="formSearch.userAddress" placeholder="请输入工号" />
-      </el-form-item>
-      <el-form-item label="部门">
-        <el-input v-model="formSearch.userAddress" placeholder="请选择部门" />
-      </el-form-item>
-      <el-form-item label="出生日期">
-<!--        <el-input v-model="formSearch.userName" placeholder="请选择出生日期" />-->
-        <el-date-picker
-            v-model="formSearch.userBirth"
-            type="date"
-            label="出生日期"
-            placeholder="请输入出生日期"
-            style="width: 100%"
-        />
-      </el-form-item>
-      <el-form-item label="入职日期">
-        <!--        <el-input v-model="formSearch.userName" placeholder="请选择出生日期" />-->
-        <el-date-picker
-            v-model="formSearch.userJoinDate"
-            type="date"
-            label="入职日期"
-            placeholder="请输入入职日期"
-            style="width: 100%"
-        />
-      </el-form-item>
-      <el-form-item label="地址">
-        <el-input v-model="formSearch.userAddress" placeholder="请输入地址" />
-      </el-form-item>
-      <el-form-item label="手机号">
-        <el-input v-model="formSearch.userAddress" placeholder="请输入手机号" />
-      </el-form-item>
-      <el-form-item label="邮箱">
-        <el-input v-model="formSearch.userAddress" placeholder="请输入邮箱" />
+      <el-form-item label="请选择查找的日期类型">
+        <el-select v-model="selectedDateField" placeholder="Select" style="width: 120px">
+          <el-option label="入职日期" value="timeIn" />
+          <el-option label="创建日期" value="ctTime" />
+          <el-option label="修改日期" value="upTime" />
+        </el-select>
+        <el-select v-model="selectedDateModel" placeholder="Select" style="width: 120px">
+          <el-option label="精确查找" value="jq" />
+          <el-option label="区间查找" value="qj" />
+        </el-select>
+        <span>
+          <el-date-picker
+              clearable
+              v-if="selectedDateModel === 'jq'"
+              v-model="formSearch[selectedDateField]"
+              type="date"
+              label="出生日期"
+              placeholder="请输入出生日期"
+              style="width: 100%"
+          />
+          <el-date-picker
+              clearable
+              v-if="selectedDateModel === 'qj'"
+              v-model="formSearch[selectedDateField+selectedDateModel]"
+              type="daterange"
+              unlink-panels
+              range-separator="到"
+              start-placeholder="开始时间"
+              end-placeholder="结束时间"
+              :shortcuts="shortcuts"
+              :size="size"
+          />
+        </span>
+        <span>
+          <el-button>
+              <el-icon ><Search/></el-icon>
+          </el-button>
+        </span>
       </el-form-item>
     </el-form>
     <!-- 右侧按钮区域 -->
     <div class="right-container">
-      <el-button type="info" @click="handleSearch">搜索</el-button>
-      <div style="display: flex; margin-top: 12px">
-        <el-button type="danger" @click="handleDeleteAll">× 批量删除</el-button>
-        <el-button type="primary" @click="handleAdd">+ 新增</el-button>
-      </div>
+      <el-button type="danger" @click="handleDeleteAll">× 批量删除</el-button>
+      <el-button type="primary" @click="handleAdd">+ 新增</el-button>
     </div>
   </div>
   <div class="table">
@@ -60,27 +119,24 @@
             :width="item.width ? item.width : auto"
             align="center"
             :fixed="item.fixed ? item.fixed : false"
-            :filters="item.filters ? item.filters : false"
+            :filters="item.filters ? item.filters : null"
             :filter-method="item.filters ? filterMethod : false"
+            :filter-multiple="item.filters ? false : null"
             :sortable="item.sortable ? item.sortable : false"
         >
           <template #header="scope">
             <span>{{ item.label }}</span>
             <!-- 切换锁定状态按钮 -->
             <el-tooltip :content="item.fixed ? '取消固定' : '将该列固定到左侧'" placement="top">
-              <el-button
-                  circle
-                  size="small"
-                  @click="toggleFixed(item)"
-                  style="margin-left: 5px;"
-              >
-                <el-icon v-if="item.fixed"> <!-- 如果已固定，显示Unlock图标 -->
+              <span @click="toggleFixed(item)"
+                  style="margin-left: 5px;" >
+                <el-icon v-if="item.fixed" color="#289eea"> <!-- 如果已固定，显示Unlock图标 -->
                   <Unlock />
                 </el-icon>
                 <el-icon v-else> <!-- 如果未固定，显示Lock图标 -->
                   <Lock />
                 </el-icon>
-              </el-button>
+              </span>
             </el-tooltip>
           </template>
           <template v-if ="item.prop === 'status'" #default="scope">
@@ -106,7 +162,7 @@
         small
         background
         layout="prev, pager, next"
-        :total="config.total"
+        :total="pageSearch.total"
         @current-change="changePage"
         class="pager mt-4"
     />
@@ -212,7 +268,10 @@ export default defineComponent({
   setup() {
     // const tableLayout = ref<TableInstance['tableLayout']>('fixed')
     const { proxy } = getCurrentInstance();
-    const list = reactive([]);
+    const list = ref([]);
+    const selectedField = ref('userName');
+    const selectedDateField = ref('timeIn');
+    const selectedDateModel = ref('jq');
     const tableLabel = reactive([
       {
         prop: "userName",
@@ -276,6 +335,30 @@ export default defineComponent({
             { text: '在职', value: '在职' },
             { text: '离职', value: '离职' },
         ]
+      },
+      {
+        prop: "sex",
+        label: "性别",
+        width: 110,
+        fixed: false,
+        filters: [
+          { text: '男', value: '男' },
+          { text: '女', value: '女' },
+        ]
+      },
+      {
+        prop: "birth",
+        label: "出生日期",
+        width: 220,
+        fixed: false,
+        sortable: true,
+      },
+      {
+        prop: "timeIn",
+        label: "入职时间",
+        width: 220,
+        fixed: false,
+        sortable: true,
       },
       {
         prop: "ctTime",
@@ -565,17 +648,25 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      getUserData(config);
+      handleSearch(pageSearch);
     });
-    const config = reactive({
-      total: 0,
-      page: 1,
-      userName: "",
-      userSex: "",
-      userBirth: "",
-      userAddress: "",
+    const formSearch = reactive({
+      userName: null,
+      empNum: null,
+      departmentName: null,
+      birth: null,
+      timeIn: null,
+      timeInqj: null,
+      telephone: null,
+      email: null,
     });
-    const getUserData = async (config) => {
+    const pageSearch = reactive({
+      pageNum: 1,
+      pageSize: 20,
+      total: null,
+      data: formSearch,
+    });
+    const getUserData = async () => {
       // 通过 mock 或请求获取用户数据
       // let res = await proxy.$api.getUserData(config);
       // config.total = res.count;
@@ -584,14 +675,14 @@ export default defineComponent({
       //   return item;
       // });
 
-      let res = await proxy.$api.getUserData(config);
+      let res = await proxy.$api.getUserList(pageSearch);
 
       // 保持 userDataTest 的数据不变
-      config.total = userDataTest.total;
+      pageSearch.total = res.total;
 
       // 创建一个新的数据集合，不直接修改 userDataTest
-      let userListData = userDataTest.records.map((item) => {
-        let newItem = { ...item }; // 克隆一份数据
+      list.value = res.records.map((item) => {
+        let newItem = {...item}; // 克隆一份数据
         newItem.roleName = newItem.roleName === "admin" ? "管理员" :
             (newItem.roleName === "boss" ? "老板" :
                 (newItem.roleName === "user" ? "普通用户" : "其他用户"));
@@ -600,23 +691,46 @@ export default defineComponent({
         newItem.status = newItem.status === 1 ? "在职" : "离职"; // 格式化状态
         return newItem; // 返回新的对象
       });
-      Object.assign(list, userListData);
     };
     const changePage = (page) => {
       // console.log(page);
-      config.page = page;
-      getUserData(config);
+      pageSearch.page = page;
+      getUserData(pageSearch);
     };
-    const formSearch = reactive({
+    // 添加用户的form数据
+    const formUser = reactive({
+      userId: "",
       userName: "",
-      userSex: "",
-      userBirth: "",
-      userAddress: "",
-      userJoinDate: "",
+      roleName: "",
+      departmentName: "",
+      userImage: "",
+      empNum: "",
+      telephone: "",
+      email: "",
+      status: "",
+      ctTime: "",
+      upTime: "",
     });
-    const handleSearch = () => {
-      config.userName = formSearch.userName;
-      getUserData(config);
+
+    const handleSearch = async () => {
+      let res = await proxy.$api.getUserList(pageSearch);
+
+      // 保持 userDataTest 的数据不变
+      pageSearch.total = res.total;
+
+      // 创建一个新的数据集合，不直接修改 userDataTest
+      list.value = res.records.map((item) => {
+        let newItem = {...item}; // 克隆一份数据
+        newItem.roleName = newItem.roleName === "admin" ? "管理员" :
+            (newItem.roleName === "boss" ? "老板" :
+                (newItem.roleName === "user" ? "普通用户" : "其他用户"));
+        newItem.timeIn = newItem.timeIn ? formatDateTime(newItem.timeIn) : '-'; // 格式化创建时间
+        newItem.ctTime = newItem.ctTime ? formatDateTime(newItem.ctTime) : '-'; // 格式化创建时间
+        newItem.upTime = newItem.upTime ? formatDateTime(newItem.upTime) : '-'; // 格式化更新时间
+        newItem.status = newItem.status === 1 ? "在职" : "离职"; // 格式化状态
+        newItem.sex = newItem.sex === "1" ? "男" : "女"; // 格式化状态
+        return newItem; // 返回新的对象
+      });
     };
     // 控制模态框的显示隐藏
     const dialogVisible = ref(false);
@@ -630,14 +744,7 @@ export default defineComponent({
             // catch error
           });
     };
-    // 添加用户的form数据
-    const formUser = reactive({
-      name: "", // 添加用户的 用户名
-      age: "",
-      sex: "",
-      birth: "",
-      addr: "",
-    });
+
     const timeFormat = (time) => {
       var time = new Date(time);
       var year = time.getFullYear();
@@ -659,7 +766,7 @@ export default defineComponent({
               // console.log(proxy.$refs);
               dialogVisible.value = false;
               proxy.$refs.userForm.resetFields();
-              getUserData(config);
+              getUserData(pageSearch);
             }
           } else {
             // 编辑的接口
@@ -669,7 +776,7 @@ export default defineComponent({
               // console.log(proxy.$refs);
               dialogVisible.value = false;
               proxy.$refs.userForm.resetFields();
-              getUserData(config);
+              getUserData(pageSearch);
             }
           }
         } else {
@@ -694,7 +801,7 @@ export default defineComponent({
 
       action.value = "edit";
       dialogVisible.value = true;
-      row.sex == 1 ? (row.sex = "男") : (row.sex = "女");
+      row.sex === "1" ? (row.sex = "男") : (row.sex = "女");
       proxy.$nextTick(() => {
         Object.assign(formUser, row);
       });
@@ -717,7 +824,7 @@ export default defineComponent({
               message: "删除成功",
               type: "success",
             });
-            getUserData(config);
+            getUserData(pageSearch);
           })
           .catch(() => {
             // catch error
@@ -748,7 +855,10 @@ export default defineComponent({
       list,
       tableLabel,
       // tableLayout,
-      config,
+      pageSearch,
+      selectedField,
+      selectedDateField,
+      selectedDateModel,
       changePage,
       formSearch,
       handleSearch,
@@ -775,7 +885,7 @@ export default defineComponent({
 .table {
   background-color: #fafafa;
   position: relative;
-  height: 80%;
+  height: 90%;
   //max-height: 80%;
   .el-table {
     --el-table-border-color: #c1c1c1b0;
@@ -788,11 +898,12 @@ export default defineComponent({
     color: #454545;
     //min-height: auto !important;
     height: 100%;
+    //height: auto;
     /* 滚动条样式，确保滚动 */
     //overflow-y: auto;
 
     /* 发现样式在f12中修改成功，但是代码中修改失败时可以使用深选择器穿透 /deep/ 和 :: v-deep 在 vue3 中过时了*/
-    :deep .el-table__column-filter-trigger {
+    :deep(.el-table__column-filter-trigger) {
       margin-left: 5px; /* 这将应用到子组件中的样式 */
     }
   }
@@ -815,11 +926,14 @@ export default defineComponent({
   .el-form-item {
     margin-right: 18px;
     margin-bottom: 12px;
+
+    :deep(.el-input) {
+      display: flex;
+    }
   }
   .right-container {
     display: flex;
-    flex-direction: column;
-    align-items: flex-end;
+    //justify-content: space-between; /* 使子元素两端对齐 */
 
     .el-button {
       min-width: 75px;

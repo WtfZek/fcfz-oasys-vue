@@ -115,4 +115,16 @@ export default {
     });
   },
 
+  // 获取个人信息逻辑
+  getUserList(params) {
+    return request({
+      url: '/user/list',
+      method: 'post',
+      mock: false,
+      data: {
+        ...params
+      },
+    });
+  },
+
 }
