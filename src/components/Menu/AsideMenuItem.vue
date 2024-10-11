@@ -10,7 +10,7 @@
         <span>{{ item.label }}</span>
       </template>
 <!--      <el-menu-item-group>-->
-        <menu-item v-for="child in item.children" :key="child.path" :item="child" />
+        <aside-menu-item v-for="child in item.children" :key="child.path" :item="child" />
 <!--      </el-menu-item-group>-->
     </el-sub-menu>
 <!--  </div>-->
@@ -23,7 +23,7 @@ import { useStore } from 'vuex'
 import router from "../../router/index.js";
 
 export default {
-  name: 'MenuItem',
+  name: 'AsideMenuItem',
   props: {
     item: {
       type: Object,

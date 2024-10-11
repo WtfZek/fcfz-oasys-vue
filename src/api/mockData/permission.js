@@ -15,123 +15,189 @@ export default {
               "label": "首页",
               "icon": "House",  // 对应 Element Plus 的 House 图标
               "url": "Home/Home",
-              "children": [],
+              "children": []
             },
             {
-              "path": "/dept",
+              "path": "/enterprise",
               "name": "enterpriseManagement",
               "label": "企业管理",
               "icon": "Suitcase",  // 对应 Suitcase 图标
-              "url": "Dept/Department",
+              "url": "Enterprise/Management",
               "children": [
                 {
-                  "path": "/dept/user-management",
+                  "path": "/enterprise/user-management",
                   "name": "userManagement",
                   "label": "用户管理",
                   "icon": "User",  // 对应 User 图标
-                  "url": "User/UserManagement",
-                  "children": [],
+                  "url": "Enterprise/UserManagement",
+                  "children": []
                 },
                 {
-                  "path": "/dept/department",
+                  "path": "/enterprise/department-management",
                   "name": "departmentManagement",
                   "label": "部门管理",
                   "icon": "OfficeBuilding",  // 对应 OfficeBuilding 图标
-                  "url": "Dept/Department",
-                  "children": [],
+                  "url": "Enterprise/DepartmentManagement",
+                  "children": []
                 },
                 {
-                  "path": "/dept/role",
+                  "path": "/enterprise/role-management",
                   "name": "roleManagement",
                   "label": "职位管理",
                   "icon": "Management",  // 对应 Management 图标
-                  "url": "Dept/Role",
-                  "children": [],
+                  "url": "Enterprise/RoleManagement",
+                  "children": []
+                },
+                {
+                  "path": "/enterprise/permission-management",
+                  "name": "permissionManagement",
+                  "label": "角色管理",
+                  "icon": "Key",  // 对应 Key 图标
+                  "url": "Role/PermissionManagement",
+                  "children": []
                 }
               ]
             },
             {
-              "path": "/check",
+              "path": "/attendance",
               "name": "attendanceManagement",
               "label": "考勤管理",
               "icon": "Tools",  // 对应 Tools 图标
-              "url": "Check",
+              "url": "Attendance/Management",
               "children": [
                 {
-                  "path": "/check/message",
-                  "name": "punchInInfo",
-                  "label": "打卡信息",
+                  "path": "/attendance/punch-management",
+                  "name": "punchManagement",
+                  "label": "打卡管理",
                   "icon": "DocumentChecked",  // 对应 DocumentChecked 图标
-                  "url": "Check/Message",
+                  "url": "Attendance/AttendanceManagement",
                   "children": [
-                    {
-                      "path": "/check/message/echart",
-                      "name": "visualization",
-                      "label": "可视化界面",
-                      "icon": "DataAnalysis",  // 对应 DataAnalysis 图标
-                      "url": "Check/Message/Echart",
-                      "children": [],
-                    },
-                    {
-                      "path": "/check/message/calendar",
-                      "name": "checkCalendar",
-                      "label": "打卡日历",
-                      "icon": "Calendar",  // 对应 DocumentChecked 图标
-                      "url": "Attendance/AttendanceCalendar",
-                      "children": [],
-                    }
                   ]
                 },
                 {
-                  "path": "/check/info",
-                  "name": "attendanceInformation",
-                  "label": "考勤信息",
-                  "icon": "Timer",  // 对应 Timer 图标
-                  "url": "Check/Info",
+                  "path": "/attendance/message/calendar",
+                  "name": "attendanceCalendar",
+                  "label": "打卡日历",
+                  "icon": "Calendar",  // 对应 DocumentChecked 图标
+                  "url": "Attendance/AttendanceCalendar",
                   "children": [],
                 },
-              ]
-            },
-            {
-              "path": "/unitfx",
-              "name": "unitfx",
-              "label": "单元分析",
-              "icon": "PieChart",  // 对应 PieChart 图标
-              "url": "Unitfx",
-              "children": [
                 {
-                  "path": "/unitfx/test1",
-                  "name": "test1",
-                  "label": "测试测试测试测试1",
-                  "icon": "DataBoard",  // 对应 DataBoard 图标
-                  "url": "Unitfx/Test1",
-                  "children": [],
+                  "path": "/attendance/statistics",
+                  "name": "attendanceStatistics",
+                  "label": "统计信息",
+                  "icon": "PieChart",  // 对应 PieChart 图标
+                  "url": "Attendance/AttendanceStatistics",
+                  "children": [
+                    {
+                      "path": "/attendance/statistics/annual",
+                      "name": "annualVisualization",
+                      "label": "考勤年度可视化信息",
+                      "icon": "Calendar",  // 对应 Calendar 图标
+                      "url": "Attendance/Statistics/AnnualVisualization",
+                      "children": []
+                    },
+                    {
+                      "path": "/attendance/statistics/quarterly",
+                      "name": "quarterlyVisualization",
+                      "label": "考勤季度可视化",
+                      "icon": "BarChart",  // 对应 BarChart 图标
+                      "url": "Attendance/Statistics/QuarterlyVisualization",
+                      "children": []
+                    },
+                    {
+                      "path": "/attendance/statistics/monthly",
+                      "name": "monthlyVisualization",
+                      "label": "考勤月度可视化",
+                      "icon": "Clock",  // 对应 Clock 图标
+                      "url": "Attendance/Statistics/MonthlyVisualization",
+                      "children": []
+                    },
+                    {
+                      "path": "/attendance/statistics/weekly",
+                      "name": "weeklyVisualization",
+                      "label": "考勤周可视化",
+                      "icon": "ChartBar",  // 对应 ChartBar 图标
+                      "url": "Attendance/Statistics/WeeklyVisualization",
+                      "children": []
+                    },
+                    {
+                      "path": "/attendance/statistics/summary",
+                      "name": "attendanceSummary",
+                      "label": "考勤统计大屏汇总",
+                      "icon": "Monitor",  // 对应 Monitor 图标
+                      "url": "Attendance/Statistics/Summary",
+                      "children": []
+                    }
+                  ]
                 }
               ]
             },
             {
-              "path": "/oaflow",
+              "path": "/report",
+              "name": "reportManagement",
+              "label": "日志管理",
+              "icon": "Document",  // 对应 Document 图标
+              "url": "Report/Management",
+              "children": [
+                {
+                  "path": "/report/info",
+                  "name": "reportInfo",
+                  "label": "日志信息",
+                  "icon": "Files",  // 对应 Files 图标
+                  "url": "Report/ReportInfo",
+                  "children": []
+                },
+                {
+                  "path": "/log/my-reports",
+                  "name": "myReports",
+                  "label": "我的日志",
+                  "icon": "Notebook",  // 对应 Notebook 图标
+                  "url": "Report/MyReports",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "path": "/approval",
               "name": "oaApproval",
-              "label": "OA审批",
+              "label": "流程审批",
               "icon": "Check",  // 对应 Check 图标
               "url": "OA/Approval",
-              "children": [],
-            },
-            {
-              "path": "/people",
-              "name": "employeeInfo",
-              "label": "员工信息",
-              "icon": "User",  // 对应 User 图标
-              "url": "Employee/Info",
-              "children": [],
-            },
-            {
-              "path": "/other",
-              "name": "other",
-              "label": "其他",
-              "icon": "Location",  // 对应 Location 图标
-              "url": "Other/Other",
-              "children": [],
+              "children": [
+                {
+                  "path": "/approval/management",
+                  "name": "approvalManagement",
+                  "label": "审批管理",
+                  "icon": "Files",  // 对应 Files 图标
+                  "url": "Approval/ApprovalManagement",
+                  "children": []
+                },
+                {
+                  "path": "/approval/my-application",
+                  "name": "myApplication",
+                  "label": "我的申请",
+                  "icon": "DocumentAdd",  // 对应 DocumentAdd 图标
+                  "url": "Approval/MyApplication",
+                  "children": []
+                },
+                {
+                  "path": "/approval/pending-list",
+                  "name": "pendingList",
+                  "label": "待审列表",
+                  "icon": "DocumentChecked",  // 对应 DocumentChecked 图标
+                  "url": "Approval/PendingList",
+                  "children": []
+                },
+                {
+                  "path": "/approval/flow-definition",
+                  "name": "flowDefinition",
+                  "label": "流程定义",
+                  "icon": "EditPen",  // 对应 FlowChart 图标
+                  "url": "Approval/FlowDefinition",
+                  "children": []
+                }
+              ]
             }
           ],
           token:

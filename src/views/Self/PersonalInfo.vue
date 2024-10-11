@@ -38,6 +38,8 @@
 <script>
 import { reactive, computed } from 'vue';
 import { getCurrentInstance } from "vue-demi";
+import { useRouter } from "vue-router";
+import { useStore } from 'vuex'
 // import { ElMessage } from 'element-plus';
 
 export default {
@@ -74,6 +76,10 @@ export default {
       return new Date(userInfoData.timeIn).toLocaleDateString(undefined, options);
     });
 
+    const router = useRouter();
+
+    const store = useStore();
+
     const handleEdit = () => {
       ElMessage({
         message: '编辑功能未实现',
@@ -82,6 +88,11 @@ export default {
     };
 
     const handleLogout = () => {
+      store.commit('clearToken');
+      store.commit('cleanMenu');
+      router.push({
+        name: 'login'
+      })
       ElMessage({
         message: '退出成功',
         type: 'success',

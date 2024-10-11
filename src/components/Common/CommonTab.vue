@@ -1,9 +1,12 @@
 <template>
   <div class="tags">
+    <el-button style="margin-right: 15px" size="small" closable="true" type="danger" @click="handleCloseAll(tags)">
+      关闭所有标签
+    </el-button>
     <el-tag
         :key="tag.name"
         v-for="(tag, index) in tags"
-        :closable="tag.name !== 'home'"
+        :closable="tag.name !== 'index'"
         :disable-transitions="false"
         :effect="$route.name === tag.name ? 'dark' : 'plain'"
         @click="changeMenu(tag)"
@@ -11,6 +14,8 @@
     >
       {{ tag.label }}
     </el-tag>
+  </div>
+  <div>
   </div>
 </template>
 
@@ -46,10 +51,15 @@ export default {
       }
       // store.commit("selectMenu", tag);
     };
+    const handleClearList = (tags) => {
+      store.commit("clearTabList", tags);
+      router.push({ name: "index" });
+    };
     return {
       tags,
       changeMenu,
       handleClose,
+      handleCloseAll: handleClearList,
     };
   },
 };

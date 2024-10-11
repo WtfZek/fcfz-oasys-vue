@@ -60,6 +60,21 @@ export default createStore({
             state.tabsList.splice(res, 1);
         },
 
+        clearTabList(state, val) {
+            // 收集要删除的标签名
+            const namesToRemove = val
+                .filter(item => item.name !== 'index')
+                .map(item => item.name);
+
+            // 遍历标签列表，反向删除匹配的标签
+            namesToRemove.forEach(name => {
+                const index = state.tabsList.findIndex(val => val.name === name);
+                if (index !== -1) {
+                    state.tabsList.splice(index, 1);
+                }
+            });
+        },
+
         /**
          * 设置菜单并将其存储在 localStorage 中。
          * @param {Object} state - Vuex 的状态。

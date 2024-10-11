@@ -7,18 +7,6 @@
 <!--      <el-form-item label="工号">-->
 <!--        <el-input clearable v-model="formSearch.empNum" placeholder="请输入工号" />-->
 <!--      </el-form-item>-->
-<!--      <el-form-item label="部门">-->
-<!--        <el-input clearable v-model="formSearch.departmentName" placeholder="请选择部门" />-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="出生日期">-->
-<!--        <el-date-picker-->
-<!--            clearable-->
-<!--            v-model="formSearch.birth"-->
-<!--            type="date"-->
-<!--            label="出生日期"-->
-<!--            placeholder="请输入出生日期"-->
-<!--            style="width: 100%"-->
-<!--        />-->
 <!--      </el-form-item>-->
 <!--      <el-form-item label="入职日期">-->
 <!--        &lt;!&ndash;        <el-input v-model="formSearch.userName" placeholder="请选择出生日期" />&ndash;&gt;-->
@@ -31,24 +19,16 @@
 <!--            style="width: 100%"-->
 <!--        />-->
 <!--      </el-form-item>-->
-<!--      <el-form-item label="地址">-->
-<!--        <el-input clearable v-model="formSearch.userAddress" placeholder="请输入地址" />-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="手机号">-->
-<!--        <el-input clearable v-model="formSearch.telephone" placeholder="请输入手机号" />-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="邮箱">-->
-<!--        <el-input clearable v-model="formSearch.email" placeholder="请输入邮箱" />-->
-<!--      </el-form-item>-->
-      <el-form-item label="请选择查找的类型">
+      <el-form-item label="查找">
         <el-input
             clearable
+            @clear="handleClear"
             v-model="formSearch[selectedField]"
             placeholder="请输入查询内容"
             class="input-with-select"
         >
           <template #prepend>
-            <el-select v-model="selectedField" placeholder="Select" style="width: 120px">
+            <el-select v-model="selectedField" placeholder="Select" style="width: 120px" @change="handleSelectedFieldChange">
               <el-option label="用户名" value="userName" />
               <el-option label="工号" value="empNum" />
               <el-option label="部门" value="departmentName" />
@@ -56,25 +36,26 @@
             </el-select>
           </template>
           <template #append>
-            <el-button>
+            <el-button @click="handleSearch">
               <el-icon ><Search/></el-icon>
             </el-button>
           </template>
         </el-input>
       </el-form-item>
-      <el-form-item label="请选择查找的日期类型">
-        <el-select v-model="selectedDateField" placeholder="Select" style="width: 120px">
+      <el-form-item label="">
+        <el-select v-model="selectedDateModel" placeholder="Select" style="width: 100px" @change="handleSelectedDateModelChange">
+          <el-option label="精确查找" value="jq" />
+          <el-option label="区间查找" value="qj" />
+        </el-select>
+        <el-select v-model="selectedDateField" placeholder="Select" style="width: 120px" @change="handleSelectedDateFieldChange">
           <el-option label="入职日期" value="timeIn" />
           <el-option label="创建日期" value="ctTime" />
           <el-option label="修改日期" value="upTime" />
         </el-select>
-        <el-select v-model="selectedDateModel" placeholder="Select" style="width: 120px">
-          <el-option label="精确查找" value="jq" />
-          <el-option label="区间查找" value="qj" />
-        </el-select>
         <span>
           <el-date-picker
               clearable
+              @clear="handleClear"
               v-if="selectedDateModel === 'jq'"
               v-model="formSearch[selectedDateField]"
               type="date"
@@ -84,6 +65,7 @@
           />
           <el-date-picker
               clearable
+              @clear="handleClear"
               v-if="selectedDateModel === 'qj'"
               v-model="formSearch[selectedDateField+selectedDateModel]"
               type="daterange"
@@ -96,7 +78,7 @@
           />
         </span>
         <span>
-          <el-button>
+          <el-button @click="handleSearch">
               <el-icon ><Search/></el-icon>
           </el-button>
         </span>
@@ -120,14 +102,14 @@
             align="center"
             :fixed="item.fixed ? item.fixed : false"
             :filters="item.filters ? item.filters : null"
-            :filter-method="item.filters ? filterMethod : false"
+            :filter-method="item.filters ? filterMethod : null"
             :filter-multiple="item.filters ? false : null"
             :sortable="item.sortable ? item.sortable : false"
         >
           <template #header="scope">
             <span>{{ item.label }}</span>
             <!-- 切换锁定状态按钮 -->
-            <el-tooltip :content="item.fixed ? '取消固定' : '将该列固定到左侧'" placement="top">
+            <el-tooltip :content="item.fixed ? '取消固定' : '将该列固定到左侧'" placement="top" :hide-after="500">
               <span @click="toggleFixed(item)"
                   style="margin-left: 5px;" >
                 <el-icon v-if="item.fixed" color="#289eea"> <!-- 如果已固定，显示Unlock图标 -->
@@ -163,8 +145,10 @@
         background
         layout="prev, pager, next"
         :total="pageSearch.total"
+        :page-size="pageSearch.pageSize"
+        :current-page="pageSearch.pageNum"
         @current-change="changePage"
-        class="pager mt-4"
+        class="pager"
     />
   </div>
   <el-dialog
@@ -252,7 +236,6 @@
     </template> -->
   </el-dialog>
 </template>
-
 
 <script>
 import {
@@ -405,241 +388,6 @@ export default defineComponent({
           ctTime: "2024-09-26T06:06:01.000+00:00",
           upTime: null
         },
-        {
-          userId: 6,
-          userName: "黄岚",
-          roleName: "user",
-          departmentName: "销售部",
-          userImage: "SHhufLveRR",
-          empNum: "5855972111",
-          telephone: "760-6340-3641",
-          email: "huang12@qq.com",
-          status: 1,
-          ctTime: "2024-09-26T06:05:57.000+00:00",
-          upTime: null
-        },
-        {
-          userId: 1,
-          userName: "梁震南",
-          roleName: "boss",
-          departmentName: "销售部",
-          userImage: "1yeWOPS3Kd",
-          empNum: "5938189848",
-          telephone: "192-0151-2897",
-          email: "liangzhenn8@qq.com",
-          status: 0,
-          ctTime: "2024-09-10T07:13:01.000+00:00",
-          upTime: "2024-09-10T07:13:01.000+00:00"
-        },
-        {
-          userId: 7,
-          userName: "涂子航",
-          roleName: "admin",
-          departmentName: "人事部",
-          userImage: "ssss",
-          empNum: "20221107040",
-          telephone: "13094295529",
-          email: "3109702282@qq.com",
-          status: 1,
-          ctTime: "2024-09-30T02:01:21.000+00:00",
-          upTime: "2024-09-30T02:01:22.000+00:00"
-        },
-        {
-          userId: 8,
-          userName: "小尹",
-          roleName: "admin",
-          departmentName: "综合部",
-          userImage: "sdasdsa",
-          empNum: "2424389790",
-          telephone: "2313231",
-          email: "swz2424389790@gmail.com",
-          status: 1,
-          ctTime: "2024-09-26T06:06:01.000+00:00",
-          upTime: null
-        },
-        {
-          userId: 6,
-          userName: "黄岚",
-          roleName: "user",
-          departmentName: "销售部",
-          userImage: "SHhufLveRR",
-          empNum: "5855972111",
-          telephone: "760-6340-3641",
-          email: "huang12@qq.com",
-          status: 1,
-          ctTime: "2024-09-26T06:05:57.000+00:00",
-          upTime: null
-        },
-        {
-          userId: 1,
-          userName: "梁震南",
-          roleName: "boss",
-          departmentName: "销售部",
-          userImage: "1yeWOPS3Kd",
-          empNum: "5938189848",
-          telephone: "192-0151-2897",
-          email: "liangzhenn8@qq.com",
-          status: 0,
-          ctTime: "2024-09-10T07:13:01.000+00:00",
-          upTime: "2024-09-10T07:13:01.000+00:00"
-        },
-        {
-          userId: 7,
-          userName: "涂子航",
-          roleName: "admin",
-          departmentName: "人事部",
-          userImage: "ssss",
-          empNum: "20221107040",
-          telephone: "13094295529",
-          email: "3109702282@qq.com",
-          status: 1,
-          ctTime: "2024-09-30T02:01:21.000+00:00",
-          upTime: "2024-09-30T02:01:22.000+00:00"
-        },
-        {
-          userId: 8,
-          userName: "小尹",
-          roleName: "admin",
-          departmentName: "综合部",
-          userImage: "sdasdsa",
-          empNum: "2424389790",
-          telephone: "2313231",
-          email: "swz2424389790@gmail.com",
-          status: 1,
-          ctTime: "2024-09-26T06:06:01.000+00:00",
-          upTime: null
-        },
-
-        {
-          userId: 7,
-          userName: "涂子航",
-          roleName: "admin",
-          departmentName: "人事部",
-          userImage: "ssss",
-          empNum: "20221107040",
-          telephone: "13094295529",
-          email: "3109702282@qq.com",
-          status: 1,
-          ctTime: "2024-09-30T02:01:21.000+00:00",
-          upTime: "2024-09-30T02:01:22.000+00:00"
-        },
-        {
-          userId: 8,
-          userName: "小尹",
-          roleName: "admin",
-          departmentName: "综合部",
-          userImage: "sdasdsa",
-          empNum: "2424389790",
-          telephone: "2313231",
-          email: "swz2424389790@gmail.com",
-          status: 1,
-          ctTime: "2024-09-26T06:06:01.000+00:00",
-          upTime: null
-        },
-        {
-          userId: 6,
-          userName: "黄岚",
-          roleName: "user",
-          departmentName: "销售部",
-          userImage: "SHhufLveRR",
-          empNum: "5855972111",
-          telephone: "760-6340-3641",
-          email: "huang12@qq.com",
-          status: 1,
-          ctTime: "2024-09-26T06:05:57.000+00:00",
-          upTime: null
-        },
-        {
-          userId: 1,
-          userName: "梁震南",
-          roleName: "boss",
-          departmentName: "销售部",
-          userImage: "1yeWOPS3Kd",
-          empNum: "5938189848",
-          telephone: "192-0151-2897",
-          email: "liangzhenn8@qq.com",
-          status: 0,
-          ctTime: "2024-09-10T07:13:01.000+00:00",
-          upTime: "2024-09-10T07:13:01.000+00:00"
-        },
-        {
-          userId: 7,
-          userName: "涂子航",
-          roleName: "admin",
-          departmentName: "人事部",
-          userImage: "ssss",
-          empNum: "20221107040",
-          telephone: "13094295529",
-          email: "3109702282@qq.com",
-          status: 1,
-          ctTime: "2024-09-30T02:01:21.000+00:00",
-          upTime: "2024-09-30T02:01:22.000+00:00"
-        },
-        {
-          userId: 8,
-          userName: "小尹",
-          roleName: "admin",
-          departmentName: "综合部",
-          userImage: "sdasdsa",
-          empNum: "2424389790",
-          telephone: "2313231",
-          email: "swz2424389790@gmail.com",
-          status: 1,
-          ctTime: "2024-09-26T06:06:01.000+00:00",
-          upTime: null
-        },
-        {
-          userId: 6,
-          userName: "黄岚",
-          roleName: "user",
-          departmentName: "销售部",
-          userImage: "SHhufLveRR",
-          empNum: "5855972111",
-          telephone: "760-6340-3641",
-          email: "huang12@qq.com",
-          status: 1,
-          ctTime: "2024-09-26T06:05:57.000+00:00",
-          upTime: null
-        },
-        {
-          userId: 1,
-          userName: "梁震南",
-          roleName: "boss",
-          departmentName: "销售部",
-          userImage: "1yeWOPS3Kd",
-          empNum: "5938189848",
-          telephone: "192-0151-2897",
-          email: "liangzhenn8@qq.com",
-          status: 0,
-          ctTime: "2024-09-10T07:13:01.000+00:00",
-          upTime: "2024-09-10T07:13:01.000+00:00"
-        },
-        {
-          userId: 7,
-          userName: "涂子航",
-          roleName: "admin",
-          departmentName: "人事部",
-          userImage: "ssss",
-          empNum: "20221107040",
-          telephone: "13094295529",
-          email: "3109702282@qq.com",
-          status: 1,
-          ctTime: "2024-09-30T02:01:21.000+00:00",
-          upTime: "2024-09-30T02:01:22.000+00:00"
-        },
-        {
-          userId: 8,
-          userName: "小李",
-          roleName: "admin",
-          departmentName: "综合部",
-          userImage: "sdasdsa",
-          empNum: "2424389790",
-          telephone: "2313231",
-          email: "swz2424389790@gmail.com",
-          status: 1,
-          ctTime: "2024-09-26T06:06:01.000+00:00",
-          upTime: null
-        },
       ],
       total: 15,
       size: 10,
@@ -648,7 +396,7 @@ export default defineComponent({
     });
 
     onMounted(() => {
-      handleSearch(pageSearch);
+      getUserDataList(pageSearch);
     });
     const formSearch = reactive({
       userName: null,
@@ -662,11 +410,11 @@ export default defineComponent({
     });
     const pageSearch = reactive({
       pageNum: 1,
-      pageSize: 20,
+      pageSize: 10,
       total: null,
       data: formSearch,
     });
-    const getUserData = async () => {
+    const getUserDataList = async (pageParams) => {
       // 通过 mock 或请求获取用户数据
       // let res = await proxy.$api.getUserData(config);
       // config.total = res.count;
@@ -675,48 +423,12 @@ export default defineComponent({
       //   return item;
       // });
 
-      let res = await proxy.$api.getUserList(pageSearch);
+      let res = await proxy.$api.getUserList(pageParams);
 
       // 保持 userDataTest 的数据不变
       pageSearch.total = res.total;
-
-      // 创建一个新的数据集合，不直接修改 userDataTest
-      list.value = res.records.map((item) => {
-        let newItem = {...item}; // 克隆一份数据
-        newItem.roleName = newItem.roleName === "admin" ? "管理员" :
-            (newItem.roleName === "boss" ? "老板" :
-                (newItem.roleName === "user" ? "普通用户" : "其他用户"));
-        newItem.ctTime = newItem.ctTime ? formatDateTime(newItem.ctTime) : '-'; // 格式化创建时间
-        newItem.upTime = newItem.upTime ? formatDateTime(newItem.upTime) : '-'; // 格式化更新时间
-        newItem.status = newItem.status === 1 ? "在职" : "离职"; // 格式化状态
-        return newItem; // 返回新的对象
-      });
-    };
-    const changePage = (page) => {
-      // console.log(page);
-      pageSearch.page = page;
-      getUserData(pageSearch);
-    };
-    // 添加用户的form数据
-    const formUser = reactive({
-      userId: "",
-      userName: "",
-      roleName: "",
-      departmentName: "",
-      userImage: "",
-      empNum: "",
-      telephone: "",
-      email: "",
-      status: "",
-      ctTime: "",
-      upTime: "",
-    });
-
-    const handleSearch = async () => {
-      let res = await proxy.$api.getUserList(pageSearch);
-
-      // 保持 userDataTest 的数据不变
-      pageSearch.total = res.total;
+      pageSearch.pageSize = res.size;
+      pageSearch.pageNum = res.current;
 
       // 创建一个新的数据集合，不直接修改 userDataTest
       list.value = res.records.map((item) => {
@@ -731,6 +443,30 @@ export default defineComponent({
         newItem.sex = newItem.sex === "1" ? "男" : "女"; // 格式化状态
         return newItem; // 返回新的对象
       });
+    };
+    const changePage = (page) => {
+      // console.log(page);
+      pageSearch.pageNum = page;
+      getUserDataList(pageSearch);
+    };
+    // 添加用户的form数据
+    const fromUserInfo = reactive({
+      userId: "",
+      userName: "",
+      roleName: "",
+      departmentName: "",
+      userImage: "",
+      empNum: "",
+      telephone: "",
+      email: "",
+      status: "",
+      ctTime: "",
+      upTime: "",
+    });
+
+    const handleSearch = async () => {
+      pageSearch.pageNum = 1;
+      await getUserDataList(pageSearch);
     };
     // 控制模态框的显示隐藏
     const dialogVisible = ref(false);
@@ -760,23 +496,23 @@ export default defineComponent({
       proxy.$refs.userForm.validate(async (valid) => {
         if (valid) {
           if (action.value == "add") {
-            formUser.birth = timeFormat(formUser.birth);
-            let res = await proxy.$api.addUser(formUser);
+            fromUserInfo.birth = timeFormat(fromUserInfo.birth);
+            let res = await proxy.$api.addUser(fromUserInfo);
             if (res) {
               // console.log(proxy.$refs);
               dialogVisible.value = false;
               proxy.$refs.userForm.resetFields();
-              getUserData(pageSearch);
+              getUserDataList(pageSearch);
             }
           } else {
             // 编辑的接口
-            formUser.sex == "男" ? (formUser.sex = 1) : (formUser.sex = 0);
-            let res = await proxy.$api.editUser(formUser);
+            fromUserInfo.sex == "男" ? (fromUserInfo.sex = 1) : (fromUserInfo.sex = 0);
+            let res = await proxy.$api.editUser(fromUserInfo);
             if (res) {
               // console.log(proxy.$refs);
               dialogVisible.value = false;
               proxy.$refs.userForm.resetFields();
-              getUserData(pageSearch);
+              getUserDataList(pageSearch);
             }
           }
         } else {
@@ -803,7 +539,7 @@ export default defineComponent({
       dialogVisible.value = true;
       row.sex === "1" ? (row.sex = "男") : (row.sex = "女");
       proxy.$nextTick(() => {
-        Object.assign(formUser, row);
+        Object.assign(fromUserInfo, row);
       });
     };
     // 新增用户
@@ -824,7 +560,7 @@ export default defineComponent({
               message: "删除成功",
               type: "success",
             });
-            getUserData(pageSearch);
+            getUserDataList(pageSearch);
           })
           .catch(() => {
             // catch error
@@ -851,6 +587,47 @@ export default defineComponent({
       }
     };
 
+    // 方法
+    const handleSelectedFieldChange = (newVal) => {
+
+      // 清空所有相关字段，或者根据需要清空特定字段
+      Object.keys(formSearch).forEach((key) => {
+        if (key !== newVal) {
+          formSearch[key] = null;
+        }
+      });
+      // 如果需要只清空当前选择的字段，可以使用：
+      // formSearch[newVal] = '';
+    };
+
+    const handleSelectedDateFieldChange = (newVal) => {
+      // 清空日期相关的字段
+      formSearch.timeIn = null;
+      formSearch.ctTime = null;
+      formSearch.upTime = null;
+      // 根据选择的日期字段清空相关数据
+      if (newVal) {
+        formSearch[newVal] = null;
+        formSearch[newVal + 'qj'] = [];
+      }
+    };
+
+    const handleSelectedDateModelChange = (newVal) => {
+      // 清空当前选择的日期字段数据
+      if (newVal === 'jq') {
+        // 如果选择精确查找，只保留单个日期字段
+        formSearch[selectedDateField.value] = null;
+      } else if (newVal === 'qj') {
+        // 如果选择区间查找，清空区间查找相关的字段
+        formSearch[selectedDateField.value + 'qj'] = [];
+      }
+    };
+
+    const handleClear = () => {
+      // 清空搜索表单数据
+     handleSearch(pageSearch);
+    };
+
     return {
       list,
       tableLabel,
@@ -864,7 +641,7 @@ export default defineComponent({
       handleSearch,
       dialogVisible,
       handleClose,
-      formUser,
+      formUser: fromUserInfo,
       onSubmit,
       handleCancel,
       action,
@@ -874,6 +651,10 @@ export default defineComponent({
       handleSelectionChange,
       filterMethod,
       toggleFixed,
+      handleSelectedFieldChange,
+      handleSelectedDateFieldChange,
+      handleSelectedDateModelChange,
+      handleClear,
       // formatDateTime,
       // handleDeleteAll,
     };
@@ -927,7 +708,7 @@ export default defineComponent({
     margin-right: 18px;
     margin-bottom: 12px;
 
-    :deep(.el-input) {
+    span {
       display: flex;
     }
   }
