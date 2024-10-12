@@ -53,7 +53,7 @@ export default {
                   "name": "permissionManagement",
                   "label": "角色管理",
                   "icon": "Key",  // 对应 Key 图标
-                  "url": "Role/PermissionManagement",
+                  "url": "Enterprise/RoleManagement",
                   "children": []
                 }
               ]

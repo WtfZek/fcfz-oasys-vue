@@ -127,4 +127,15 @@ export default {
     });
   },
 
+  getAttendanceDataList(params) {
+    return request({
+      url: '/attendance/getAllAttendance',
+      method: 'post',
+      mock: false,
+      data: {
+        ...params
+      },
+    });
+  }
+
 }

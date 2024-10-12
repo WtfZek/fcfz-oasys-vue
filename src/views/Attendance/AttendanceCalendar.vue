@@ -13,20 +13,35 @@
     </el-card>
 
     <div class="attendance-records-wrapper">
-      <!-- 打卡信息卡片 -->
-      <el-card v-if="filteredAttendanceRecords.length > 0" v-for="record in filteredAttendanceRecords" :key="record.attendanceId" class="punch-info">
-        <h3>{{ selectedDateString }} 的打卡记录</h3>
-        <div class="attendance-record">
-          <p><strong>签到时间:</strong> {{ formatTime(record.timeIn) }}</p>
-          <p><strong>签退时间:</strong> {{ formatTime(record.timeOut) }}</p>
-          <p><strong>打卡地址:</strong> {{ record.address }}</p>
-          <p><strong>打卡类型:</strong> {{ record.type }}</p>
-          <p><strong>打卡状态:</strong> {{ record.status }}</p>
-          <el-divider></el-divider>
-        </div>
-      </el-card>
+      <!-- 打卡信息卡片 - 使用表单展示 -->
+      <el-form v-if="filteredAttendanceRecords.length > 0" v-for="record in filteredAttendanceRecords" :key="record.attendanceId" class="punch-info">
+        <el-card>
+          <div class="attendance-record">
+            <el-form-item label="签到时间">
+<!--              <el-input v-model="record.timeIn" :disabled="true" />-->
+              <el-text size="default">{{ formatTime(record.timeIn) }}</el-text>
+            </el-form-item>
+            <el-form-item label="签退时间">
+              <el-text size="default">{{ formatTime(record.timeOut) }}</el-text>
+            </el-form-item>
+            <el-form-item label="打卡地址">
+              <el-text size="default">{{ record.address }}</el-text>
+            </el-form-item>
+            <el-form-item label="打卡类型">
+              <el-text size="default">{{ record.type }}</el-text>
+            </el-form-item>
+            <el-form-item label="打卡状态">
+              <el-tag
+                  :type="record.status === '打卡成功' ? 'primary' : 'danger'"
+                  disable-transitions
+              >{{ record.status }}</el-tag>
+            </el-form-item>
+            <el-divider></el-divider>
+          </div>
+        </el-card>
+      </el-form>
+
       <el-card v-if="filteredAttendanceRecords.length <= 0" class="punch-info">
-        <h3>{{ selectedDateString }} 的打卡记录</h3>
         <div class="attendance-record">
           <p><strong>今日未打卡</strong></p>
           <el-divider></el-divider>
@@ -46,13 +61,9 @@ export default {
     const selectedDate = ref(new Date());
 
     // 模拟打卡信息
-    const punchData = {
-      "2024-09-01": { time: "08:45 AM", status: "已打卡" },
-      "2024-09-02": { time: "09:10 AM", status: "迟到" },
-      "2024-09-03": { time: "08:50 AM", status: "已打卡" },
-    };
+    const punchData = ref();
 
-    const attendanceRecords = ref([
+    const userAttendanceRecords = ref([
       {
         "attendanceId": 2,
         "attendanceUserName": "梁震南",
@@ -386,24 +397,24 @@ export default {
     ])
 
     // 选中的打卡信息
-    const punchInfo = ref(null);
+    // const punchInfo = ref(null);
 
     // 过滤考勤记录以仅显示所选日期的记录
     const filteredAttendanceRecords = computed(() => {
       const dateString = formatDate(selectedDate.value);
-      return attendanceRecords.value.filter(record => record.date === dateString);
+      return userAttendanceRecords.value.filter(record => record.date === dateString);
     });
 
     // 日期选择事件
-    const onDateSelect = (date) => {
-      const dateString = date.toISOString().split("T")[0];
-      punchInfo.value = punchData[dateString] || { time: "未打卡", status: "无记录" };
-    };
+    // const onDateSelect = (date) => {
+    //   const dateString = date.toISOString().split("T")[0];
+    //   punchInfo.value = punchData[dateString] || { time: "未打卡", status: "无记录" };
+    // };
 
     // 判断当前日期是否有对应的打卡记录并且打卡成功
     const isDayChecked = (day) => {
-      return attendanceRecords.value.some(record =>
-          record.date === day && record.status === "打卡成功"
+      return userAttendanceRecords.value.some(record =>
+          record.date === day
       );
     };
 
@@ -412,27 +423,12 @@ export default {
       return isDayChecked(day) ? 'is-checked' : '';
     };
 
-    // const formatDate = (date) => {
-    //   const year = date.getFullYear();
-    //   const month = String(date.getMonth() + 1).padStart(2, '0'); // 月份从0开始
-    //   const day = String(date.getDate()).padStart(2, '0');
-    //   return `${year}-${month}-${day}`;
-    // };
-    //
-    // const formatTime = (isoString) => {
-    //   const date = new Date(isoString);
-    //   const hours = String(date.getHours()).padStart(2, '0');
-    //   const minutes = String(date.getMinutes()).padStart(2, '0');
-    //   const seconds = String(date.getSeconds()).padStart(2, '0');
-    //   return `${hours}:${minutes}:${seconds}`;
-    // };
-
 
     return {
       selectedDate,
-      punchInfo,
+      // punchInfo,
       filteredAttendanceRecords,
-      onDateSelect,
+      // onDateSelect,
       getCellClass,
       isDayChecked,
       formatDate,
@@ -462,7 +458,7 @@ export default {
 .attendance-records-wrapper {
   display: flex;
   flex-wrap: wrap;            /* 允许换行 */
-  justify-content: space-between;  /* 让卡片两端对齐 */
+  justify-content: center;  /* 让卡片两端对齐 */
   overflow-x: auto;           /* 当卡片过多时允许横向滚动 */
   max-width: 100%;            /* 限制容器的宽度 */
 }

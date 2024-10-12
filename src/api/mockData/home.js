@@ -56,21 +56,21 @@ export default {
       data: {
         countData: [
           {
-            name: "今日支付订单",
+            name: "打卡总次数", // Clock-in Total Count
             value: 1234,
-            icon: "SuccessFilled",
+            icon: "SuccessFilled", // 修改为“Clock”图标
             color: "#2ec7c9",
           },
           {
-            name: "今日收藏订单",
+            name: "日志总数", // Total Logs
             value: 210,
-            icon: "StarFilled",
+            icon: "Edit", // 修改为“Edit”图标
             color: "#ffb980",
           },
           {
-            name: "今日未支付订单",
+            name: "审批申请数", // Approval Requests
             value: 1234,
-            icon: "GoodsFilled",
+            icon: "DocumentChecked", // 修改为“DocumentChecked”图标
             color: "#5ab1ef",
           },
           // {
@@ -115,27 +115,27 @@ export default {
         // 饼状图
         videoData: [
           {
-            name: '小米',
+            name: '驻场',
             value: 2999
           },
           {
-            name: '苹果',
+            name: '出差',
             value: 5999
           },
           {
-            name: 'vivo',
+            name: '请假',
             value: 1500
           },
           {
-            name: 'oppo',
+            name: '预算',
             value: 1999
           },
           {
-            name: '魅族',
+            name: '合同',
             value: 2200
           },
           {
-            name: '三星',
+            name: '采购',
             value: 4500
           }
         ],

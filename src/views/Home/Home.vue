@@ -5,25 +5,25 @@
         <div class="user">
           <img src="../../assets/images/user.png" alt="" />
           <div class="user-info">
-            <p class="name">Admin</p>
-            <p class="role">超级管理员</p>
+            <p class="name">尹嘉豪 - 管理员</p>
+<!--            <p class="role">管理员</p>-->
           </div>
         </div>
         <div class="login-info">
-          <p>上次登录时间:<span>2022-7-11</span></p>
-          <p>上次登录的地点:<span>北京</span></p>
+          <p>上次登录时间:<span>2024-10-12</span></p>
+          <p>上次登录的地点:<span>湖北</span></p>
         </div>
       </el-card>
       <el-card shadow="hover" style="margin-top: 20px" height="450px">
-        <el-table :data="tableData">
-          <el-table-column
-              v-for="(val, key) in tableLabel"
-              :key="key"
-              :prop="key"
-              :label="val"
-          >
-          </el-table-column>
-        </el-table>
+<!--        <el-table :data="tableData">-->
+<!--          <el-table-column-->
+<!--              v-for="(val, key) in tableLabel"-->
+<!--              :key="key"-->
+<!--              :prop="key"-->
+<!--              :label="val"-->
+<!--          >-->
+<!--          </el-table-column>-->
+<!--        </el-table>-->
       </el-card>
     </el-col>
     <el-col :span="16" style="margin-top: 20px" class="right-num">

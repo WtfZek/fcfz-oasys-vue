@@ -92,7 +92,7 @@
   </div>
   <div class="table">
     <el-table :data="list" style="width: 100%" table-layout="fixed" :default-sort="{ prop: 'ctTime', order: 'descending' }" @selection-change="handleSelectionChange" >
-        <el-table-column fixed type="selection" width="55" align="center"/>
+        <el-table-column cell-class-name="first-column" fixed type="selection" width="55" align="center"/>
         <el-table-column
             v-for="item in tableLabel"
             :key="item.prop"
@@ -111,7 +111,7 @@
             <!-- 切换锁定状态按钮 -->
             <el-tooltip :content="item.fixed ? '取消固定' : '将该列固定到左侧'" placement="top" :hide-after="500">
               <span @click="toggleFixed(item)"
-                  style="margin-left: 5px;" >
+                  style=" margin-left: 5px;" >
                 <el-icon v-if="item.fixed" color="#289eea"> <!-- 如果已固定，显示Unlock图标 -->
                   <Unlock />
                 </el-icon>
@@ -125,8 +125,7 @@
             <el-tag
                 :type="scope.row.status === '在职' ? 'primary' : 'info'"
                 disable-transitions
-            >{{ scope.row.status }}</el-tag
-            >
+            >{{ scope.row.status }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column class="last-column" fixed="right" label="操作" min-width="180" header-align="center" align="center">
@@ -251,7 +250,7 @@ export default defineComponent({
   setup() {
     // const tableLayout = ref<TableInstance['tableLayout']>('fixed')
     const { proxy } = getCurrentInstance();
-    const list = ref([]);
+    const dataList = ref([]);
     const selectedField = ref('userName');
     const selectedDateField = ref('timeIn');
     const selectedDateModel = ref('jq');
@@ -410,7 +409,7 @@ export default defineComponent({
     });
     const pageSearch = reactive({
       pageNum: 1,
-      pageSize: 10,
+      pageSize: 20,
       total: null,
       data: formSearch,
     });
@@ -431,7 +430,7 @@ export default defineComponent({
       pageSearch.pageNum = res.current;
 
       // 创建一个新的数据集合，不直接修改 userDataTest
-      list.value = res.records.map((item) => {
+      dataList.value = res.records.map((item) => {
         let newItem = {...item}; // 克隆一份数据
         newItem.roleName = newItem.roleName === "admin" ? "管理员" :
             (newItem.roleName === "boss" ? "老板" :
@@ -629,7 +628,7 @@ export default defineComponent({
     };
 
     return {
-      list,
+      list: dataList,
       tableLabel,
       // tableLayout,
       pageSearch,
@@ -690,7 +689,6 @@ export default defineComponent({
   }
 
 
-
   .pager {
     position: absolute;
     right: 0;
@@ -699,6 +697,10 @@ export default defineComponent({
   }
 }
 
+
+.first-column {
+  background-color: #333333;
+}
 
 .user-header {
   display: flex;

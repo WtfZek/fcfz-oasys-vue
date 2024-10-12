@@ -32,13 +32,14 @@ export default defineComponent({
 </script>
 
 <style lang="less" scoped>
-.el-main {
-  padding-top: 0;
-}
 .el-container {
   flex-wrap: wrap;
   align-items: flex-start;
   height: 100%;
+
+  .el-main {
+    padding-top: 0;
+  }
 }
 .common-layout {
   .lay-container {
