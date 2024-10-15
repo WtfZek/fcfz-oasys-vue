@@ -35,6 +35,11 @@
               <el-option label="入职日期" value="timeIn" />
             </el-select>
           </template>
+          <!--          <template #prefix>-->
+          <!--            <el-button >-->
+          <!--              <el-icon ><Plus/></el-icon>-->
+          <!--            </el-button>-->
+          <!--          </template>-->
           <template #append>
             <el-button @click="handleSearch">
               <el-icon ><Search/></el-icon>
@@ -244,12 +249,14 @@ import {
   ref,
   reactive, computed,
 } from "vue";
-import { formatDateTime } from '@/utils/format';
+import {formatDateTime} from '@/utils/format';
+import {Plus} from "@element-plus/icons-vue";
 
 export default defineComponent({
+  components: {Plus},
   setup() {
     // const tableLayout = ref<TableInstance['tableLayout']>('fixed')
-    const { proxy } = getCurrentInstance();
+    const {proxy} = getCurrentInstance();
     const dataList = ref([]);
     const selectedField = ref('userName');
     const selectedDateField = ref('timeIn');

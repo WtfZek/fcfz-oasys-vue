@@ -127,15 +127,23 @@ export default {
     });
   },
 
-  getAttendanceDataList(params) {
-    return request({
-      url: '/attendance/getAllAttendance',
-      method: 'post',
-      mock: false,
-      data: {
-        ...params
-      },
-    });
-  }
+    getAttendanceDataList(params) {
+        return request({
+            url: '/attendance/getAllAttendance',
+            method: 'post',
+            mock: false,
+            data: {
+                ...params
+            },
+        });
+    },
+
+    getAttendanceSelfList() {
+        return request({
+            url: '/attendance/getSelfAttendance',
+            method: 'post',
+            mock: false,
+        });
+    }
 
 }

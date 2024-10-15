@@ -1,25 +1,31 @@
 <template>
-<!--  <div>-->
-    <el-menu-item v-if="!item.children || item.children.length === 0" :index="item.path" :key="item.path" @click="clickMenu(item)">
+  <el-menu-item
+      v-if="!item.children || item.children.length === 0"
+      :index="item.path"
+      :key="item.path"
+      @click="clickMenu(item)"
+  >
+    <component class="icons" :is="item.icon"></component>
+    <span>{{ item.label }}</span>
+  </el-menu-item>
+
+  <el-sub-menu v-else :index="item.path" :key="item.path">
+    <template #title>
       <component class="icons" :is="item.icon"></component>
       <span>{{ item.label }}</span>
-    </el-menu-item>
-    <el-sub-menu v-else :index="item.path" :key="item.path">
-      <template #title>
-        <component class="icons" :is="item.icon"></component>
-        <span>{{ item.label }}</span>
-      </template>
-<!--      <el-menu-item-group>-->
-        <aside-menu-item v-for="child in item.children" :key="child.path" :item="child" />
-<!--      </el-menu-item-group>-->
-    </el-sub-menu>
-<!--  </div>-->
+    </template>
+
+    <aside-menu-item
+        v-for="(child, index) in item.children"
+        :key="`${child.path}-${index}`"
+        :item="child"
+    />
+  </el-sub-menu>
 </template>
 
 <script>
-import { useRoute } from 'vue-router';
-
-import { useStore } from 'vuex'
+import {useRoute} from 'vue-router';
+import {useStore} from 'vuex';
 import router from "../../router/index.js";
 
 export default {
@@ -30,20 +36,18 @@ export default {
       required: true,
     },
   },
-  setup(props) {
-    // 直接使用props，不进行解构
+  setup({item}) {
     const route = useRoute();
-
     const store = useStore();
+
     const clickMenu = (item) => {
-      router.push({
-        name: item.name,
-      })
+      if (!item.name) return;
+      router.push({name: item.name}).catch(console.error);
       store.commit("selectMenu", item);
-    }
-    // 返回模板中需要使用的值
+    };
+
     return {
-      props,  // 将整个props返回
+      item,
       route,
       clickMenu,
     };

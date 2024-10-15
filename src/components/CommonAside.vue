@@ -7,7 +7,7 @@
         text-color="#fff"
         :collapse="$store.state.isCollapse"
         :collapse-transition="false"
-        popper-offset="0"
+        :popper-offset="0"
     >
       <h3 v-show="!$store.state.isCollapse">富辰方舟 OA 系统</h3>
       <h3 v-show="$store.state.isCollapse"> O A </h3>

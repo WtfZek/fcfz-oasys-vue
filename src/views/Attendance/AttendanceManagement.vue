@@ -97,7 +97,7 @@
           :key="item.prop"
           :label="item.label"
           :prop="item.prop"
-          :width="item.width ? item.width : auto"
+          :width="item.width ? item.width : 'auto'"
           align="center"
           :fixed="item.fixed ? item.fixed : false"
           :filters="item.filters ? item.filters : null"
@@ -108,7 +108,17 @@
         <template #header="scope">
           <span>{{ item.label }}</span>
           <!-- 切换锁定状态按钮 -->
-
+          <el-tooltip :content="item.fixed ? '取消固定' : '将该列固定到左侧'" placement="top" :hide-after="500">
+              <span @click="toggleFixed(item)"
+                    style=" margin-left: 5px;">
+                <el-icon v-if="item.fixed" color="#289eea"> <!-- 如果已固定，显示Unlock图标 -->
+                  <Unlock/>
+                </el-icon>
+                <el-icon v-else> <!-- 如果未固定，显示Lock图标 -->
+                  <Lock/>
+                </el-icon>
+              </span>
+          </el-tooltip>
         </template>
         <template v-if ="item.prop === 'status'" #default="scope">
           <el-tag
@@ -245,22 +255,22 @@ export default defineComponent({
     const selectedDateModel = ref('jq');
     const tableLabel = reactive([
       {
-        prop: "attendanceUserName",
+        prop: "userName",
         label: "姓名",
         width: 100,
         // fixed: 'left',
       },
       {
-        prop: "attendanceUserDepartName",
+        prop: "departName",
         label: "部门",
         width: 150,
         // fixed: 'left',
         filters: [
-          { text: '销售部', value: '销售部'},
-          { text: '人事部', value: '人事部'},
-          { text: '综合部', value: '综合部'},
-          { text: '财务部', value: '财务部'},
-          { text: '技术部', value: '技术部'},
+          {text: '销售部', value: '销售部'},
+          {text: '人事部', value: '人事部'},
+          {text: '综合部', value: '综合部'},
+          {text: '财务部', value: '财务部'},
+          {text: '技术部', value: '技术部'},
         ]
       },
       {
@@ -335,13 +345,6 @@ export default defineComponent({
       params: {},
     });
     const getAttendanceDataList = async (pageParams) => {
-      // 通过 mock 或请求获取用户数据
-      // let res = await proxy.$api.getUserData(config);
-      // config.total = res.count;
-      // list.value = res.list.map((item) => {
-      //   item.sexLabel = item.sex === 0 ? "女" : "男";
-      //   return item;
-      // });
 
       let res = await proxy.$api.getAttendanceDataList(pageParams);
 
@@ -365,7 +368,7 @@ export default defineComponent({
       getAttendanceDataList(pageSearch);
     };
     // 添加和修改打卡信息的form数据
-    const fromUserInfo = reactive({
+    const fromAttendanceInfo = reactive({
       userId: "",
       userName: "",
       roleName: "",
@@ -413,8 +416,8 @@ export default defineComponent({
       proxy.$refs.userForm.validate(async (valid) => {
         if (valid) {
           if (action.value == "add") {
-            fromUserInfo.birth = timeFormat(fromUserInfo.birth);
-            let res = await proxy.$api.addUser(fromUserInfo);
+            fromAttendanceInfo.birth = timeFormat(fromAttendanceInfo.birth);
+            let res = await proxy.$api.addUser(fromAttendanceInfo);
             if (res) {
               // console.log(proxy.$refs);
               dialogVisible.value = false;
@@ -423,8 +426,8 @@ export default defineComponent({
             }
           } else {
             // 编辑的接口
-            fromUserInfo.sex == "男" ? (fromUserInfo.sex = 1) : (fromUserInfo.sex = 0);
-            let res = await proxy.$api.editUser(fromUserInfo);
+            fromAttendanceInfo.sex == "男" ? (fromAttendanceInfo.sex = 1) : (fromAttendanceInfo.sex = 0);
+            let res = await proxy.$api.editUser(fromAttendanceInfo);
             if (res) {
               // console.log(proxy.$refs);
               dialogVisible.value = false;
@@ -456,7 +459,7 @@ export default defineComponent({
       dialogVisible.value = true;
       row.sex === "1" ? (row.sex = "男") : (row.sex = "女");
       proxy.$nextTick(() => {
-        Object.assign(fromUserInfo, row);
+        Object.assign(fromAttendanceInfo, row);
       });
     };
     // 新增用户
@@ -558,7 +561,7 @@ export default defineComponent({
       handleSearch,
       dialogVisible,
       handleClose,
-      formUser: fromUserInfo,
+      formUser: fromAttendanceInfo,
       onSubmit,
       handleCancel,
       action,

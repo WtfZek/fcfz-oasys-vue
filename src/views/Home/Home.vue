@@ -45,7 +45,7 @@
         </el-card>
       </div>
       <el-card style="height: 280px">
-        <div ref="echart" style="height: 280px"></div>
+        <div ref="echart" style="height: 280px;"></div>
       </el-card>
       <div class="graph">
         <el-card style="height: 260px">
@@ -317,7 +317,7 @@ export default defineComponent({
     display: flex;
     justify-content: space-between;
     .el-card {
-      width: 48%;
+      width: 49%;
     }
   }
 }

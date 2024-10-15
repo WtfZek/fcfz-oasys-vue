@@ -149,7 +149,7 @@ export default {
                   "children": []
                 },
                 {
-                  "path": "/log/my-reports",
+                  "path": "/report/my-reports",
                   "name": "myReports",
                   "label": "我的日志",
                   "icon": "Notebook",  // 对应 Notebook 图标

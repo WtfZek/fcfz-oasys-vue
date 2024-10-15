@@ -109,7 +109,7 @@ export default createStore({
             const buildMenuArray = (items) => {
                 items.forEach(item => {
                     let url = `../views/${item.url}.vue`;
-                    item.component = () => import(url);
+                    item.component = () => import(/* @vite-ignore */ url);
                     menuArray.push(item);
 
                     // 如果有子菜单，递归处理

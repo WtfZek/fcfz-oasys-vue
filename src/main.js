@@ -10,7 +10,10 @@ import './api/mock.js'
 import api from './api/api'
 // 引入 Element Plus 的中文语言包
 import zhCn from 'element-plus/es/locale/lang/zh-cn'
-import { ElConfigProvider } from 'element-plus' // 按需引入 ElConfigProvider
+import {ElConfigProvider} from 'element-plus' // 按需引入 ElConfigProvider
+
+import VueUeditorWrap from 'vue-ueditor-wrap';
+
 const app = createApp(App)
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
@@ -33,14 +36,15 @@ router.beforeEach((to, from, next) => {
     store.commit('getToken')
     const token = store.state.token
     if (!token && to.name !== 'login') {
-        next({ name: 'login' })
+        next({name: 'login'})
     } else if (!checkRouter(to.path)) {
-        next({ name: 'home' })
+        next({name: 'home'})
     } else {
         next()
     }
 })
-app.use(router).use(store)
+app.use(router).use(store).use(VueUeditorWrap)
 app.mount('#app')
 
 app.component('ElConfigProvider', ElConfigProvider)
+
