@@ -127,23 +127,51 @@ export default {
     });
   },
 
-    getAttendanceDataList(params) {
-        return request({
-            url: '/attendance/getAllAttendance',
-            method: 'post',
-            mock: false,
-            data: {
-                ...params
-            },
-        });
-    },
+  getAttendanceDataList(params) {
+    return request({
+      url: '/attendance/getAllAttendance',
+      method: 'post',
+      mock: false,
+      data: {
+        ...params
+      },
+    });
+  },
 
-    getAttendanceSelfList() {
-        return request({
-            url: '/attendance/getSelfAttendance',
-            method: 'post',
-            mock: false,
-        });
-    }
+  getAttendanceSelfList() {
+    return request({
+      url: '/attendance/getSelfAttendance',
+      method: 'post',
+      mock: false,
+    });
+  },
+
+  getResource(params) {
+    return request({
+      url: `file/image/${encodeURIComponent(params)}`,
+      method: 'get',
+      mock: false,
+      responseType: 'blob'
+    });
+
+  },
+
+  getResourceAsBase64(params) {
+    return request({
+      url: `/file/resource/base64/${params}`,
+      method: 'get',
+      mock: false,
+    });
+  },
+
+  testToken() {
+    return request({
+      url: `file/some-endpoint`,
+      method: 'get',
+      mock: false,
+      responseType: 'blob'
+    });
+
+  }
 
 }

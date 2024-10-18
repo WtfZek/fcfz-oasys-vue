@@ -46,6 +46,12 @@ function request(options) {
   if (typeof options.mock !== 'undefined') {
     isMock = options.mock
   }
+
+  // 设置 responseType 为 blob（如果明确需要流）
+  if (options.responseType) {
+    service.defaults.responseType = options.responseType;
+  }
+
   // 对线上环境做处理
   if (config.env == 'prod') {
     // 不给你用到mock的机会
