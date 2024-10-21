@@ -5,8 +5,8 @@
       <el-container>
         <common-header />
         <common-tab />
-        <el-main  class="right-main">
-          <router-view />
+        <el-main class="right-main">
+          <router-view/>
         </el-main>
       </el-container>
     </el-container>

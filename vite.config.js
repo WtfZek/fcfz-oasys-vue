@@ -25,11 +25,11 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, '')
       },
-      // '/static': {
-      //   target: 'http://localhost:8088',
-      //   changeOrigin: true,
-      //   rewrite: path => path.replace(/^\/api/, '')
-      // }
+      '/res': {
+        target: 'https://fcfz-oa.oss-cn-shanghai.aliyuncs.com/',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, '').replace(/^\/res/, '')
+      }
     }
   },
   resolve: {

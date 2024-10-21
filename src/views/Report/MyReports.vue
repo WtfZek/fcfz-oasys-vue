@@ -1,19 +1,45 @@
 <template>
-  <div class="container">
-    <vue-ueditor-wrap v-model="content"
-                      editor-id="editor"
-                      :config="editorConfig"
-                      :editorDependencies="['ueditor.config.js','ueditor.all.js']"
-                      style="height:500px; "/>
-  </div>
-  <div>
-    <img style="width: 200px" src="http://localhost:8088/file/image/20" alt="image.png"/>
-    <img style="width: 200px" :src="imageUrl" alt="image21.png"/>
-  </div>
+  <el-card class="my-card">
+    <el-container>
+      <!-- 侧边栏 -->
+      <el-aside width="200px" height="100%">
+        <el-menu
+            active-text-color="#ffd04b"
+            class="el-menu-vertical-demo"
+            @open="handleOpen"
+            @close="handleClose"
+        >
+          <!--          <el-sub-menu v-for="reportType in reportTypes" :key="reportType.typeName" :index="reportType.typeName">-->
+          <!--            <template #title>-->
+          <!--              <span>{{ reportType.typeName }}</span>-->
+          <!--            </template>-->
+          <!--            <el-menu-item v-if="" index="reportType.index1">子项1</el-menu-item>-->
+          <!--            <el-menu-item index="reportType.index2">子项2</el-menu-item>-->
+          <!--          </el-sub-menu>-->
 
-  <div>
-    <video v-if="videoUrl" controls style="width: 100%;">
-      <source :src="videoUrl" type="video/mp4"/>
+          <el-menu-item v-for="" index="reportType.index1">子项1</el-menu-item>
+        </el-menu>
+      </el-aside>
+
+      <!-- 主体内容 -->
+      <el-container>
+        <el-header class="custom-header">日志1</el-header>
+        <el-main class="right-main">
+          <vue-ueditor-wrap
+              v-model="content"
+              editor-id="editor"
+              :config="editorConfig"
+              :editorDependencies="['ueditor.config.js', 'ueditor.all.js']"
+          />
+        </el-main>
+      </el-container>
+    </el-container>
+  </el-card>
+
+  <div v-if="false">
+    <img style="width: 200px" src="http://localhost:5173/res/611400b0-9354-43ed-8bbc-07fed6c04704.png" alt="image.png"/>
+    <video controls style="width: 20%;">
+      <source src="http://localhost:5173/res/6368f08c-a4c6-40f2-862b-dba9e63a74ca.mp4" type="video/mp4"/>
       您的浏览器不支持 HTML5 视频标签。
     </video>
   </div>
@@ -27,136 +53,149 @@ export default {
     const content = ref('<p><em><span style="color: #A5A5A5;">编辑内容...</span></em></p>');
     const editorConfig = {
       // 后端服务地址，后端处理参考
-      // https://open-doc.modstart.com/ueditor-plus/backend.html
-      serverUrl: 'api/ueditor',
+      serverUrl: 'http://localhost:5173/api/ueditor',
       UEDITOR_HOME_URL: '/static/UEditorPlus/dist-min/',
       UEDITOR_CORS_URL: '/static/UEditorPlus/dist-min/',
-
-
       toolbars: [
         [
           "fullscreen",
-
           "fontfamily",
           "fontsize",
           "|",
-          "bold",         // 加粗
-          "italic",       // 斜体
-          "underline",    // 下划线
-          "strikethrough",// 删除线
+          "bold",
+          "italic",
+          "underline",
+          "strikethrough",
           "|",
-          "forecolor",    // 字体颜色
-          "backcolor",    // 背景色
+          "forecolor",
+          "backcolor",
           "|",
-          "removeformat", // 清除格式
-          "formatmatch",  // 格式刷
-          "autotypeset",  // 自动排版
+          "removeformat",
+          "formatmatch",
+          "autotypeset",
           "|",
           "indent",
           "justifyleft",
           "justifycenter",
           "justifyright",
           "justifyjustify",
-          "insertorderedlist",   // 有序列表
-          "insertunorderedlist", // 无序列表
+          "insertorderedlist",
+          "insertunorderedlist",
           "|",
-          "undo",         // 撤销
-          "redo",         // 重做
+          "undo",
+          "redo",
           "|",
-          "print",               // 打印
-          "source",              // 查看源代码
-          "preview",             // 预览
-          "searchreplace",       // 查询替换
-          "help",                // 帮助
+          "print",
+          "source",
+          "preview",
+          "searchreplace",
+          "help",
           "|",
         ],
         [
-          "simpleupload",        // 单图上传
-          "insertimage",         // 多图上传
-          "imagenone",           // 图片默认
-          "imageleft",           // 图片左浮动
-          "imageright",          // 图片右浮动
-          "imagecenter",         // 图片居中
+          "simpleupload",
+          "insertimage",
+          "imagenone",
+          "imageleft",
+          "imageright",
+          "imagecenter",
           "|",
-          "insertvideo",         // 视频
-          "attachment",          // 附件
-          "insertcode",          // 插入代码
-          "formula",             // 公式
+          "insertvideo",
+          "attachment",
+          "insertcode",
+          "formula",
           "|",
-          // "horizontal",          // 分隔线
-          "date",                // 日期
-          "time",                // 时间
-          // "spechars",            // 特殊字符
-          "wordimage",           // Word图片转存
+          "date",
+          "time",
+          "wordimage",
           "|",
-          "inserttable",         // 插入表格
-          "deletetable",         // 删除表格
-          "insertparagraphbeforetable",     // 表格前插入行
-          "insertrow",           // 前插入行
-          "deleterow",           // 删除行
-          "insertcol",           // 前插入列
-          "deletecol",           // 删除列
-          "mergecells",          // 合并多个单元格
-          "mergeright",          // 右合并单元格
-          "mergedown",           // 下合并单元格
-          "splittocells",        // 完全拆分单元格
-          "splittorows",         // 拆分成行
-          "splittocols",         // 拆分成列
-          "contentimport",       // 内容导入（支持Word、Markdown）
+          "inserttable",
+          "deletetable",
+          "insertparagraphbeforetable",
+          "insertrow",
+          "deleterow",
+          "insertcol",
+          "deletecol",
+          "mergecells",
+          "mergeright",
+          "mergedown",
+          "splittocells",
+          "splittorows",
+          "splittocols",
+          "contentimport",
           "|",
         ]
       ]
-    }
+    };
 
-    const imageUrl = ref('')
-    const videoUrl = ref('')
+    const reportTypes = ref([
+      {typeName: '日报'},
+      {typeName: '周报'},
+      {typeName: '月报'},
+    ]);
 
     const {proxy} = getCurrentInstance();
 
-    const imageSrc = async (fileName) => {
-      let res = await proxy.$api.getResourceAsBase64(fileName);
-      imageUrl.value = `data:image/png;base64,${res}`;
-      // 请完善此处代码
-      console.log(res)
-
-    }
-
-    const videoSrc = async (fileName) => {
-      let res = await proxy.$api.getResourceAsBase64(fileName);
-      videoUrl.value = `data:image/png;base64,${res}`;
-      // 请完善此处代码
-      console.log(res)
-
-    }
-
     onMounted(() => {
-      imageSrc("f6b82cff-4765-4c4e-9715-1d042f2b581d.png")
-      videoSrc("Vite124231541545123452.mp4")
-    })
+    });
 
     return {
       content,
       editorConfig,
-      imageUrl,
-      videoUrl,
-      imageSrc,
-      videoSrc,
+      reportTypes,
     }
   }
 }
-
 </script>
 
 <style lang="less" scoped>
-.container {
+.my-card {
+  height: 100%; /* 卡片占满视口高度 */
+
+  //.common-layout {
+  //  height: 100%;
+  //}
+
+  :deep(.el-card__body) {
+    height: 100%; /* 卡片内部内容占满卡片 */
+    padding: 0 !important;
+    display: flex;
+    flex-direction: column; /* 确保布局正确 */
+  }
+}
+
+/* 主容器布局 */
+.el-container {
+  height: 100%;
+  flex-wrap: nowrap;
+}
+
+/* 自定义 Header 居中和样式 */
+.custom-header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 20px;
+  height: 60px;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #dcdfe6;
+}
+
+/* 右侧内容区域 */
+.right-main {
+  flex: 1; /* 占满剩余空间 */
   width: 100%;
+  padding: 0;
 
   :deep(.edui-editor) {
     width: 100% !important;
+    height: 100% !important;
   }
 
   :deep(.edui-editor-iframeholder) {
     width: 100% !important;
+    height: 100% !important;
   }
 }
 </style>
