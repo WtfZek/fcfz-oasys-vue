@@ -10,8 +10,8 @@
           </div>
         </div>
         <div class="login-info">
-          <p>上次登录时间:<span>2024-10-12</span></p>
-          <p>上次登录的地点:<span>湖北</span></p>
+          <p>上次登录时间:<span>{{ previousDate }}</span></p>
+          <p>上次登录的地点:<span>湖北 - 武汉</span></p>
         </div>
       </el-card>
       <el-card shadow="hover" style="margin-top: 20px" height="450px">
@@ -70,9 +70,11 @@ import {
 import * as echarts from "echarts";
 export default defineComponent({
   setup() {
-    const { proxy } = getCurrentInstance();
+    const {proxy} = getCurrentInstance();
     let tableData = ref([]);
     let countData = ref([]);
+
+    let previousDate = ref(""); // 新增的响应式属性
 
     const tableLabel = {
       name: "课程",
@@ -96,6 +98,8 @@ export default defineComponent({
       countData.value = res.countData;
     };
     onMounted(() => {
+      getYesterdayDate();
+      // 调用获取前一天日期的函数
       getTableList();
       // 获取count数据
       getCountData();
@@ -171,7 +175,6 @@ export default defineComponent({
     });
 
     // 获取数据
-
     const getChartData = async () => {
       // 异步从 API 获取图表数据
       let result = await proxy.$api.getChartData();
@@ -244,10 +247,18 @@ export default defineComponent({
       vEcharts.setOption(pieOptions); // 设置图表选项以渲染饼图
     };
 
+    const getYesterdayDate = () => {
+      const today = new Date();
+      today.setDate(today.getDate() - 1); // 设置日期为前一天
+      const options = {year: 'numeric', month: '2-digit', day: '2-digit'};
+      previousDate.value = today.toLocaleDateString('zh-CN', options).replace(/\//g, '-'); // 格式化日期
+    };
+
     return {
       tableData, // 表格显示的数据
       tableLabel, // 表格列的标签
       countData, // 各种指标的计数数据
+      previousDate, // 返回前一天的日期
     };
   },
 });

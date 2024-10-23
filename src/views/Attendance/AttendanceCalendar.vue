@@ -30,13 +30,13 @@
             <el-form-item label="打卡类型">
               <el-text size="default">{{ record.type }}</el-text>
             </el-form-item>
+            <el-divider></el-divider>
             <el-form-item label="打卡状态">
               <el-tag
                   :type="record.status === '打卡成功' ? 'primary' : 'danger'"
                   disable-transitions
               >{{ record.status }}</el-tag>
             </el-form-item>
-            <el-divider></el-divider>
           </div>
         </el-card>
       </el-form>
