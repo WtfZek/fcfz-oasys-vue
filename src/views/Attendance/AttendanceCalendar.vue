@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import {ref, computed, onMounted, getCurrentInstance} from "vue";
+import {ref, reactive, computed, onMounted, getCurrentInstance} from "vue";
 import {formatDate, formatTime} from '@/utils/format';
 
 export default {
@@ -66,6 +66,23 @@ export default {
     const punchData = ref();
 
     const userAttendanceRecords = ref([]);
+
+    const formSearch = reactive({
+      reportId: null,
+      reportName: null,
+      type: null,
+      reportDate: null,
+      content: null,
+      reportUserId: null,
+      userName: null,
+      departNam: null,
+    });
+    const pageSearch = reactive({
+      pageNum: 1,
+      pageSize: 365,
+      total: null,
+      data: formSearch,
+    });
 
     // 选中的打卡信息
     // const punchInfo = ref(null);
@@ -82,23 +99,31 @@ export default {
     //   punchInfo.value = punchData[dateString] || { time: "未打卡", status: "无记录" };
     // };
 
-    // 判断当前日期是否有对应的打卡记录并且打卡成功
+    // 判断当前日期是否有成功打卡记录
     const isDayChecked = (day) => {
-      return userAttendanceRecords.value.some(record =>
-          record.date === day
-      );
+      const record = userAttendanceRecords.value.find(record => record.date === day);
+      return record && record.status === '打卡成功';
     };
 
     // 获取单元格的样式类，如果该日期有成功打卡记录则返回对应的类
     const getCellClass = (day) => {
-      return isDayChecked(day) ? 'is-checked' : '';
+      const record = userAttendanceRecords.value.find(record => record.date === day);
+      if (record) {
+        return record.status === '打卡成功' ? 'is-checked' : 'is-failed';
+      }
+      return '';
     };
 
     const getAttendanceSelfList = async () => {
 
-      let res = await proxy.$api.getAttendanceSelfList();
+      let res = await proxy.$api.getAttendanceSelfList(pageSearch);
 
       console.log(res.records);
+
+      // 保持 userDataTest 的数据不变
+      pageSearch.total = res.total;
+      pageSearch.pageSize = res.size;
+      pageSearch.pageNum = res.current;
 
       // 创建一个新的数据集合，不直接修改返回数据
       userAttendanceRecords.value = res.records.map((item) => {
@@ -137,10 +162,17 @@ export default {
 .el-card {
   background-color: #fafafa;
 }
+
 .is-checked {
   color: #0fa60f;
   font-weight: bold;
 }
+
+.is-failed {
+  color: red; /* 打卡失败的颜色 */
+  font-weight: bold;
+}
+
 
 .calendar-page {
   display: flex;

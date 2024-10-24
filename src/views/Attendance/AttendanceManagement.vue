@@ -283,14 +283,14 @@ export default defineComponent({
       {
         prop: "timeIn",
         label: "签到时间",
-        width: 220,
+        width: 180,
         fixed: false,
         sortable: true,
       },
       {
         prop: "timeOut",
         label: "签退时间",
-        width: 220,
+        width: 180,
         fixed: false,
         sortable: true,
       },

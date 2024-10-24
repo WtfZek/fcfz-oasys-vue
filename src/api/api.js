@@ -138,12 +138,15 @@ export default {
     });
   },
 
-  getAttendanceSelfList() {
-    return request({
-      url: '/attendance/getSelfAttendance',
-      method: 'post',
-      mock: false,
-    });
+  getAttendanceSelfList(params) {
+      return request({
+          url: '/attendance/getSelfAttendance',
+          method: 'post',
+          mock: false,
+          data: {
+              ...params
+          },
+      });
   },
 
   getResource(params) {
@@ -164,14 +167,33 @@ export default {
     });
   },
 
-  testToken() {
-    return request({
-      url: `file/some-endpoint`,
-      method: 'get',
-      mock: false,
-      responseType: 'blob'
-    });
+    testToken() {
+        return request({
+            url: `file/some-endpoint`,
+            method: 'get',
+            mock: false,
+            responseType: 'blob'
+        });
+    },
 
-  }
+    getPersonalReport(params) {
+        return request({
+            url: `report/list-self`,
+            method: 'post',
+            mock: false,
+            data: {
+                ...params
+            },
+        });
+    },
+
+    getReportShareUserList(params) {
+        return request({
+            url: `report/shareReportToUser`,
+            method: 'post',
+            mock: false,
+            data: params
+        });
+    },
 
 }
