@@ -70,9 +70,20 @@ export default {
   //background-color: #eeeeee;
   padding: 20px;
   width: 100%;
+
   .el-tag {
     margin-right: 15px;
     cursor: pointer;
   }
+
+  .el-tag:hover {
+    transform: scale(1.05); /* 悬停时略微放大 */
+  }
+
+  .el-button:hover {
+    transform: scale(1.05); /* 悬停时略微放大 */
+  }
 }
+
+
 </style>

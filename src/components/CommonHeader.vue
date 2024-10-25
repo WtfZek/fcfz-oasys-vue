@@ -20,8 +20,8 @@
     </div>
     <div class="r-content">
       <el-dropdown>
-        <span class="el-dropdown-link">
-          <img class="user" :src="getImagSrc('user')" alt="" />
+        <span class="el-dropdown-link" @click="toPersonalInfo">
+          <img class="user" :src="getImagSrc('user')" alt=""/>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
@@ -93,13 +93,23 @@ header {
     height: 40px;
     border-radius: 50%;
   }
+
+  .user:hover {
+    transform: scale(1.05); /* 悬停时略微放大 */
+  }
 }
 .l-content {
   display: flex;
   align-items: center;
+
   .el-button {
     margin-right: 20px;
   }
+
+  .el-button:hover {
+    transform: scale(1.1); /* 悬停时略微放大 */
+  }
+
   h3 {
     color: #fff;
   }

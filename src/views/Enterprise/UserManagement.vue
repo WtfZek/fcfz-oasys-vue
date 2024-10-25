@@ -690,11 +690,18 @@ export default defineComponent({
     //overflow-y: auto;
 
     /* 发现样式在f12中修改成功，但是代码中修改失败时可以使用深选择器穿透 /deep/ 和 :: v-deep 在 vue3 中过时了*/
+
     :deep(.el-table__column-filter-trigger) {
       margin-left: 5px; /* 这将应用到子组件中的样式 */
     }
   }
 
+  //:deep(.el-table__row) {
+  //  transition: transform 0.3s ease; /* 添加动画效果，使放大平滑 */
+  //}
+  //:deep(.el-table__row:hover) {
+  //  transform: scale(1.1); /* 放大1.1倍 */
+  //}
 
   .pager {
     position: absolute;
@@ -727,8 +734,14 @@ export default defineComponent({
 
     .el-button {
       min-width: 75px;
+      //transition: transform 0.3s ease; /* 添加动画效果，使放大平滑 */
     }
+
+    //.el-button:hover {
+    //  transform: scale(1.1); /* 放大1.1倍 */
+    //}
   }
 }
+
 
 </style>

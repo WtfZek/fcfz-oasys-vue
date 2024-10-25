@@ -32,6 +32,7 @@
             :body-style="{ display: 'flex', padding: 0 }"
             v-for="item in countData"
             :key="item.name"
+            shadow="hover"
         >
           <component
               class="icons"
@@ -44,14 +45,14 @@
           </div>
         </el-card>
       </div>
-      <el-card style="height: 280px">
+      <el-card style="height: 280px" shadow="hover">
         <div ref="echart" style="height: 280px;"></div>
       </el-card>
       <div class="graph">
-        <el-card style="height: 260px">
+        <el-card style="height: 260px" shadow="hover">
           <div ref="userechart" style="height: 240px"></div>
         </el-card>
-        <el-card style="height: 260px">
+        <el-card style="height: 260px" shadow="hover">
           <div ref="videoechart" style="height: 240px"></div>
         </el-card>
       </div>
@@ -323,13 +324,23 @@ export default defineComponent({
       }
     }
   }
+
   .graph {
     margin-top: 20px;
     display: flex;
     justify-content: space-between;
+
     .el-card {
       width: 49%;
     }
+  }
+
+  .el-card {
+    transition: transform 0.3s ease; /* 添加动画效果，使放大平滑 */
+  }
+
+  .el-card:hover {
+    transform: scale(1.015); /* 鼠标悬停时放大 */
   }
 }
 </style>
