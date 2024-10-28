@@ -646,7 +646,7 @@ export default {
 }
 
 .report-item:hover {
-  transform: scale(1.1) rotate(0.1deg) translateZ(0); /* 只放大高度，不放大宽度 */
+  transform: scale(1.1) translate3d(0, 0, 0) translateZ(0); /* 只放大高度，不放大宽度 */
 }
 
 .report-name {
@@ -702,7 +702,7 @@ export default {
 .add-share-user-box:hover {
   color: #337ecc;
   border-color: #337ecc; /* 悬停时改变虚线框颜色 */
-  transform: scale(1.05); /* 悬停时略微放大 */
+  transform: scale(1.1) translate3d(0, 0, 0) translateZ(0); /* 只放大高度，不放大宽度 */
 }
 
 .el-button {
@@ -710,7 +710,7 @@ export default {
 }
 
 .el-button:hover {
-  transform: scale(1.05); /* 悬停时略微放大 */
+  transform: scale(1.1) translate3d(0, 0, 0) translateZ(0); /* 只放大高度，不放大宽度 */
 }
 
 .el-menu-scroll-item {

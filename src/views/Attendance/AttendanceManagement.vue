@@ -1,5 +1,5 @@
 <template>
-  <div class="user-header">
+  <div class="attendance-header">
     <el-form :inline="true" :model="formSearch">
       <!--      <el-form-item label="用户名">-->
       <!--        <el-input clearable v-model="formSearch.userName" placeholder="请输入用户名" />-->
@@ -587,7 +587,8 @@ export default defineComponent({
 .table {
   background-color: #fafafa;
   position: relative;
-  height: 90%;
+  height: calc(100% - 70px);
+  min-width: 1120px;
   //max-height: 80vh; /* 使用视口高度作为参考 */
   .el-table {
     --el-table-border-color: #c1c1c1b0;
@@ -621,9 +622,10 @@ export default defineComponent({
 }
 
 
-.user-header {
+.attendance-header {
   display: flex;
   justify-content: space-between;
+  min-width: 1120px;
 
   .el-form-item {
     margin-right: 18px;

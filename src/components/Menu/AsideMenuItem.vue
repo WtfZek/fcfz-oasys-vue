@@ -7,7 +7,7 @@
   >
     <div class="menu-item-badge">
       <component class="icons" :is="item.icon"></component>
-      <span>{{ item.label }}</span>
+      <span v-if="!$store.state.isCollapse">{{ item.label }}</span>
     </div>
   </el-menu-item>
 
@@ -15,7 +15,7 @@
     <template #title>
       <div class="menu-item-badge">
         <component class="icons" :is="item.icon"></component>
-        <span>{{ item.label }}</span>
+        <span v-if="!$store.state.isCollapse">{{ item.label }}</span>
       </div>
     </template>
 
@@ -71,8 +71,17 @@ export default {
   align-items: center;
   justify-content: space-between;
   overflow: hidden;
-  /*transition: transform 0.3s ease;*/
   z-index: 1;
+  transition: all 0.3s ease-in-out;
+}
+
+.sub-menu-item-badge {
+  z-index: 1;
+  transition: all 0.2s ease;
+}
+
+.sub-menu-item-badge:hover {
+  transform: scale(1.1) translate3d(0, 0, 0) translateZ(0); /* 只放大高度，不放大宽度 */;
 }
 
 .menu-item-badge:hover {

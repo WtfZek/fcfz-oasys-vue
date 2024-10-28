@@ -1,5 +1,5 @@
 <template>
-  <div class="user-header">
+  <div class="attendance-header">
     <el-form :inline="true" :model="formSearch">
 <!--      <el-form-item label="用户名">-->
 <!--        <el-input clearable v-model="formSearch.userName" placeholder="请输入用户名" />-->
@@ -691,7 +691,7 @@ export default defineComponent({
 .table {
   background-color: #fafafa;
   position: relative;
-  height: 90%;
+  height: calc(100% - 70px);
   //max-height: 80%;
   .el-table {
     --el-table-border-color: #c1c1c1b0;
@@ -735,7 +735,7 @@ export default defineComponent({
   background-color: #333333;
 }
 
-.user-header {
+.attendance-header {
   display: flex;
   justify-content: space-between;
 
