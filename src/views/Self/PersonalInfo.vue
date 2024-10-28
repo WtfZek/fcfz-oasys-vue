@@ -88,10 +88,10 @@ export default {
 
 
     const handleLogout = async () => {
+      await proxy.$api.logout();
       store.commit('clearToken');
       store.commit('cleanMenu');
 
-      await proxy.$api.logout();
       router.push({
         name: 'login'
       })

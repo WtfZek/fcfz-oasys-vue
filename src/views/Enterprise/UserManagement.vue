@@ -731,8 +731,11 @@ export default defineComponent({
 }
 
 
-.first-column {
-  background-color: #333333;
+.first-column,
+.last-column {
+  //display: flex;
+  //align-items: center;
+  //justify-content: center;
 }
 
 .attendance-header {
@@ -763,10 +766,13 @@ export default defineComponent({
 }
 
 .userImage {
-  width: 40px;
+  width: 40px; /* Adjust size as needed */
   height: 40px;
   border-radius: 10%; /* 轻度圆角 */
   box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
+  display: block;
+  margin: auto;
   //border: 1px solid #e0e0e0;
   //transition: transform 0.2s ease;
 }

@@ -69,6 +69,7 @@ export default {
   //background-color: #eeeeee;
   padding: 20px;
   width: 100%;
+  min-width: 1200px;
 
   .el-tag {
     margin-right: 15px;
