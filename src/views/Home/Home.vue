@@ -269,92 +269,90 @@ export default defineComponent({
 .home {
   margin-top: -20px;
   height: calc(100% + 10px);
-  .user {
 
-    .userImage {
-      display: flex;
-      align-items: center;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #ccc;
-      margin-bottom: 20px;
+  .userImage {
+    display: flex;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 20px;
 
-      img {
-        width: 150px;
-        height: 150px;
-        border-radius: 50%;
-        margin-right: 40px;
+    img {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      margin-right: 40px;
+    }
+  }
+
+  .login-info {
+    p {
+      line-height: 30px;
+      font-size: 14px;
+      color: #999;
+
+      span {
+        color: #666;
+        margin-left: 60px;
       }
     }
+  }
 
-    .login-info {
-      p {
-        line-height: 30px;
-        font-size: 14px;
-        color: #999;
-
-        span {
-          color: #666;
-          margin-left: 60px;
-        }
-      }
-    }
-
-    .num {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-
-      .el-card {
-        width: 32%;
-        margin-bottom: 20px;
-      }
-
-      .icons {
-        width: 80px;
-        height: 80px;
-        font-size: 30px;
-        text-align: center;
-        line-height: 80px;
-        color: #fff;
-      }
-
-      .detail {
-        margin-left: 15px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-
-        .num {
-          font-size: 30px;
-          margin-bottom: 10px;
-        }
-
-        .txt {
-          font-size: 14px;
-          text-align: center;
-          color: #999;
-        }
-      }
-    }
-
-    .graph {
-      margin-top: 20px;
-      display: flex;
-      justify-content: space-between;
-
-      .el-card {
-        width: 49%;
-      }
-    }
+  .num {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
 
     .el-card {
-      z-index: 1;
-      transition: transform 0.3s ease; /* 添加动画效果，使放大平滑 */
+      width: 32%;
+      margin-bottom: 20px;
     }
 
-    .el-card:hover {
-      transform: scale(1.015) translate3d(0, 0, 0) translateZ(0); /* 只放大高度，不放大宽度 */;
+    .icons {
+      width: 80px;
+      height: 80px;
+      font-size: 30px;
+      text-align: center;
+      line-height: 80px;
+      color: #fff;
     }
+
+    .detail {
+      margin-left: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      .num {
+        font-size: 30px;
+        margin-bottom: 10px;
+      }
+
+      .txt {
+        font-size: 14px;
+        text-align: center;
+        color: #999;
+      }
+    }
+  }
+
+  .graph {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+
+    .el-card {
+      width: 49%;
+    }
+  }
+
+  .el-card {
+    z-index: 1;
+    transition: transform 0.3s ease; /* 添加动画效果，使放大平滑 */
+  }
+
+  .el-card:hover {
+    transform: scale(1.015) translate3d(0, 0, 0) translateZ(0); /* 只放大高度，不放大宽度 */;
   }
 }
 </style>
