@@ -108,18 +108,22 @@
                   label="分享人"
                   style="margin: 0; display: flex; align-items: center;"
               >
-                <img
-                    v-for="user in currentReportShareUsers"
-                    class="user"
-                    :src="user.userImage"
-                    @error="handleImageError"
-                    :alt="user.userName"
-                />
+                <el-tooltip v-for="user in currentReportShareUsers" :content="user.userName" placement="top"
+                            :hide-after="150">
+                  <img
 
-                <!-- 添加报告分享人 -->
-                <div v-if="isUpdate || isCreate" class="user add-share-user-box" @click="handleAddSharer">
-                  <span style="font-size: 24px; color: #999;">+</span>
-                </div>
+                      class="userImage"
+                      :src="user.userImage"
+                      @error="handleImageError"
+                      :alt="user.userName"
+                  />
+                </el-tooltip>
+                <el-tooltip :content="'添加共享人'" placement="top" :hide-after="500">
+                  <!-- 添加报告分享人 -->
+                  <div v-if="isUpdate || isCreate" class="userImage add-share-user-box" @click="handleAddSharer">
+                    <span style="font-size: 24px; color: #999;">+</span>
+                  </div>
+                </el-tooltip>
               </el-form-item>
             </el-form>
           </el-row>
@@ -666,7 +670,7 @@ export default {
   //margin-top: 20px;
 }
 
-.user {
+.userImage {
   width: 40px;
   height: 40px;
   border-radius: 10%; /* 轻度圆角 */
@@ -676,7 +680,7 @@ export default {
   transition: transform 0.2s ease;
 }
 
-.user:hover {
+.userImage:hover {
   transform: scale(1.05);
 }
 

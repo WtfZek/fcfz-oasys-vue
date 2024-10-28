@@ -21,12 +21,12 @@
     <div class="r-content">
       <el-dropdown>
         <span class="el-dropdown-link" @click="toPersonalInfo">
-          <img class="user" :src="getImagSrc('user')" alt=""/>
+          <img class="userImage" :src="getImagSrc('user')" alt=""/>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item @click="toPersonalInfo">个人中心</el-dropdown-item>
-            <el-dropdown-item @click="loginOut">退出登录</el-dropdown-item>
+            <el-dropdown-item @click="logout">退出登录</el-dropdown-item>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -35,8 +35,8 @@
 </template>
 
 <script>
-import { computed, defineComponent } from "vue";
-import { useRouter } from "vue-router";
+import {computed, defineComponent, getCurrentInstance} from "vue";
+import {useRouter} from "vue-router";
 import { useStore } from 'vuex'
 export default defineComponent({
   setup() {
@@ -60,9 +60,13 @@ export default defineComponent({
       return store.state.currentMenu;
     });
 
-    const loginOut = () => {
+
+    const {proxy} = getCurrentInstance();
+
+    const logout = async () => {
       store.commit('clearToken');
       store.commit('cleanMenu');
+      await proxy.$api.logout();
       router.push({
         name: 'login'
       })
@@ -72,7 +76,7 @@ export default defineComponent({
       getImagSrc,
       toPersonalInfo,
       handleCollapse,
-      loginOut,
+      logout,
       current,
     };
   }
@@ -88,13 +92,13 @@ header {
   background: #333;
 }
 .r-content {
-  .user {
+  .userImage {
     width: 40px;
     height: 40px;
     border-radius: 50%;
   }
 
-  .user:hover {
+  .userImage:hover {
     transform: scale(1.05); /* 悬停时略微放大 */
   }
 }

@@ -17,25 +17,33 @@
       <el-form v-if="filteredAttendanceRecords.length > 0" v-for="record in filteredAttendanceRecords" :key="record.attendanceId" class="punch-info">
         <el-card>
           <div class="attendance-record">
-            <el-form-item label="签到时间">
-<!--              <el-input v-model="record.timeIn" :disabled="true" />-->
-              <el-text size="default">{{ record.timeIn }}</el-text>
+            <el-form-item label="签到时间：">
+              <el-text :class="getTimeClass(record.timeIn, '09:00:00', true)" size="default">{{
+                  record.timeIn
+                }}
+              </el-text>
             </el-form-item>
-            <el-form-item label="签退时间">
-              <el-text size="default">{{ record.timeOut }}</el-text>
+
+            <el-form-item label="签退时间：">
+              <el-text :class="getTimeClass(record.timeOut, '17:30:00', false)" size="default">{{
+                  record.timeOut
+                }}
+              </el-text>
             </el-form-item>
-            <el-form-item label="打卡地址">
+
+            <el-form-item label="打卡地址：">
               <el-text size="default">{{ record.address }}</el-text>
             </el-form-item>
-            <el-form-item label="打卡类型">
+            <el-form-item label="打卡类型：">
               <el-text size="default">{{ record.type }}</el-text>
             </el-form-item>
             <el-divider></el-divider>
-            <el-form-item label="打卡状态">
+            <el-form-item label="打卡状态：">
               <el-tag
                   :type="record.status === '打卡成功' ? 'primary' : 'danger'"
                   disable-transitions
-              >{{ record.status }}</el-tag>
+              >{{ record.status }}
+              </el-tag>
             </el-form-item>
           </div>
         </el-card>
@@ -139,6 +147,24 @@ export default {
       getAttendanceDataList(pageSearch);
     };
 
+    const getTimeClass = (time, threshold, isEarlierBetter) => {
+      if (!time) return ''; // 如果没有时间，返回空字符串
+      const [hour, minute, second] = time.split(':').map(Number);
+      const [thresholdHour, thresholdMinute, thresholdSecond] = threshold.split(':').map(Number);
+
+      const isBeforeThreshold =
+          hour < thresholdHour ||
+          (hour === thresholdHour && minute < thresholdMinute) ||
+          (hour === thresholdHour && minute === thresholdMinute && second <= thresholdSecond);
+
+      // 根据 isEarlierBetter 判断方向
+      if ((isEarlierBetter && isBeforeThreshold) || (!isEarlierBetter && !isBeforeThreshold)) {
+        return 'time-success'; // 满足条件的显示绿色
+      }
+      return 'time-fail'; // 不满足条件的显示红色
+    };
+
+
     onMounted(() => {
       getAttendanceSelfList();
     });
@@ -150,6 +176,7 @@ export default {
       // onDateSelect,
       getCellClass,
       isDayChecked,
+      getTimeClass,
       formatDate,
       formatTime,
       selectedDateString: computed(() => formatDate(selectedDate.value)),
@@ -193,7 +220,7 @@ export default {
   margin-top: 20px;
   margin-right: 20px;         /* 卡片之间的间距 */
   /*flex-basis: 30%;            !* 让每个卡片占据一定宽度，保持对齐 *!*/
-  min-width: 300px;           /* 保证卡片的最小宽度 */
+  min-width: 300px; /* 保证卡片的最小宽度 */
 }
 
 .punch-info h3 {
@@ -203,6 +230,17 @@ export default {
 .attendance-record {
 
 }
+
+.time-success {
+  color: #0fa60f; /* 绿色 */
+  font-weight: bold;
+}
+
+.time-fail {
+  color: red; /* 红色 */
+  font-weight: bold;
+}
+
 </style>
 
 

@@ -96,17 +96,18 @@
     </div>
   </div>
   <div class="table">
-    <el-table :data="list" style="width: 100%" table-layout="fixed" :default-sort="{ prop: 'ctTime', order: 'descending' }" @selection-change="handleSelectionChange" >
-        <el-table-column cell-class-name="first-column" fixed type="selection" width="55" align="center"/>
-        <el-table-column
-            v-for="item in tableLabel"
-            :key="item.prop"
-            :label="item.label"
-            :prop="item.prop"
-            :width="item.width ? item.width : auto"
-            align="center"
-            :fixed="item.fixed ? item.fixed : false"
-            :filters="item.filters ? item.filters : null"
+    <el-table v-loading="tableLoading" :data="list" style="width: 100%" table-layout="fixed"
+              :default-sort="{ prop: 'ctTime', order: 'descending' }" @selection-change="handleSelectionChange">
+      <el-table-column cell-class-name="first-column" fixed type="selection" width="55" align="center"/>
+      <el-table-column
+          v-for="item in tableLabel"
+          :key="item.prop"
+          :label="item.label"
+          :prop="item.prop"
+          :width="item.width ? item.width : auto"
+          align="center"
+          :fixed="item.fixed ? item.fixed : false"
+          :filters="item.filters ? item.filters : null"
             :filter-method="item.filters ? filterMethod : null"
             :filter-multiple="item.filters ? false : null"
             :sortable="item.sortable ? item.sortable : false"
@@ -126,12 +127,21 @@
               </span>
             </el-tooltip>
           </template>
-          <template v-if ="item.prop === 'status'" #default="scope">
-            <el-tag
-                :type="scope.row.status === '在职' ? 'primary' : 'info'"
-                disable-transitions
-            >{{ scope.row.status }}</el-tag>
-          </template>
+        <template #default="scope">
+          <el-tag
+              v-if="item.prop === 'status'"
+              :type="scope.row.status === '在职' ? 'primary' : 'info'"
+              disable-transitions
+          >{{ scope.row.status }}
+          </el-tag>
+          <img
+              v-if="item.prop === 'userImage'"
+              class="userImage"
+              :src="scope.row.userImage"
+              @error="handleImageError"
+              :alt="scope.row.userName"
+          />
+        </template>
         </el-table-column>
         <el-table-column class="last-column" fixed="right" label="操作" min-width="180" header-align="center" align="center">
           <template #default="scope">
@@ -251,6 +261,7 @@ import {
 } from "vue";
 import {formatDateTime} from '@/utils/format';
 import {Plus} from "@element-plus/icons-vue";
+import defaultAvatar from '@/assets/images/defaultUser.png';
 
 export default defineComponent({
   components: {Plus},
@@ -261,6 +272,7 @@ export default defineComponent({
     const selectedField = ref('userName');
     const selectedDateField = ref('timeIn');
     const selectedDateModel = ref('jq');
+    const tableLoading = ref(true);
     const tableLabel = reactive([
       {
         prop: "userName",
@@ -449,6 +461,7 @@ export default defineComponent({
         newItem.sex = newItem.sex === "1" ? "男" : "女"; // 格式化状态
         return newItem; // 返回新的对象
       });
+      tableLoading.value = false;
     };
     const changePage = (page) => {
       // console.log(page);
@@ -631,7 +644,11 @@ export default defineComponent({
 
     const handleClear = () => {
       // 清空搜索表单数据
-     handleSearch(pageSearch);
+      handleSearch(pageSearch);
+    };
+
+    const handleImageError = (event) => {
+      event.target.src = defaultAvatar; // 本地默认图片路径
     };
 
     return {
@@ -642,6 +659,7 @@ export default defineComponent({
       selectedField,
       selectedDateField,
       selectedDateModel,
+      tableLoading,
       changePage,
       formSearch,
       handleSearch,
@@ -661,6 +679,7 @@ export default defineComponent({
       handleSelectedDateFieldChange,
       handleSelectedDateModelChange,
       handleClear,
+      handleImageError,
       // formatDateTime,
       // handleDeleteAll,
     };
@@ -743,5 +762,13 @@ export default defineComponent({
   }
 }
 
+.userImage {
+  width: 40px;
+  height: 40px;
+  border-radius: 10%; /* 轻度圆角 */
+  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+  //border: 1px solid #e0e0e0;
+  //transition: transform 0.2s ease;
+}
 
 </style>

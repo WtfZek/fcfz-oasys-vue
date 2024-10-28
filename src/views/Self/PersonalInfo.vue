@@ -36,9 +36,8 @@
 </template>
 
 <script>
-import { reactive, computed } from 'vue';
-import { getCurrentInstance } from "vue-demi";
-import { useRouter } from "vue-router";
+import {reactive, computed, getCurrentInstance} from 'vue';
+import {useRouter} from "vue-router";
 import { useStore } from 'vuex'
 // import { ElMessage } from 'element-plus';
 
@@ -87,16 +86,19 @@ export default {
       });
     };
 
-    const handleLogout = () => {
+
+    const handleLogout = async () => {
       store.commit('clearToken');
       store.commit('cleanMenu');
+
+      await proxy.$api.logout();
       router.push({
         name: 'login'
       })
-      ElMessage({
-        message: '退出成功',
-        type: 'success',
-      });
+      // ElMessage({
+      //   message: '退出成功',
+      //   type: 'success',
+      // });
     };
 
     getUserInfo();

@@ -2,11 +2,11 @@
   <el-row class="home" :gutter="20">
     <el-col :span="8" style="margin-top: 20px">
       <el-card shadow="hover">
-        <div class="user">
-          <img src="../../assets/images/user.png" alt="" />
+        <div class="userImage">
+          <img src="../../assets/images/user.png" alt=""/>
           <div class="user-info">
             <p class="name">尹嘉豪 - 管理员</p>
-<!--            <p class="role">管理员</p>-->
+            <!--            <p class="role">管理员</p>-->
           </div>
         </div>
         <div class="login-info">
@@ -268,12 +268,14 @@ export default defineComponent({
 <style lang="less" scoped>
 .home {
   margin-top: -20px;
-  .user {
+
+  .userImage {
     display: flex;
     align-items: center;
     padding-bottom: 20px;
     border-bottom: 1px solid #ccc;
     margin-bottom: 20px;
+
     img {
       width: 150px;
       height: 150px;

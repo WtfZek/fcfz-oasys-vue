@@ -15,13 +15,12 @@
       {{ tag.label }}
     </el-tag>
   </div>
-  <div>
-  </div>
 </template>
 
 <script>
 import { useRouter, useRoute } from "vue-router";
 import { useStore } from "vuex";
+
 export default {
   setup() {
     const store = useStore();
@@ -84,6 +83,5 @@ export default {
     transform: scale(1.05); /* 悬停时略微放大 */
   }
 }
-
 
 </style>
