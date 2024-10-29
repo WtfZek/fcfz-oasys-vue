@@ -205,6 +205,7 @@ export default {
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-width: 1200px;
   /*padding: 20px;*/
 }
 

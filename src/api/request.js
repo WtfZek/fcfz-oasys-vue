@@ -1,6 +1,9 @@
 import axios from 'axios'
 import config from '../config'
-import { ElMessage } from 'element-plus'
+import {ElMessage} from 'element-plus'
+import store from "../store";
+import router from '../router'
+
 const NETWORK_ERROR = '网络请求异常,请稍后重试.....'
 
 axios.defaults.withCredentials = true;
@@ -18,16 +21,24 @@ service.interceptors.request.use((req) => {
   if (key && value) {
     req.headers[key] = value;
   }
-  // jwt-token认证的时候 
+  // jwt-token认证的时候
   return req
 })
 
 // 在请求之后做一些事情
 service.interceptors.response.use((res) => {
-  const { code, data, msg } = res.data
+  const {code, data, msg} = res.data
+  console.log('res', res)
+  console.log('code', code)
   // 根据后端 协商  视情况而定
-  if (code == 200) {
+  if (code === '200') {
+    console.log('登录成功')
     return data
+  } else if (code === "10302") {
+    console.log('token过期')
+    store.commit('clearToken');
+    store.commit('cleanMenu');
+    router.push('/login')
   } else {
     // 网络请求错误，用element-plus的弹窗信息
     ElMessage.error(msg || NETWORK_ERROR)

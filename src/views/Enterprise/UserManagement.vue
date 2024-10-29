@@ -1,15 +1,15 @@
 <template>
-  <div class="attendance-header">
+  <div class="user-header">
     <el-form :inline="true" :model="formSearch">
-<!--      <el-form-item label="用户名">-->
-<!--        <el-input clearable v-model="formSearch.userName" placeholder="请输入用户名" />-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="工号">-->
-<!--        <el-input clearable v-model="formSearch.empNum" placeholder="请输入工号" />-->
-<!--      </el-form-item>-->
-<!--      </el-form-item>-->
-<!--      <el-form-item label="入职日期">-->
-<!--        &lt;!&ndash;        <el-input v-model="formSearch.userName" placeholder="请选择出生日期" />&ndash;&gt;-->
+      <!--      <el-form-item label="用户名">-->
+      <!--        <el-input clearable v-model="formSearch.userName" placeholder="请输入用户名" />-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="工号">-->
+      <!--        <el-input clearable v-model="formSearch.empNum" placeholder="请输入工号" />-->
+      <!--      </el-form-item>-->
+      <!--      </el-form-item>-->
+      <!--      <el-form-item label="入职日期">-->
+      <!--        &lt;!&ndash;        <el-input v-model="formSearch.userName" placeholder="请选择出生日期" />&ndash;&gt;-->
 <!--        <el-date-picker-->
 <!--            clearable-->
 <!--            v-model="formSearch.timeIn"-->
@@ -130,7 +130,9 @@
         <template #default="scope">
           <el-tag
               v-if="item.prop === 'status'"
-              :type="scope.row.status === '在职' ? 'primary' : 'info'"
+              :type="scope.row.status === '在职' ? 'success' :
+                (scope.row.status === '离职') ? 'info' :
+                  (scope.row.status === '出差') ? 'primary' : 'warning'"
               disable-transitions
           >{{ scope.row.status }}
           </el-tag>
@@ -457,7 +459,10 @@ export default defineComponent({
         newItem.timeIn = newItem.timeIn ? formatDateTime(newItem.timeIn) : '-'; // 格式化创建时间
         newItem.ctTime = newItem.ctTime ? formatDateTime(newItem.ctTime) : '-'; // 格式化创建时间
         newItem.upTime = newItem.upTime ? formatDateTime(newItem.upTime) : '-'; // 格式化更新时间
-        newItem.status = newItem.status === 1 ? "在职" : "离职"; // 格式化状态
+        newItem.status = (newItem.status === 1) ? "在职" :
+            (newItem.status === 0) ? "离职" :
+                (newItem.status === 2) ? "出差" : "其他"; // 格式化状态
+
         newItem.sex = newItem.sex === "1" ? "男" : "女"; // 格式化状态
         return newItem; // 返回新的对象
       });
@@ -692,6 +697,7 @@ export default defineComponent({
   background-color: #fafafa;
   position: relative;
   height: calc(100% - 70px);
+  min-width: 1200px;
   //max-height: 80%;
   .el-table {
     --el-table-border-color: #c1c1c1b0;
@@ -699,8 +705,8 @@ export default defineComponent({
     --el-table-header-text-color: #333;
     --el-table-header-bg-color: #e5e5e5;
     --el-table-tr-bg-color: #f3f3f3;
-    --el-table-fixed-left-column: inset 10px 0 10px -10px rgba(0,0,0,0.15);
-    --el-table-fixed-right-column: inset -10px 0 10px -10px rgba(0,0,0,0.15);
+    --el-table-fixed-left-column: inset 10px 0 10px -10px rgba(0, 0, 0, 0.15);
+    --el-table-fixed-right-column: inset -10px 0 10px -10px rgba(0, 0, 0, 0.15);
     color: #454545;
     //min-height: auto !important;
     height: 100%;
@@ -738,9 +744,10 @@ export default defineComponent({
   //justify-content: center;
 }
 
-.attendance-header {
+.user-header {
   display: flex;
   justify-content: space-between;
+  min-width: 1200px;
 
   .el-form-item {
     margin-right: 18px;
@@ -750,6 +757,7 @@ export default defineComponent({
       display: flex;
     }
   }
+
   .right-container {
     display: flex;
     //justify-content: space-between; /* 使子元素两端对齐 */

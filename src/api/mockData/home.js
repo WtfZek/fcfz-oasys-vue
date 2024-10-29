@@ -1,7 +1,7 @@
 export default {
   getHomeData: () => {
     return {
-      code: 200,
+      code: "200",
       data: {
         tableData: [
           {
@@ -52,7 +52,7 @@ export default {
   },
   getCountData: () => {
     return {
-      code: 200,
+      code: "200",
       data: {
         countData: [
           {
@@ -97,11 +97,11 @@ export default {
   },
   getChartData: () => {
     return {
-      code: 200,
+      code: "200",
       data: {
         orderData: {
           "date": ['2019.10.01', '2019.10.02', '2019.10.03', '2019.10.04', '2019.10.05', '2019.10.06', '2019.10.07'],
-          "data|7":[
+          "data|7": [
             {
               "苹果": "@integer(1000, 5000)",
               "小米": "@integer(1000, 5000)",

@@ -82,16 +82,17 @@ export default {
       ],
       confirmPassword: [
         {
-          required: !isLogin.value,
+          required: isLogin.value,
           message: "请确认密码",
           trigger: "blur"
         },
         {
           validator: (rule, value, callback) => {
-            if(!value) {
+            if (isLogin.value) {
+              callback(); // 登录状态下不校验密码一致性
+            } else if (!value) {
               callback(new Error("请二次确认密码"));
-            }
-            if (value !== formData.password) {
+            } else if (value !== formData.password) {
               callback(new Error("两次密码输入不一致"));
             } else {
               callback();
@@ -103,18 +104,12 @@ export default {
       captcha: [{ required: true, message: "请输入验证码", trigger: "blur" }],
     };
 
-    const handleSubmit = async (url, config) => {
+    const handleSubmit = async () => {
       // 手动触发校验
-      formRef.value.validate(async (valid) => {
-        if (valid) {
-
-          // 验证码校验，使用 axios 死活不带 cookie
-          // const captchaResponse = await axios.post("http://localhost:8088/validate-captcha", {
-          //   captcha: formData.captcha,
-          //   key: ""
-          // }, {withCredentials: true});
-
-          const captchaResponseData = await proxy.$api.validateCaptcha( {
+      const valid = await formRef.value.validate();
+      if (valid) {
+        try {
+          const captchaResponseData = await proxy.$api.validateCaptcha({
             captcha: formData.captcha,
           });
 
@@ -125,14 +120,6 @@ export default {
           }
 
           if (isLogin.value) {
-            // mock 的登录逻辑
-            // const res = await proxy.$api.getMenu(formData);
-            // store.commit("setMenu", res.menu);
-            // store.commit("addMenu", router);
-            // store.commit("setToken", res.token);
-            // await router.push({ name: "index" });
-            // ElMessage.success("登录成功！");
-
             // 正常登录逻辑
             const loginResponseData = await proxy.$api.login(formData);
 
@@ -145,9 +132,10 @@ export default {
             localStorage.setItem('tokenValue', tokenValue);
 
             const res = await proxy.$api.getMenu({
-              username: "admin",
-              password: "admin"
+              username: formData.empNum,
+              password: formData.password
             });
+
             store.commit("setMenu", res.menu);
             store.commit("addMenu", router);
             store.commit("setToken", res.token);
@@ -163,10 +151,13 @@ export default {
               ElMessage.error(res.message || "注册失败，请重试。");
             }
           }
-        } else {
-          ElMessage.error("校验失败！");
+        } catch (error) {
+          // 捕获并处理 API 调用错误
+          ElMessage.error(error.message || "操作失败，请重试。");
         }
-      });
+      } else {
+        ElMessage.error("校验失败！");
+      }
     };
 
     const toggleForm = () => {

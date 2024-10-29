@@ -37,7 +37,7 @@
 <script>
 import {computed, defineComponent, getCurrentInstance} from "vue";
 import {useRouter} from "vue-router";
-import { useStore } from 'vuex'
+import {useStore} from 'vuex'
 export default defineComponent({
   setup() {
     const getImagSrc = (user) => {
@@ -67,7 +67,7 @@ export default defineComponent({
       await proxy.$api.logout();
       store.commit('clearToken');
       store.commit('cleanMenu');
-      router.push({
+      await router.push({
         name: 'login'
       })
     };

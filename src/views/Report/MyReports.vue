@@ -14,13 +14,6 @@
             class="el-menu-vertical-demo"
             :default-active="currentActiveIndex.toString()"
         >
-          <!--          <el-sub-menu v-for="reportType in reportTypes" :key="reportType.typeName" :index="reportType.typeName">-->
-          <!--            <template #title>-->
-          <!--              <span>{{ reportType.typeName }}</span>-->
-          <!--            </template>-->
-          <!--            <el-menu-item v-if="" index="reportType.index1">子项1</el-menu-item>-->
-          <!--            <el-menu-item index="reportType.index2">子项2</el-menu-item>-->
-          <!--          </el-sub-menu>-->
           <el-menu-item
               v-for="(personalReport, index) in personalReports"
               :key="personalReport.reportId"
@@ -69,19 +62,6 @@
                 </el-text>
               </el-form-item>
             </el-form>
-          </div>
-          <div v-if="!isCreate" class="r-content">
-            <el-dropdown>
-              <span class="el-dropdown-link">
-
-              </span>
-              <template #dropdown>
-                <el-dropdown-menu>
-                  <el-dropdown-item @click=""></el-dropdown-item>
-                  <!--                  这里添加以下搜索功能的表单-->
-                </el-dropdown-menu>
-              </template>
-            </el-dropdown>
           </div>
         </el-header>
 
@@ -286,6 +266,8 @@ export default {
 
     const personalReports = ref([]);
 
+    const createReportShareUsers = ref([]);
+
     const createReport = reactive({
       reportId: null,
       reportUserId: null,
@@ -327,6 +309,8 @@ export default {
         // 在此处向personalReports.value添加一条数据
         isCreate.value = true;
         isUpdate.value = true;
+        currentReportShareUsers.value = [];
+        getReportShareUserList();
         console.log(currentReport.value);
       }).catch(() => {
         // 要优化处理
@@ -376,15 +360,17 @@ export default {
         ElMessage({
           type: 'success',
           message: '当前报告已保存',
-        })
+        });
 
-        console.log(currentReport.value);
+
+        //虚假的保存
+
         // 重置 currentReport
       }).catch(() => {
         ElMessage({
           type: 'success',
           message: '保存已取消',
-        })
+        });
       })
     };
 
@@ -409,6 +395,10 @@ export default {
 
         isUpdate.value = false;
         isCreate.value = false;
+
+        // personalReports.value = [];
+        // pageSearch.pageNum = 1;
+        // getPersonalReport();
         // 重置 currentReport
       }).catch(() => {
         ElMessage({
@@ -436,6 +426,10 @@ export default {
         dialogVisible.value = false; // 关闭弹窗
         isUpdate.value = false;
         isCreate.value = false;
+        // 重新获取一次个人报告
+        personalReports.value = [];
+        pageSearch.pageNum = 1;
+        getPersonalReport();
         // 重置 currentReport
       }).catch(() => {
         // ElMessage({
@@ -464,8 +458,10 @@ export default {
 
         isUpdate.value = false;
         isCreate.value = false;
+
         // 重置 currentReport
         currentActiveIndex.value = currentActiveIndex.value > 0 ? currentActiveIndex.value - 1 : 0;
+
       }).catch(() => {
         ElMessage({
           type: 'success',
@@ -482,14 +478,17 @@ export default {
     };
 
     const getReportShareUserList = async () => {
-      // 将字符串转换为数组
-      let userIds = currentReport.value.shareUserId.split(',').map(Number);
+      try {
+        let userIds = currentReport.value.shareUserId.split(',').map(Number);
+        currentReportShareUsers.value = await proxy.$api.getReportShareUserList(userIds);
 
-      console.log(userIds);
-      // 调用 API，传递数组作为参数
-      currentReportShareUsers.value = await proxy.$api.getReportShareUserList(userIds);
-
-      console.log(currentReportShareUsers.value);
+        // 确保返回数据有效
+        if (!Array.isArray(currentReportShareUsers.value) || currentReportShareUsers.value.length === 0) {
+          console.warn("用户列表为空");
+        }
+      } catch (error) {
+        console.error("获取用户列表失败:", error);
+      }
     }
 
 
@@ -646,7 +645,7 @@ export default {
 }
 
 .report-item:hover {
-  transform: scale(1.1) translate3d(0, 0, 0) translateZ(0); /* 只放大高度，不放大宽度 */
+  transform: scale(1.05) translate3d(0, 0, 0) translateZ(0); /* 只放大高度，不放大宽度 */
 }
 
 .report-name {
