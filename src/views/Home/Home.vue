@@ -40,7 +40,7 @@
               :style="{ background: item.color }"
           ></component>
           <div class="detail">
-            <p class="num">￥{{ item.value }}</p>
+            <p class="num">{{ item.value }}</p>
             <p class="txt">{{ item.name }}</p>
           </div>
         </el-card>
@@ -269,6 +269,7 @@ export default defineComponent({
 .home {
   margin-top: -20px;
   height: calc(100% + 10px);
+  min-width: 1200px;
 
   .userImage {
     display: flex;

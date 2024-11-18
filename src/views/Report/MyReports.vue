@@ -362,7 +362,7 @@ export default {
           message: '当前报告已保存',
         });
 
-
+        console.log("当前报告数据：", currentReport);
         //虚假的保存
 
         // 重置 currentReport

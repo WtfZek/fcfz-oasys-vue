@@ -127,9 +127,8 @@ export default {
             const tokenName = loginResponseData.tokenName;
             const tokenValue = loginResponseData.tokenValue;
 
-            // 将 token 信息存入 localStorage
-            localStorage.setItem('tokenKey', tokenName);
-            localStorage.setItem('tokenValue', tokenValue);
+            // // 将 token 信息存入 localStorage
+            // store.commit('setToken', tokenName, tokenValue)
 
             const res = await proxy.$api.getMenu({
               username: formData.empNum,
@@ -138,8 +137,8 @@ export default {
 
             store.commit("setMenu", res.menu);
             store.commit("addMenu", router);
-            store.commit("setToken", res.token);
-            await router.push({ name: "index" });
+            store.commit('setToken', {tokenName, tokenValue});
+            await router.push({name: "index"});
             ElMessage.success("登录成功！");
           } else {
             // 注册逻辑

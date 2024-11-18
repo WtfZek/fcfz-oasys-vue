@@ -33,12 +33,13 @@ function checkRouter(path) {
 }
 
 router.beforeEach((to, from, next) => {
-    store.commit('getToken')
+    store.commit('getSaToken')
     const token = store.state.token
+    console.log('token', token)
     if (!token && to.name !== 'login') {
         next({name: 'login'})
     } else if (!checkRouter(to.path)) {
-        next({name: 'home'})
+        next({name: 'index'})
     } else {
         next()
     }

@@ -6,7 +6,7 @@ import router from '../router'
 
 const NETWORK_ERROR = '网络请求异常,请稍后重试.....'
 
-axios.defaults.withCredentials = true;
+// axios.defaults.withCredentials = true;
 // 创建一个axios实例对象
 const service = axios.create({
   baseURL: config.baseApi,
@@ -18,6 +18,7 @@ service.interceptors.request.use((req) => {
   // 可以自定义header
   const key = localStorage.getItem('tokenKey'); // 一般都是 satoken
   const value = localStorage.getItem('tokenValue'); // uuid 形式
+  // store.commit('getToken');
   if (key && value) {
     req.headers[key] = value;
   }
@@ -32,12 +33,12 @@ service.interceptors.response.use((res) => {
   console.log('code', code)
   // 根据后端 协商  视情况而定
   if (code === '200') {
-    console.log('登录成功')
     return data
-  } else if (code === "10302") {
+  } else if (code === '10302') {
     console.log('token过期')
     store.commit('clearToken');
     store.commit('cleanMenu');
+    store.commit('clearToken');
     router.push('/login')
   } else {
     // 网络请求错误，用element-plus的弹窗信息

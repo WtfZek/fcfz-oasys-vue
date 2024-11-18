@@ -1,5 +1,5 @@
 import { createStore } from 'vuex';
-import Cookie from 'js-cookie'
+// import Cookie from 'js-cookie'
 export default createStore({
     state: {
         isCollapse: false,
@@ -141,15 +141,29 @@ export default createStore({
         },
 
         setToken(state, val) {
-            state.token = val
-            Cookie.set('token', val)
+            state.token = val.tokenValue
+            localStorage.setItem('tokenKey', val.tokenName);
+            localStorage.setItem('tokenValue', state.token);
+            // Cookie.set(val.tokenName, state.token)
         },
+
+        // setToken(state, val) {
+        //     state.token = val
+        //     Cookie.set('token', val)
+        // },
         clearToken(state) {
             state.token = ''
-            Cookie.remove('token')
+            localStorage.removeItem('tokenKey');
+            localStorage.removeItem('tokenValue');
+            // Cookie.remove('satoken')
         },
         getToken(state) {
-            state.token = state.token || Cookie.get('token')
+            // state.token = state.token || Cookie.get('token')
+            state.token = state.token || localStorage.getItem('tokenValue')
+        },
+        getSaToken(state) {
+            // state.token = state.token || Cookie.get('satoken')
+            state.token = state.token || localStorage.getItem('tokenValue')
         }
     }
 })
