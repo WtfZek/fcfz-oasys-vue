@@ -40,6 +40,11 @@ service.interceptors.response.use((res) => {
     store.commit('cleanMenu');
     store.commit('clearToken');
     router.push('/login')
+  } else if (code === '500') {
+    console.log('服务器异常')
+    console.log(msg)
+    ElMessage.error('服务器异常')
+    return Promise.reject('服务器异常')
   } else {
     // 网络请求错误，用element-plus的弹窗信息
     ElMessage.error(msg || NETWORK_ERROR)

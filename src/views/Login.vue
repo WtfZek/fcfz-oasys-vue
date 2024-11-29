@@ -64,6 +64,7 @@ export default {
     const formData = reactive({
       empNum: "2424389790",
       password: "123456",
+      device: "PC",
       confirmPassword: "", // 注册时需要确认密码
       captcha: "", // 验证码
     });

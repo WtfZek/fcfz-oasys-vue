@@ -41,21 +41,21 @@ export default {
                   "children": []
                 },
                 {
-                  "path": "/enterprise/role-management",
-                  "name": "roleManagement",
-                  "label": "职位管理",
-                  "icon": "Management",  // 对应 Management 图标
-                  "url": "Enterprise/RoleManagement",
-                  "children": []
+                    "path": "/enterprise/post-management",
+                    "name": "postManagement",
+                    "label": "职位管理",
+                    "icon": "Management",  // 对应 Management 图标
+                    "url": "Enterprise/PostManagement",
+                    "children": []
                 },
-                {
-                  "path": "/enterprise/permission-management",
-                  "name": "permissionManagement",
-                  "label": "角色管理",
-                  "icon": "Key",  // 对应 Key 图标
-                  "url": "Enterprise/RoleManagement",
-                  "children": []
-                }
+                  {
+                      "path": "/enterprise/role-management",
+                      "name": "roleManagement",
+                      "label": "角色管理",
+                      "icon": "Key",  // 对应 Key 图标
+                      "url": "Enterprise/RoleManagement",
+                      "children": []
+                  }
               ]
             },
             {
@@ -74,14 +74,14 @@ export default {
                   "children": [
                   ]
                 },
-                {
-                  "path": "/attendance/message/calendar",
-                  "name": "attendanceCalendar",
-                  "label": "打卡日历",
-                  "icon": "Calendar",  // 对应 DocumentChecked 图标
-                  "url": "Attendance/AttendanceCalendar",
-                  "children": [],
-                },
+                  {
+                      "path": "/attendance/punch-calendar",
+                      "name": "attendanceCalendar",
+                      "label": "打卡日历",
+                      "icon": "Calendar",  // 对应 DocumentChecked 图标
+                      "url": "Attendance/AttendanceCalendar",
+                      "children": [],
+                  },
                 {
                   "path": "/attendance/statistics",
                   "name": "attendanceStatistics",
@@ -89,46 +89,22 @@ export default {
                   "icon": "PieChart",  // 对应 PieChart 图标
                   "url": "Attendance/AttendanceStatistics",
                   "children": [
-                    {
-                      "path": "/attendance/statistics/annual",
-                      "name": "annualVisualization",
-                      "label": "考勤年度可视化信息",
-                      "icon": "Calendar",  // 对应 Calendar 图标
-                      "url": "Attendance/Statistics/AnnualVisualization",
-                      "children": []
-                    },
-                    {
-                      "path": "/attendance/statistics/quarterly",
-                      "name": "quarterlyVisualization",
-                      "label": "考勤季度可视化",
-                      "icon": "BarChart",  // 对应 BarChart 图标
-                      "url": "Attendance/Statistics/QuarterlyVisualization",
-                      "children": []
-                    },
-                    {
-                      "path": "/attendance/statistics/monthly",
-                      "name": "monthlyVisualization",
-                      "label": "考勤月度可视化",
-                      "icon": "Clock",  // 对应 Clock 图标
-                      "url": "Attendance/Statistics/MonthlyVisualization",
-                      "children": []
-                    },
-                    {
-                      "path": "/attendance/statistics/weekly",
-                      "name": "weeklyVisualization",
-                      "label": "考勤周可视化",
-                      "icon": "ChartBar",  // 对应 ChartBar 图标
-                      "url": "Attendance/Statistics/WeeklyVisualization",
-                      "children": []
-                    },
-                    {
-                      "path": "/attendance/statistics/summary",
-                      "name": "attendanceSummary",
-                      "label": "考勤统计大屏汇总",
-                      "icon": "Monitor",  // 对应 Monitor 图标
-                      "url": "Attendance/Statistics/Summary",
-                      "children": []
-                    }
+                      {
+                          "path": "/attendance/statistics-stage",
+                          "name": "stageVisualization",
+                          "label": "考勤阶段可视化信息",
+                          "icon": "TrendCharts",  // 对应 Calendar 图标
+                          "url": "Attendance/Statistics/StageVisualization",
+                          "children": []
+                      },
+                      {
+                          "path": "/attendance/statistics-summary",
+                          "name": "attendanceSummary",
+                          "label": "考勤统计大屏汇总",
+                          "icon": "Monitor",  // 对应 Monitor 图标
+                          "url": "Attendance/Statistics/Summary",
+                          "children": []
+                      }
                   ]
                 }
               ]
@@ -188,14 +164,6 @@ export default {
                   "icon": "DocumentChecked",  // 对应 DocumentChecked 图标
                   "url": "Approval/PendingList",
                   "children": []
-                },
-                {
-                  "path": "/approval/flow-definition",
-                  "name": "flowDefinition",
-                  "label": "流程定义",
-                  "icon": "EditPen",  // 对应 FlowChart 图标
-                  "url": "Approval/FlowDefinition",
-                  "children": []
                 }
               ]
             }
@@ -242,22 +210,22 @@ export default {
                   "url": "Enterprise/DepartmentManagement",
                   "children": []
                 },
-                {
-                  "path": "/enterprise/role-management",
-                  "name": "roleManagement",
-                  "label": "职位管理",
-                  "icon": "Management",  // 对应 Management 图标
-                  "url": "Enterprise/RoleManagement",
-                  "children": []
-                },
-                {
-                  "path": "/enterprise/permission-management",
-                  "name": "permissionManagement",
-                  "label": "角色管理",
-                  "icon": "Key",  // 对应 Key 图标
-                  "url": "Enterprise/RoleManagement",
-                  "children": []
-                }
+                  {
+                      "path": "/enterprise/post-management",
+                      "name": "postManagement",
+                      "label": "职位管理",
+                      "icon": "Management",  // 对应 Management 图标
+                      "url": "Enterprise/PostManagement",
+                      "children": []
+                  },
+                  {
+                      "path": "/enterprise/role-management",
+                      "name": "permissionManagement",
+                      "label": "角色管理",
+                      "icon": "Key",  // 对应 Key 图标
+                      "url": "Enterprise/RoleManagement",
+                      "children": []
+                  }
               ]
             },
             {

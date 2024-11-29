@@ -204,4 +204,30 @@ export default {
     })
   },
 
+  getForm(id) {
+    return request({
+      url: `form/${id}`,
+      method: 'get',
+      mock: false,
+    })
+  },
+
+  addFrom(params) {
+    return request({
+      url: `form/add`,
+      method: 'post',
+      mock: false,
+      data: params
+    })
+  },
+
+  updateForm(params) {
+    return request({
+      url: `form/update`,
+      method: 'post',
+      mock: false,
+      data: params
+    })
+  },
+
 }

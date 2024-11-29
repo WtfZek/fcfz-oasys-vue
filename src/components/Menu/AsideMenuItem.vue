@@ -1,4 +1,5 @@
 <template>
+  <!-- 最外层菜单项 -->
   <el-menu-item
       v-if="!item.children || item.children.length === 0"
       :index="item.path"
@@ -7,22 +8,27 @@
   >
     <div class="menu-item-badge">
       <component class="icons" :is="item.icon"></component>
-      <span v-if="!$store.state.isCollapse">{{ item.label }}</span>
+      <!-- 仅最外层菜单根据折叠状态隐藏 -->
+      <span v-if="!isRoot || !$store.state.isCollapse">{{ item.label }}</span>
     </div>
   </el-menu-item>
 
+  <!-- 最外层子菜单 -->
   <el-sub-menu v-else :index="item.path" :key="item.path">
     <template #title>
       <div class="menu-item-badge">
         <component class="icons" :is="item.icon"></component>
-        <span v-if="!$store.state.isCollapse">{{ item.label }}</span>
+        <!-- 仅最外层菜单根据折叠状态隐藏 -->
+        <span v-if="!isRoot || !$store.state.isCollapse">{{ item.label }}</span>
       </div>
     </template>
 
+    <!-- 子菜单项 -->
     <aside-menu-item
         v-for="(child, index) in item.children"
         :key="`${child.path}-${index}`"
         :item="child"
+        :is-root="false"
     />
   </el-sub-menu>
 </template>
@@ -38,6 +44,10 @@ export default {
     item: {
       type: Object,
       required: true,
+    },
+    isRoot: {
+      type: Boolean,
+      default: true, // 默认是根菜单
     },
   },
   setup({item}) {
