@@ -90,10 +90,9 @@
               >
                 <el-tooltip v-for="user in currentReportShareUsers" :content="user.userName" placement="top"
                             :hide-after="150">
-                  <img
-
+                  <el-image
                       class="userImage"
-                      :src="user.userImage"
+                      :src="user.userImage || defaultAvatar"
                       @error="handleImageError"
                       :alt="user.userName"
                   />
@@ -533,15 +532,19 @@ export default {
     };
 
     const handleImageError = (event) => {
+      console.log("图片加载失败");
       event.target.src = defaultAvatar; // 本地默认图片路径
+      console.log("当前图片地址：" + event.target.src);
     };
 
     onMounted(async () => {
+      console.log("默认用户图片地址：", defaultAvatar);
       await loadScrollPage();
       await getReportShareUserList();
     });
 
     return {
+      defaultAvatar,
       currentContent,
       editorConfig,
       // reportTypes,

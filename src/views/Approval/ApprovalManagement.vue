@@ -21,6 +21,7 @@
         </el-form-item>
 
         <template v-for="field in formTemplate.templateFields" :key="field.id">
+
           <el-form-item
               v-if="(field.formItemType === 'single_select') && field.isVisible === 1"
               :label="field.fieldTitle"
@@ -134,6 +135,72 @@
             />
           </el-form-item>
 
+          <el-form-item
+              v-if="(field.formItemType === 'image_upload') && field.isVisible === 1"
+              :label="field.fieldTitle"
+              :prop="`field_${field.fieldId}`"
+              :rules="field.validationRule"
+          >
+            <el-upload action="#" list-type="picture-card" :auto-upload="false">
+              <el-icon>
+                <Plus/>
+              </el-icon>
+
+              <template #file="{ file }">
+                <div>
+                  <img class="el-upload-list__item-thumbnail" :src="file.url" alt=""/>
+                  <span class="el-upload-list__item-actions">
+                    <span
+                        class="el-upload-list__item-preview"
+                        @click="handlePictureCardPreview(file)"
+                    >
+                    <el-icon><zoom-in/></el-icon>
+                    </span>
+                    <span
+                        v-if="!disabled"
+                        class="el-upload-list__item-delete"
+                        @click="handleDownload(file)"
+                    >
+                      <el-icon><Download/></el-icon>
+                    </span>
+                    <span
+                        v-if="!disabled"
+                        class="el-upload-list__item-delete"
+                        @click="handleRemove(file)"
+                    >
+                    <el-icon><Delete/></el-icon>
+                  </span>
+                  </span>
+                </div>
+              </template>
+            </el-upload>
+          </el-form-item>
+
+          <el-form-item
+              v-if="(field.formItemType === 'file_upload') && field.isVisible === 1"
+              :label="field.fieldTitle"
+              :prop="`field_${field.fieldId}`"
+              :rules="field.validationRule"
+          >
+            <el-upload
+                class="upload-demo"
+                drag
+                action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
+                multiple
+            >
+              <el-icon class="el-icon--upload">
+                <upload-filled/>
+              </el-icon>
+              <div class="el-upload__text">
+                拖动文件到这里，或 <em>点击上传</em>
+              </div>
+              <template #tip>
+                <div class="el-upload__tip">
+                  小于 500kb 的 jpg/png 文件
+                </div>
+              </template>
+            </el-upload>
+          </el-form-item>
           <!-- 可扩展其他字段类型 -->
         </template>
 
@@ -161,7 +228,7 @@
 </template>
 
 <script>
-import {ref, reactive, onMounted, onBeforeMount, watch, getCurrentInstance,} from 'vue';
+import {ref, reactive, onMounted, onBeforeMount, watch, getCurrentInstance, nextTick} from 'vue';
 
 export default {
   setup() {
@@ -177,274 +244,276 @@ export default {
 
     const formModel = reactive({});
 
-    const formTemplate = reactive({
-      "templateId": 1,
-      "templateName": "请假",
-      "isSys": "1",
-      "templateType": "approval_leave",
-      "category": "排班",
-      "status": "0",
-      "updatedTime": null,
-      "templateFields": [
-        {
-          "fieldId": 1,
-          "fieldTitle": "请假类型",
-          "fieldType": "varchar",
-          "fieldSort": 1,
-          "validationRule": [
-            {
-              "required": true,
-              "message": "请假类型不能为空",
-              "trigger": "change"
-            }
-          ],
-          "isRequired": 1,
-          "formItemType": "single_select",
-          "defaultValue": "请输入",
-          "isSummary": 1,
-          "isVisible": 1,
-          "fieldOptions": [
-            {
-              "id": 1,
-              "templateFieldId": 1,
-              "optionValue": "年假",
-              "optionLabel": "年假",
-              "oprionSort": 1
-            },
-            {
-              "id": 2,
-              "templateFieldId": 1,
-              "optionValue": "事假",
-              "optionLabel": "事假",
-              "oprionSort": 2
-            },
-            {
-              "id": 3,
-              "templateFieldId": 1,
-              "optionValue": "病假",
-              "optionLabel": "病假",
-              "oprionSort": 3
-            },
-            {
-              "id": 4,
-              "templateFieldId": 1,
-              "optionValue": "调休",
-              "optionLabel": "调休",
-              "oprionSort": 4
-            },
-            {
-              "id": 5,
-              "templateFieldId": 1,
-              "optionValue": "产假",
-              "optionLabel": "产假",
-              "oprionSort": 5
-            },
-            {
-              "id": 6,
-              "templateFieldId": 1,
-              "optionValue": "陪产假",
-              "optionLabel": "陪产假",
-              "oprionSort": 6
-            },
-            {
-              "id": 7,
-              "templateFieldId": 1,
-              "optionValue": "婚假",
-              "optionLabel": "婚假",
-              "oprionSort": 7
-            },
-            {
-              "id": 8,
-              "templateFieldId": 1,
-              "optionValue": "例假",
-              "optionLabel": "例假",
-              "oprionSort": 8
-            },
-            {
-              "id": 9,
-              "templateFieldId": 1,
-              "optionValue": "丧假",
-              "optionLabel": "丧假",
-              "oprionSort": 9
-            }
-          ]
-        },
-        {
-          "fieldId": 2,
-          "fieldTitle": "请假开始时间",
-          "fieldType": "datetime",
-          "fieldSort": 2,
-          "validationRule": [
-            {
-              "required": true,
-              "message": "请假开始时间不能为空",
-              "trigger": "blur"
-            }
-          ],
-          "isRequired": 1,
-          "formItemType": "datetime_piker",
-          "defaultValue": "请选择日期",
-          "isSummary": 1,
-          "isVisible": 1,
-          "fieldOptions": null
-        },
-        {
-          "fieldId": 3,
-          "fieldTitle": "请假结束时间",
-          "fieldType": "datetime",
-          "fieldSort": 3,
-          "validationRule": [
-            {
-              "required": true,
-              "message": "请假结束时间不能为空",
-              "trigger": "blur"
-            }
-          ],
-          "isRequired": 1,
-          "formItemType": "datetime_piker",
-          "defaultValue": "请选择日期",
-          "isSummary": 1,
-          "isVisible": 1,
-          "fieldOptions": null
-        },
-        {
-          "fieldId": 4,
-          "fieldTitle": "请假时长（天）",
-          "fieldType": "int",
-          "fieldSort": 4,
-          "validationRule": [
-            {
-              "required": true,
-              "message": "请假时长不能为空",
-              "trigger": "blur"
-            }
-          ],
-          "isRequired": 1,
-          "formItemType": "input",
-          "defaultValue": "自动计算",
-          "isSummary": 0,
-          "isVisible": 0,
-          "fieldOptions": null
-        },
-        {
-          "fieldId": 5,
-          "fieldTitle": "请假事由",
-          "fieldType": "longtext",
-          "fieldSort": 5,
-          "validationRule": [
-            {
-              "required": true,
-              "message": "请假事由不能为空",
-              "trigger": "blur"
-            }
-          ],
-          "isRequired": 1,
-          "formItemType": "text-input",
-          "defaultValue": "请输入",
-          "isSummary": 1,
-          "isVisible": 1,
-          "fieldOptions": null
-        },
-        {
-          "fieldId": 6,
-          "fieldTitle": "测试用多选项",
-          "fieldType": "multi-varchar",
-          "fieldSort": 6,
-          "validationRule": [
-            {
-              "required": true,
-              "message": "测试用多选项不能为空",
-              "trigger": "change"
-            }
-          ],
-          "isRequired": 1,
-          "formItemType": "multiple_select",
-          "defaultValue": "请选择多选项",
-          "isSummary": 0,
-          "isVisible": 1,
-          "fieldOptions": [
-            {
-              "id": 10,
-              "templateFieldId": 6,
-              "optionValue": "多选项1",
-              "optionLabel": "多选项1",
-              "oprionSort": 1
-            },
-            {
-              "id": 11,
-              "templateFieldId": 6,
-              "optionValue": "多选项2",
-              "optionLabel": "多选项2",
-              "oprionSort": 2
-            },
-            {
-              "id": 12,
-              "templateFieldId": 6,
-              "optionValue": "多选项3",
-              "optionLabel": "多选项3",
-              "oprionSort": 3
-            },
-            {
-              "id": 13,
-              "templateFieldId": 6,
-              "optionValue": "多选项4",
-              "optionLabel": "多选项4",
-              "oprionSort": 4
-            },
-            {
-              "id": 14,
-              "templateFieldId": 6,
-              "optionValue": "多选项5",
-              "optionLabel": "多选项5",
-              "oprionSort": 5
-            }
-          ]
-        },
-        {
-          "fieldId": 7,
-          "fieldTitle": "测试多选用户数据",
-          "fieldType": "multi-bigint",
-          "fieldSort": 7,
-          "validationRule": [
-            {
-              "required": true,
-              "message": "测试多选用户数据不能为空",
-              "trigger": "change"
-            }
-          ],
-          "isRequired": 1,
-          "formItemType": "user_select",
-          "defaultValue": "请选择用户",
-          "isSummary": 0,
-          "isVisible": 0,
-          "fieldOptions": null
-        },
-        {
-          "fieldId": 8,
-          "fieldTitle": "测试富文本编辑框",
-          "fieldType": "longtext",
-          "fieldSort": 8,
-          "validationRule": [
-            {
-              "required": true,
-              "message": "测试富文本编辑框不能为空",
-              "trigger": "blur"
-            },
-            {
-              "pattern": "^1[3-9]\\d{9}$",
-              "message": "请输入有效的手机号",
-              "trigger": "blur"
-            }
-          ],
-          "isRequired": 1,
-          "formItemType": "rich-text-editor",
-          "defaultValue": "编辑内容...",
-          "isSummary": 0,
-          "isVisible": 1,
-          "fieldOptions": null
-        }
-      ]
-    });
+    // const formTemplate = reactive({
+    //   "templateId": 1,
+    //   "templateName": "请假",
+    //   "isSys": "1",
+    //   "templateType": "approval_leave",
+    //   "category": "排班",
+    //   "status": "0",
+    //   "updatedTime": null,
+    //   "templateFields": [
+    //     {
+    //       "fieldId": 1,
+    //       "fieldTitle": "请假类型",
+    //       "fieldType": "varchar",
+    //       "fieldSort": 1,
+    //       "validationRule": [
+    //         {
+    //           "required": true,
+    //           "message": "请假类型不能为空",
+    //           "trigger": "change"
+    //         }
+    //       ],
+    //       "isRequired": 1,
+    //       "formItemType": "single_select",
+    //       "defaultValue": "请输入",
+    //       "isSummary": 1,
+    //       "isVisible": 1,
+    //       "fieldOptions": [
+    //         {
+    //           "id": 1,
+    //           "templateFieldId": 1,
+    //           "optionValue": "年假",
+    //           "optionLabel": "年假",
+    //           "oprionSort": 1
+    //         },
+    //         {
+    //           "id": 2,
+    //           "templateFieldId": 1,
+    //           "optionValue": "事假",
+    //           "optionLabel": "事假",
+    //           "oprionSort": 2
+    //         },
+    //         {
+    //           "id": 3,
+    //           "templateFieldId": 1,
+    //           "optionValue": "病假",
+    //           "optionLabel": "病假",
+    //           "oprionSort": 3
+    //         },
+    //         {
+    //           "id": 4,
+    //           "templateFieldId": 1,
+    //           "optionValue": "调休",
+    //           "optionLabel": "调休",
+    //           "oprionSort": 4
+    //         },
+    //         {
+    //           "id": 5,
+    //           "templateFieldId": 1,
+    //           "optionValue": "产假",
+    //           "optionLabel": "产假",
+    //           "oprionSort": 5
+    //         },
+    //         {
+    //           "id": 6,
+    //           "templateFieldId": 1,
+    //           "optionValue": "陪产假",
+    //           "optionLabel": "陪产假",
+    //           "oprionSort": 6
+    //         },
+    //         {
+    //           "id": 7,
+    //           "templateFieldId": 1,
+    //           "optionValue": "婚假",
+    //           "optionLabel": "婚假",
+    //           "oprionSort": 7
+    //         },
+    //         {
+    //           "id": 8,
+    //           "templateFieldId": 1,
+    //           "optionValue": "例假",
+    //           "optionLabel": "例假",
+    //           "oprionSort": 8
+    //         },
+    //         {
+    //           "id": 9,
+    //           "templateFieldId": 1,
+    //           "optionValue": "丧假",
+    //           "optionLabel": "丧假",
+    //           "oprionSort": 9
+    //         }
+    //       ]
+    //     },
+    //     {
+    //       "fieldId": 2,
+    //       "fieldTitle": "请假开始时间",
+    //       "fieldType": "datetime",
+    //       "fieldSort": 2,
+    //       "validationRule": [
+    //         {
+    //           "required": true,
+    //           "message": "请假开始时间不能为空",
+    //           "trigger": "blur"
+    //         }
+    //       ],
+    //       "isRequired": 1,
+    //       "formItemType": "datetime_piker",
+    //       "defaultValue": "请选择日期",
+    //       "isSummary": 1,
+    //       "isVisible": 1,
+    //       "fieldOptions": null
+    //     },
+    //     {
+    //       "fieldId": 3,
+    //       "fieldTitle": "请假结束时间",
+    //       "fieldType": "datetime",
+    //       "fieldSort": 3,
+    //       "validationRule": [
+    //         {
+    //           "required": true,
+    //           "message": "请假结束时间不能为空",
+    //           "trigger": "blur"
+    //         }
+    //       ],
+    //       "isRequired": 1,
+    //       "formItemType": "datetime_piker",
+    //       "defaultValue": "请选择日期",
+    //       "isSummary": 1,
+    //       "isVisible": 1,
+    //       "fieldOptions": null
+    //     },
+    //     {
+    //       "fieldId": 4,
+    //       "fieldTitle": "请假时长（天）",
+    //       "fieldType": "int",
+    //       "fieldSort": 4,
+    //       "validationRule": [
+    //         {
+    //           "required": true,
+    //           "message": "请假时长不能为空",
+    //           "trigger": "blur"
+    //         }
+    //       ],
+    //       "isRequired": 1,
+    //       "formItemType": "input",
+    //       "defaultValue": "自动计算",
+    //       "isSummary": 0,
+    //       "isVisible": 0,
+    //       "fieldOptions": null
+    //     },
+    //     {
+    //       "fieldId": 5,
+    //       "fieldTitle": "请假事由",
+    //       "fieldType": "longtext",
+    //       "fieldSort": 5,
+    //       "validationRule": [
+    //         {
+    //           "required": true,
+    //           "message": "请假事由不能为空",
+    //           "trigger": "blur"
+    //         }
+    //       ],
+    //       "isRequired": 1,
+    //       "formItemType": "text-input",
+    //       "defaultValue": "请输入",
+    //       "isSummary": 1,
+    //       "isVisible": 1,
+    //       "fieldOptions": null
+    //     },
+    //     {
+    //       "fieldId": 6,
+    //       "fieldTitle": "测试用多选项",
+    //       "fieldType": "multi-varchar",
+    //       "fieldSort": 6,
+    //       "validationRule": [
+    //         {
+    //           "required": true,
+    //           "message": "测试用多选项不能为空",
+    //           "trigger": "change"
+    //         }
+    //       ],
+    //       "isRequired": 1,
+    //       "formItemType": "multiple_select",
+    //       "defaultValue": "请选择多选项",
+    //       "isSummary": 0,
+    //       "isVisible": 1,
+    //       "fieldOptions": [
+    //         {
+    //           "id": 10,
+    //           "templateFieldId": 6,
+    //           "optionValue": "多选项1",
+    //           "optionLabel": "多选项1",
+    //           "oprionSort": 1
+    //         },
+    //         {
+    //           "id": 11,
+    //           "templateFieldId": 6,
+    //           "optionValue": "多选项2",
+    //           "optionLabel": "多选项2",
+    //           "oprionSort": 2
+    //         },
+    //         {
+    //           "id": 12,
+    //           "templateFieldId": 6,
+    //           "optionValue": "多选项3",
+    //           "optionLabel": "多选项3",
+    //           "oprionSort": 3
+    //         },
+    //         {
+    //           "id": 13,
+    //           "templateFieldId": 6,
+    //           "optionValue": "多选项4",
+    //           "optionLabel": "多选项4",
+    //           "oprionSort": 4
+    //         },
+    //         {
+    //           "id": 14,
+    //           "templateFieldId": 6,
+    //           "optionValue": "多选项5",
+    //           "optionLabel": "多选项5",
+    //           "oprionSort": 5
+    //         }
+    //       ]
+    //     },
+    //     {
+    //       "fieldId": 7,
+    //       "fieldTitle": "测试多选用户数据",
+    //       "fieldType": "multi-bigint",
+    //       "fieldSort": 7,
+    //       "validationRule": [
+    //         {
+    //           "required": true,
+    //           "message": "测试多选用户数据不能为空",
+    //           "trigger": "change"
+    //         }
+    //       ],
+    //       "isRequired": 1,
+    //       "formItemType": "user_select",
+    //       "defaultValue": "请选择用户",
+    //       "isSummary": 0,
+    //       "isVisible": 0,
+    //       "fieldOptions": null
+    //     },
+    //     {
+    //       "fieldId": 8,
+    //       "fieldTitle": "测试富文本编辑框",
+    //       "fieldType": "longtext",
+    //       "fieldSort": 8,
+    //       "validationRule": [
+    //         {
+    //           "required": true,
+    //           "message": "测试富文本编辑框不能为空",
+    //           "trigger": "blur"
+    //         },
+    //         {
+    //           "pattern": "^1[3-9]\\d{9}$",
+    //           "message": "请输入有效的手机号",
+    //           "trigger": "blur"
+    //         }
+    //       ],
+    //       "isRequired": 1,
+    //       "formItemType": "rich-text-editor",
+    //       "defaultValue": "编辑内容...",
+    //       "isSummary": 0,
+    //       "isVisible": 1,
+    //       "fieldOptions": null
+    //     }
+    //   ]
+    // });
+
+    const formTemplate = reactive({});
 
     let formData = reactive({
       "formId": null,
@@ -462,35 +531,35 @@ export default {
       ],
     });
 
-    const setupDynamicWatchers = () => {
-      formTemplate.templateFields.forEach((field) => {
-        if (field.formItemType === "multiple_select") {
-          watch(
-              () => formModel[`field_${field.fieldId}`], // 监听动态绑定的 model 值
-              (newVal) => {
-                const totalOptions = field.fieldOptions.map((opt) => opt.optionValue);
-                if (!Array.isArray(newVal)) {
-                  field.checkAll = false;
-                  field.indeterminate = false;
-                } else {
-                  const selectedCount = newVal.length;
-                  if (selectedCount === 0) {
-                    field.checkAll = false;
-                    field.indeterminate = false;
-                  } else if (selectedCount === totalOptions.length) {
-                    field.checkAll = true;
-                    field.indeterminate = false;
-                  } else {
-                    field.checkAll = false;
-                    field.indeterminate = true;
-                  }
-                }
-              },
-              {immediate: true} // 初始化时触发
-          );
-        }
-      });
-    };
+    // const setupDynamicWatchers = () => {
+    //   formTemplate.templateFields.forEach((field) => {
+    //     if (field.formItemType === "multiple_select") {
+    //       watch(
+    //           () => formModel[`field_${field.fieldId}`], // 监听动态绑定的 model 值
+    //           (newVal) => {
+    //             const totalOptions = field.fieldOptions.map((opt) => opt.optionValue);
+    //             if (!Array.isArray(newVal)) {
+    //               field.checkAll = false;
+    //               field.indeterminate = false;
+    //             } else {
+    //               const selectedCount = newVal.length;
+    //               if (selectedCount === 0) {
+    //                 field.checkAll = false;
+    //                 field.indeterminate = false;
+    //               } else if (selectedCount === totalOptions.length) {
+    //                 field.checkAll = true;
+    //                 field.indeterminate = false;
+    //               } else {
+    //                 field.checkAll = false;
+    //                 field.indeterminate = true;
+    //               }
+    //             }
+    //           },
+    //           {immediate: true} // 初始化时触发
+    //       );
+    //     }
+    //   });
+    // };
 
     const handleCheckAll = (field, value) => {
       const allOptions = field.fieldOptions.map(option => option.optionValue);
@@ -607,6 +676,7 @@ export default {
     }
 
     const initFormModel = () => {
+      console.log('formTemplate of initFormModel', formTemplate)
       formTemplate.templateFields.forEach((field) => {
         formModel[`field_${field.fieldId}`] = field.fieldValue || (field.formItemType === "multiple_select" ? [] : null);
       });
@@ -638,12 +708,23 @@ export default {
 
     }
 
-    onBeforeMount(() => {
-      setupDynamicWatchers();
+    const getFormTemplateById = async (id) => {
+      try {
+        let res = await proxy.$api.getFormTemplate(id); // 更新 formTemplate
+        Object.assign(formTemplate, res);
+        console.log('formTemplate', formTemplate)
+      } catch (error) {
+        console.error("获取表单模板失败", error);
+      }
+    };
+
+    onBeforeMount(async () => {
+      await getFormTemplateById(1); // 确保模板数据加载完成
+      // setupDynamicWatchers();
       // setupDynamicCalculations();
-      initFormModel();
-      parseRegexPatterns(formTemplate);
-      console.log(formData);
+      initFormModel(); // 确保 DOM 渲染后初始化表单
+      parseRegexPatterns(formTemplate); // 解析验证规则
+      console.log('formData', formData);
       // console.log(formData)
       // console.log(JSON.stringify(formData, null, 2));
     });
@@ -666,6 +747,8 @@ export default {
 
 <style lang="less" scoped>
 .my-card {
+  //自动显示滚动条
+  overflow-y: auto;
   height: 100%;
   min-width: 1200px;
 

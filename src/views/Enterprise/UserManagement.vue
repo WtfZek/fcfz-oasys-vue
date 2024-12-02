@@ -10,15 +10,15 @@
       <!--      </el-form-item>-->
       <!--      <el-form-item label="入职日期">-->
       <!--        &lt;!&ndash;        <el-input v-model="formSearch.userName" placeholder="请选择出生日期" />&ndash;&gt;-->
-<!--        <el-date-picker-->
-<!--            clearable-->
-<!--            v-model="formSearch.timeIn"-->
-<!--            type="date"-->
-<!--            label="入职日期"-->
-<!--            placeholder="请输入入职日期"-->
-<!--            style="width: 100%"-->
-<!--        />-->
-<!--      </el-form-item>-->
+      <!--        <el-date-picker-->
+      <!--            clearable-->
+      <!--            v-model="formSearch.timeIn"-->
+      <!--            type="date"-->
+      <!--            label="入职日期"-->
+      <!--            placeholder="请输入入职日期"-->
+      <!--            style="width: 100%"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
       <el-form-item label="查找">
         <el-input
             clearable
@@ -108,25 +108,25 @@
           align="center"
           :fixed="item.fixed ? item.fixed : false"
           :filters="item.filters ? item.filters : null"
-            :filter-method="item.filters ? filterMethod : null"
-            :filter-multiple="item.filters ? false : null"
-            :sortable="item.sortable ? item.sortable : false"
-        >
-          <template #header="scope">
-            <span>{{ item.label }}</span>
-            <!-- 切换锁定状态按钮 -->
-            <el-tooltip :content="item.fixed ? '取消固定' : '将该列固定到左侧'" placement="top" :hide-after="500">
-              <span @click="toggleFixed(item)"
-                  style=" margin-left: 5px;" >
-                <el-icon v-if="item.fixed" color="#289eea"> <!-- 如果已固定，显示Unlock图标 -->
-                  <Unlock />
-                </el-icon>
-                <el-icon v-else> <!-- 如果未固定，显示Lock图标 -->
-                  <Lock />
-                </el-icon>
-              </span>
-            </el-tooltip>
-          </template>
+          :filter-method="item.filters ? filterMethod : null"
+          :filter-multiple="item.filters ? false : null"
+          :sortable="item.sortable ? item.sortable : false"
+      >
+        <template #header="scope">
+          <span>{{ item.label }}</span>
+          <!-- 切换锁定状态按钮 -->
+          <el-tooltip :content="item.fixed ? '取消固定' : '将该列固定到左侧'" placement="top" :hide-after="500">
+            <span @click="toggleFixed(item)"
+                  style=" margin-left: 5px;">
+              <el-icon v-if="item.fixed" color="#289eea"> <!-- 如果已固定，显示Unlock图标 -->
+                <Unlock/>
+              </el-icon>
+              <el-icon v-else> <!-- 如果未固定，显示Lock图标 -->
+                <Lock/>
+              </el-icon>
+            </span>
+          </el-tooltip>
+        </template>
         <template #default="scope">
           <el-tag
               v-if="item.prop === 'status'"
@@ -139,7 +139,7 @@
           <img
               v-if="item.prop === 'userImage'"
               class="userImage"
-              :src="scope.row.userImage"
+              :src="scope.row.userImage || defaultAvatar"
               @error="handleImageError"
               :alt="scope.row.userName"
           />
@@ -281,27 +281,30 @@ export default defineComponent({
         label: "姓名",
         width: 100,
         fixed: 'left',
+        disabled: false,
       },
       {
         prop: "roleName",
         label: "系统角色",
         width: 115,
         fixed: false,
+        disabled: false,
       },
       {
         prop: "departmentName",
         label: "部门",
         width: 150,
         fixed: 'left',
+        disabled: false,
         filters: [
-          { text: '销售部', value: '销售部'},
-          { text: '人事部', value: '人事部'},
-          { text: '综合部', value: '综合部'},
-          { text: '财务部', value: '财务部'},
-          { text: '行政部', value: '行政部'},
-          { text: '技术部', value: '技术部'},
-          { text: '市场部', value: '市场部'},
-          { text: '运营部', value: '运营部'},
+          {text: '销售部', value: '销售部'},
+          {text: '人事部', value: '人事部'},
+          {text: '综合部', value: '综合部'},
+          {text: '财务部', value: '财务部'},
+          {text: '行政部', value: '行政部'},
+          {text: '技术部', value: '技术部'},
+          {text: '市场部', value: '市场部'},
+          {text: '运营部', value: '运营部'},
         ]
       },
       {
@@ -309,12 +312,14 @@ export default defineComponent({
         label: "员工头像",
         width: 150,
         fixed: false,
+        disabled: false,
       },
       {
         prop: "empNum",
         label: "工号",
         width: 150,
         fixed: false,
+        disabled: false,
         sortable: true,
       },
       {
@@ -322,21 +327,24 @@ export default defineComponent({
         label: "手机号",
         width: 150,
         fixed: false,
+        disabled: false,
       },
       {
         prop: "email",
         label: "邮箱",
         width: 220,
         fixed: false,
+        disabled: false,
       },
       {
         prop: "status",
         label: "状态",
         width: 110,
         fixed: false,
+        disabled: false,
         filters: [
-            { text: '在职', value: '在职' },
-            { text: '离职', value: '离职' },
+          {text: '在职', value: '在职'},
+          {text: '离职', value: '离职'},
         ]
       },
       {
@@ -344,9 +352,10 @@ export default defineComponent({
         label: "性别",
         width: 110,
         fixed: false,
+        disabled: false,
         filters: [
-          { text: '男', value: '男' },
-          { text: '女', value: '女' },
+          {text: '男', value: '男'},
+          {text: '女', value: '女'},
         ]
       },
       {
@@ -354,6 +363,7 @@ export default defineComponent({
         label: "出生日期",
         width: 220,
         fixed: false,
+        disabled: true,
         sortable: true,
       },
       {
@@ -361,6 +371,7 @@ export default defineComponent({
         label: "入职时间",
         width: 220,
         fixed: false,
+        disabled: true,
         sortable: true,
       },
       {
@@ -368,6 +379,7 @@ export default defineComponent({
         label: "创建时间",
         width: 220,
         fixed: false,
+        disabled: true,
         sortable: true,
       },
       {
@@ -375,6 +387,7 @@ export default defineComponent({
         label: "更新时间",
         width: 220,
         fixed: false,
+        disabled: true,
         sortable: true,
       },
     ]);
@@ -657,6 +670,7 @@ export default defineComponent({
     };
 
     return {
+      defaultAvatar,
       list: dataList,
       tableLabel,
       // tableLayout,

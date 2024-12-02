@@ -221,13 +221,21 @@ export default {
     })
   },
 
-  updateForm(params) {
-    return request({
-      url: `form/update`,
-      method: 'post',
-      mock: false,
-      data: params
-    })
-  },
+    updateForm(params) {
+        return request({
+            url: `form/update`,
+            method: 'post',
+            mock: false,
+            data: params
+        })
+    },
+
+    getFormTemplate(id) {
+        return request({
+            url: `form/template/${id}`,
+            method: 'get',
+            mock: false,
+        })
+    },
 
 }
