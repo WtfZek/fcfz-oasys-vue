@@ -62,7 +62,7 @@
                 <el-date-picker :disabled="!isCreate && !isUpdate" v-model="currentReport.reportDate" type="date"
                                 value-format="YYYY-MM-DD" placeholder="请选择日期"></el-date-picker>
               </el-form-item>
-              <el-form-item v-if="!isCreate || isUpdate && !isCreate" label="编辑日期" prop="reportDate"
+              <el-form-item v-if="isUpdate && !isCreate" label="编辑日期" prop="reportDate"
                             style="margin: 10px">
                 <el-text>{{
                     formatDateTime(currentReport.upDate ? currentReport.upDate : currentReport.ctDate)
@@ -74,14 +74,14 @@
         </el-header>
 
         <el-main class="right-main">
-          <vue-ueditor-wrap v-if="isUpdate"
+          <vue-ueditor-wrap v-if="isUpdate || isCreate"
                             v-model="currentReport.content"
                             editor-id="editor"
                             :config="editorConfig"
                             :editorDependencies="['ueditor.config.js','ueditor.all.js']"
                             style="height:100%; "/>
           <!--          用v-if强制重新加载或者说渲染，没有办法-->
-          <vue-ueditor-wrap v-if="!isUpdate"
+          <vue-ueditor-wrap v-if="!isUpdate && !isCreate"
                             v-model="currentReport.content"
                             editor-id="readonly_editor"
                             :config="editorConfig"
@@ -94,20 +94,40 @@
             <el-form :model="currentReport">
               <el-form-item
                   label="分享人"
-                  style="margin: 0; display: flex; align-items: center;"
+                  style="margin: 0; display: flex; align-items: center; position: relative"
               >
+                <el-tooltip v-if="currentReportShareUsers.length <= 0" :content="'无分享人'" placement="top"
+                            :hide-after="500">
+                  <!-- 添加报告分享人 -->
+                  <div v-if="isUpdate && !isCreate" class="userImage no-share-user-box">
+                    <span style="font-size: 16px; color: #999;">无</span>
+                  </div>
+                  <div v-if="!isUpdate && !isCreate" class="userImage no-share-user-text">
+                    <span style="font-size: 16px; color: #999;">无</span>
+                  </div>
+                </el-tooltip>
                 <el-tooltip v-for="user in currentReportShareUsers" :content="user.userName" placement="top"
                             :hide-after="150">
-                  <img
+                  <div
                       class="userImage"
-                      :src="user.userImage || defaultAvatar"
-                      @error="handleImageError"
-                      :alt="user.userName"
-                  />
+                      @mouseenter="user.showDeleteIcon = true"
+                      @mouseleave="user.showDeleteIcon = false">
+                    <img
+                        class="userImage"
+                        :src="user.userImage || defaultAvatar"
+                        @error="handleImageError"
+                        :alt="user.userName"
+                    />
+                    <div v-if="user.showDeleteIcon && isCreate" class="delete-icon" @click="handleRemoveUser(user)">
+                      <el-icon>
+                        <CircleCloseFilled/>
+                      </el-icon>
+                    </div>
+                  </div>
                 </el-tooltip>
-                <el-tooltip v-if="!isUpdate || isCreate" :content="'添加共享人'" placement="top" :hide-after="500">
+                <el-tooltip v-if="!isUpdate && isCreate" :content="'添加共享人'" placement="top" :hide-after="500">
                   <!-- 添加报告分享人 -->
-                  <div v-if="isUpdate || isCreate" class="userImage add-share-user-box" @click="handleAddSharer()">
+                  <div v-if="!isUpdate && isCreate" class="userImage add-share-user-box" @click="handleAddSharer()">
                     <span style="font-size: 24px; color: #999;">+</span>
                   </div>
                 </el-tooltip>
@@ -117,7 +137,7 @@
           </el-row>
 
           <el-row type="flex" justify="end">
-            <el-col v-if="!isUpdate">
+            <el-col v-if="!isUpdate&&!isCreate">
               <el-button type="warning" @click="handleCreateReport">新建</el-button>
               <el-button type="primary" @click="handleToUpdate">编辑</el-button>
               <el-button type="danger" @click="handleDeleteReport">删除</el-button>
@@ -297,8 +317,8 @@ export default {
       serverUrl: 'http://192.168.0.132:5173/api/ueditor',
       UEDITOR_HOME_URL: '/static/UEditorPlus/dist-min/',
       UEDITOR_CORS_URL: '/static/UEditorPlus/dist-min/',
-      toolbars: isUpdate.value ? toolbarsForUpdate : [],
-      readonly: !isUpdate.value,
+      toolbars: isUpdate.value || isCreate.value ? toolbarsForUpdate : [],
+      readonly: !isUpdate.value && !isCreate.value,
       wordCount: isUpdate.value, // 默认为 true，表示启用字数统计
       serverHeaders: {
         'Satoken': token
@@ -395,7 +415,7 @@ export default {
 
         // 在此处向personalReports.value添加一条数据
         isCreate.value = true;
-        isUpdate.value = true;
+        isUpdate.value = false;
         currentReportShareUsers.value = [];
         getReportShareUserList();
         console.log(currentReport.value);
@@ -487,10 +507,17 @@ export default {
           } else if (isCreate.value === true) {
             resData = proxy.$api.addReport(submitReport); // 使用 await 等待异步请求完成
           }
+
           console.log("resData", resData);
 
           if (resData) {
             // 提交成功
+            // 清空数据
+            currentReport.value = {};
+            personalReports.value = [];
+            pageSearch.pageNum = 1;
+            // await getReportShareUserList();
+            // await getShareUserList();
             ElMessage({
               type: 'success',
               message: '当前报告已提交',
@@ -592,7 +619,7 @@ export default {
 
     // 获取选中的菜单项对应的报告
     const handleSelectUpdate = (index) => {
-      console.log(index);
+      console.log('index', index);
       currentActiveIndex.value = index;
       getReportShareUserList();
     };
@@ -600,6 +627,7 @@ export default {
     const getReportShareUserList = async () => {
       // 如果currentReport.value.shareUserId是空数组或空或者undefined，则不执行后续操作
       if (currentReport.value.shareUserId === [] || currentReport.value.shareUserId === null || currentReport.value.shareUserId === undefined) {
+        currentReportShareUsers.value = [];
         return
       }
       try {
@@ -732,6 +760,18 @@ export default {
       );
     };
 
+    const handleRemoveUser = (user) => {
+      // Remove user logic
+      submitReport.userIDS = submitReport.userIDS.filter(id => id !== user.userId);
+      console.log('删除后的 userIDS', submitReport.userIDS)
+      shareUsers.value = shareUsers.value.filter(user => submitReport.userIDS.includes(user.userId));
+      console.log('删除后的 shareUsers', currentReportShareUsers.value)
+      console.log('删除前的 currentReportShareUsers', currentReportShareUsers.value)
+      currentReportShareUsers.value = currentReportShareUsers.value.filter(item => item.userId !== user.userId);
+      console.log('删除后的 currentReportShareUsers', currentReportShareUsers.value)
+      console.log('Removed user', user);
+    };
+
     onMounted(async () => {
       console.log("默认用户图片地址：", defaultAvatar);
       await loadScrollPage();
@@ -770,6 +810,7 @@ export default {
       submitReport,
       multiSelectUser,
       handleCheckAll,
+      handleRemoveUser,
       handleSelectShareUserSubmit,
       // selectRef,
     }
@@ -813,7 +854,12 @@ export default {
   height: calc(100% - 230px);
   //height: 100%;
   padding: 0;
+
   :deep(#editor.edui-default) {
+    height: 100% !important;
+  }
+
+  :deep(#rcreate_editor.edui-default) {
     height: 100% !important;
   }
 
@@ -890,6 +936,36 @@ export default {
   transform: scale(1.05);
 }
 
+.no-share-user-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 10%; /* 保持与图片相同的圆角 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #999;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  /* 常态下的虚线框 */
+  border: 2px dashed #ccc;
+}
+
+.no-share-user-text {
+  width: 40px;
+  height: 40px;
+  border-radius: 10%; /* 保持与图片相同的圆角 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #999;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  /* 常态下的虚线框 */
+  border: 2px #c7c7c7;
+}
+
 .add-share-user-box {
   width: 40px;
   height: 40px;
@@ -923,6 +999,25 @@ export default {
 
 }
 
+.user-avatar-container {
+  position: relative;
+  display: inline-block;
+}
+
+.delete-icon {
+  position: absolute;
+  top: -5px;
+  right: -9px;
+  //background-color: red;
+  color: red;
+  border-radius: 50%;
+  width: 17px;
+  height: 17px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
 
 //.el-menu-item {
 //  overflow: hidden;

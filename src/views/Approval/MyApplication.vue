@@ -787,6 +787,21 @@ export default {
   transform: scale(1.1) translate3d(0, 0, 0) translateZ(0); /* 只放大高度，不放大宽度 */
 }
 
+.no-share-user-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 10%; /* 保持与图片相同的圆角 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #999;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  /* 常态下的虚线框 */
+  border: 2px dashed #ccc;
+}
+
 .el-button {
   transition: all 0.2s ease;
 }

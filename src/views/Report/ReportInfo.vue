@@ -105,7 +105,7 @@
             >
               <el-tooltip v-for="user in currentReportShareUsers" :content="user.userName" placement="top"
                           :hide-after="150">
-                <el-image
+                <img
                     class="userImage"
                     :src="user.userImage || defaultAvatar"
                     @error="handleImageError"
