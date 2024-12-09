@@ -34,7 +34,7 @@ service.interceptors.response.use((res) => {
   // 根据后端 协商  视情况而定
   if (code === '200') {
     console.log('data', data)
-    return data
+    return data ? data : true;
   } else if (code === '10302') {
     console.log('token过期')
     store.commit('clearToken');

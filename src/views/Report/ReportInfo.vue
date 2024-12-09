@@ -1,151 +1,129 @@
 <template>
   <el-card class="my-card">
-    <div style="width: 100%; display: flex; justify-content: center; align-items: center;">
-      <el-form
-          ref="formRef"
-          :model="formModel"
-          label-width="120px"
-          class="dynamic-form"
-      >
-        <el-form-item>
-          <span>{{ formTemplate.templateName }}</span>
-        </el-form-item>
-
-        <el-form-item :prop="`formName`" label="表单名称"
-                      :rules="[{ required: true, message: '表单名称为必填字段', trigger: 'blur'}]">
-          <el-input
-              v-model="formModel[`formName`]"
-              placeholder="请输入表单名称"
-          />
-        </el-form-item>
-
-        <template v-for="field in formTemplate.formFieldValues" :key="field.id">
-          <el-form-item
-              v-if="(field.formItemType === 'single_select') && field.isVisible === 1"
-              :label="field.fieldTitle"
-              :prop="`field_${field.fieldId}`"
-              :rules="field.validationRule"
+    <el-container>
+      <!-- 侧边栏 -->
+      <el-aside
+          v-infinite-scroll="loadScrollPage"
+          infinite-scroll-disabled="loading"
+          infinite-scroll-distance="10"
+          v-if="!isUpdate&&!isCreate"
+          width="240px" height="100%"
+          style="border-right: 1px solid #dcdfe6;">
+        <el-menu
+            active-text-color="#337ecc"
+            class="el-menu-vertical-demo"
+            :default-active="currentActiveIndex.toString()"
+        >
+          <el-menu-item
+              v-for="(personalReport, index) in personalReports"
+              :key="personalReport.reportId"
+              :index="index.toString()"
+              @click="handleSelectUpdate(index)"
           >
-            <el-select
-                v-model="formModel[`field_${field.fieldId}`]"
-                clearable
-                :placeholder="field.defaultValue"
-                style="width: 260px"
+            <template #title>
+              <div class="report-item">
+                <span class="report-name">{{ personalReport.reportName }}</span>
+                <span class="report-date"
+                      :style="{ color: currentReport.reportId === personalReport.reportId ? '#6e94bd' : '#999' }">
+                  {{ formatDate(personalReport.reportDate) }}
+                </span>
+              </div>
+            </template>
+          </el-menu-item>
+        </el-menu>
+      </el-aside>
+
+      <!-- 主体内容 -->
+      <el-container>
+        <el-header class="custom-header">
+          <div style="width: 100%; display: flex; justify-content: center; align-items: center;">
+            <b v-if="!isCreate && !isUpdate" style="font-size: 18px; margin-right: 10px">
+              {{ currentReport.reportName }}
+            </b>
+            <el-form :inline="true" ref="reportForm">
+              <el-form-item v-if="isCreate || isUpdate" label="报告标题" prop="reportName" style="margin: 10px">
+                <el-input v-model="currentReport.reportName" style="width: 300px;">placeholder="请输入标题"></el-input>
+                <el-divider direction="vertical" style="height: 100%"></el-divider>
+              </el-form-item>
+              <el-form-item label="报告类型" prop="reportType" style="margin: 10px">
+                <el-input :disabled="!isCreate && !isUpdate" v-model="currentReport.type" style="width: 80px;">
+                  placeholder="请选择报告类型">
+                </el-input>
+              </el-form-item>
+              <el-form-item label="报告日期" prop="reportDate" style="margin: 10px">
+                <!--                <el-input v-model="currentReport.reportDate" style="width: 200px;">placeholder="请选择报告类型"></el-input>-->
+                <el-date-picker :disabled="!isCreate && !isUpdate" v-model="currentReport.reportDate" type="date"
+                                placeholder="请选择日期"></el-date-picker>
+              </el-form-item>
+              <el-form-item label="编辑日期" prop="reportDateTime" style="margin: 10px">
+                <el-text>{{
+                    formatDateTime(currentReport.upDate ? currentReport.upDate : currentReport.ctDate)
+                  }}
+                </el-text>
+              </el-form-item>
+            </el-form>
+          </div>
+        </el-header>
+
+        <el-main class="right-main">
+          <vue-ueditor-wrap v-if="isUpdate"
+                            v-model="currentReport.content"
+                            editor-id="editor"
+                            :config="editorConfig"
+                            :editorDependencies="['ueditor.config.js','ueditor.all.js']"
+                            style="height:100%; "/>
+          <!--          用v-if强制重新加载或者说渲染，没有办法-->
+          <vue-ueditor-wrap v-if="!isUpdate"
+                            v-model="currentReport.content"
+                            editor-id="readonly_editor"
+                            :config="editorConfig"
+                            :editorDependencies="['ueditor.config.js','ueditor.all.js']"
+                            height="100%"/>
+        </el-main>
+
+        <el-footer class="bottom-footer">
+          <el-row type="flex" justify="start" align="middle" class="shared-user-list">
+            <el-form :model="currentReport">
+
+            </el-form>
+          </el-row>
+
+          <el-row type="flex" justify="end">
+            <el-col v-if="!isUpdate">
+              <!--              <el-button type="warning" @click="handleCreateReport">新建</el-button>-->
+              <!--              <el-button type="primary" @click="handleToUpdate">编辑</el-button>-->
+              <!--              <el-button type="danger" @click="handleDeleteReport">删除</el-button>-->
+            </el-col>
+            <el-col v-if="isUpdate || isCreate">
+              <!--              <el-button type="success" @click="handleSaveUpdate">保存</el-button>-->
+              <!--              <el-button type="primary" @click="handleSubmitUpdate">提交</el-button>-->
+              <!--              <el-button type="danger" @click="handleCancelUpdate">取消</el-button>-->
+            </el-col>
+            <el-form-item
+                label="该报告已分享至"
+                style="margin: 0; display: flex; align-items: center;"
             >
-              <el-option
-                  v-for="item in field.fieldOptions"
-                  :key="item.optionValue"
-                  :label="item.optionLabel"
-                  :value="item.optionValue"
-              />
-            </el-select>
-          </el-form-item>
+              <el-tooltip v-for="user in currentReportShareUsers" :content="user.userName" placement="top"
+                          :hide-after="150">
+                <el-image
+                    class="userImage"
+                    :src="user.userImage || defaultAvatar"
+                    @error="handleImageError"
+                    :alt="user.userName"
+                />
+              </el-tooltip>
+              <el-tooltip :content="'添加共享人'" placement="top" :hide-after="500">
+                <!-- 添加报告分享人 -->
+                <div v-if="isUpdate || isCreate" class="userImage add-share-user-box" @click="handleAddSharer">
+                  <span style="font-size: 24px; color: #999;">+</span>
+                </div>
+              </el-tooltip>
+            </el-form-item>
+          </el-row>
+        </el-footer>
 
-          <el-form-item
-              v-if="(field.formItemType === 'multiple_select' || field.formItemType === 'user_select') && field.isVisible === 1"
-              :label="field.fieldTitle"
-              :prop="`field_${field.fieldId}`"
-              :rules="field.validationRule"
-          >
-            <el-select
-                v-model="formModel[`field_${field.fieldId}`]"
-                clearable
-                multiple
-                collapse-tags
-                collapse-tags-tooltip
-                :max-collapse-tags="2"
-                style="width: 260px"
-            >
-              <template #header>
-                <el-checkbox
-                    v-model="field.checkAll"
-                    :indeterminate="field.indeterminate"
-                    @change="handleCheckAll(field, field.checkAll)"
-                >
-                  全部
-                </el-checkbox>
-              </template>
-              <el-option
-                  v-for="item in field.fieldOptions"
-                  :key="item.optionValue"
-                  :label="item.optionLabel"
-                  :value="item.optionValue"
-              />
-            </el-select>
-          </el-form-item>
-
-          <el-form-item
-              v-if="(field.formItemType === 'input') && field.isVisible === 1"
-              :label="field.fieldTitle"
-              :prop="`field_${field.fieldId}`"
-              :rules="field.validationRule"
-          >
-            <el-input
-                v-model="formModel[`field_${field.fieldId}`]"
-                :placeholder="field.defaultValue"
-            />
-          </el-form-item>
-
-          <el-form-item
-              v-if="(field.formItemType === 'text-input' || field.formItemType === 'rich-text-editor') && field.isVisible === 1"
-              :label="field.fieldTitle"
-              :prop="`field_${field.fieldId}`"
-              :rules="field.validationRule"
-          >
-            <el-input
-                v-model="formModel[`field_${field.fieldId}`]"
-                :autosize="{ minRows: 3, maxRows: 10}"
-                resize="none"
-                type="textarea"
-                :placeholder="field.defaultValue"
-            />
-          </el-form-item>
-
-          <el-form-item
-              v-if="(field.formItemType === 'datetime_piker') && field.isVisible === 1"
-              :label="field.fieldTitle"
-              :prop="`field_${field.fieldId}`"
-              :rules="field.validationRule"
-          >
-            <el-date-picker
-                v-model="formModel[`field_${field.fieldId}`]"
-                type="datetime"
-                format="YYYY-MM-DD HH:mm:ss"
-                value-format="YYYY-MM-DD HH:mm:ss"
-                :placeholder="field.defaultValue"
-                style="width: 260px"
-            />
-          </el-form-item>
-
-          <el-form-item
-              v-if="(field.formItemType === 'date_piker') && field.isVisible === 1"
-              :label="field.fieldTitle"
-              :prop="`field_${field.fieldId}`"
-              :rules="field.validationRule"
-          >
-            <el-date-picker
-                v-model="formModel[`field_${field.fieldId}`]"
-                type="date"
-                format="YYYY-MM-DD HH:mm:ss"
-                value-format="YYYY-MM-DD HH:mm:ss"
-                :placeholder="field.defaultValue"
-                style="width: 260px"
-            />
-          </el-form-item>
-
-          <!-- 可扩展其他字段类型 -->
-        </template>
-
-        <!--          来一个el按钮-->
-        <el-form-item>
-          <el-button type="primary" @click="handleSubmit">提交</el-button>
-          <el-button @click="handleCancel">取消</el-button>
-        </el-form-item>
-      </el-form>
-
-
-    </div>
-
+      </el-container>
+    </el-container>
   </el-card>
 
 
@@ -160,490 +138,439 @@
 </template>
 
 <script>
-import {ref, reactive, onMounted, onBeforeMount, watch, getCurrentInstance,} from 'vue';
-import {} from 'vuex';
+import {ref, reactive, computed, getCurrentInstance, onMounted} from 'vue';
+import {formatDateTime, formatDate} from '@/utils/format';
+import defaultAvatar from '@/assets/images/defaultUser.png';
 
 export default {
   setup() {
+    const currentContent = ref('<p><em><span style="color: #A5A5A5;">编辑内容...</span></em></p>');
 
-    const checkAll = ref(false) // 全选标志
-    const indeterminate = ref(false) // 不确定状态
-    // const value = ref(['多选项1','多选项2']) // 当前选中项
+    const isUpdate = ref(false);
 
-    const formModel = reactive({});
+    const isCreate = ref(false);
 
-    const formTemplate = reactive({
-      "formId": 20,
-      "formName": "感冒请假",
-      "templateId": 1,
-      "formRouter": null,
-      "isScheduled": "0",
-      "sendTime": null,
-      "status": "1",
-      "updatedTime": null,
-      "submitTime": null,
-      "formFieldValues": [
-        {
-          "id": 56,
-          "fieldId": 1,
-          "fieldTitle": "请假类型",
-          "fieldType": "varchar",
-          "fieldSort": 1,
-          "validationRule": [
-            {
-              "required": true,
-              "message": "请假类型不能为空",
-              "trigger": "change"
-            }
-          ],
-          "isRequired": 1,
-          "formItemType": "single_select",
-          "defaultValue": "请输入",
-          "isSummary": 1,
-          "isVisible": 1,
-          "fieldValue": "病假",
-          "fieldOptions": [
-            {
-              "id": 1,
-              "templateFieldId": 1,
-              "optionValue": "年假",
-              "optionLabel": "年假",
-              "oprionSort": 1
-            },
-            {
-              "id": 2,
-              "templateFieldId": 1,
-              "optionValue": "事假",
-              "optionLabel": "事假",
-              "oprionSort": 2
-            },
-            {
-              "id": 3,
-              "templateFieldId": 1,
-              "optionValue": "病假",
-              "optionLabel": "病假",
-              "oprionSort": 3
-            },
-            {
-              "id": 4,
-              "templateFieldId": 1,
-              "optionValue": "调休",
-              "optionLabel": "调休",
-              "oprionSort": 4
-            },
-            {
-              "id": 5,
-              "templateFieldId": 1,
-              "optionValue": "产假",
-              "optionLabel": "产假",
-              "oprionSort": 5
-            },
-            {
-              "id": 6,
-              "templateFieldId": 1,
-              "optionValue": "陪产假",
-              "optionLabel": "陪产假",
-              "oprionSort": 6
-            },
-            {
-              "id": 7,
-              "templateFieldId": 1,
-              "optionValue": "婚假",
-              "optionLabel": "婚假",
-              "oprionSort": 7
-            },
-            {
-              "id": 8,
-              "templateFieldId": 1,
-              "optionValue": "例假",
-              "optionLabel": "例假",
-              "oprionSort": 8
-            },
-            {
-              "id": 9,
-              "templateFieldId": 1,
-              "optionValue": "丧假",
-              "optionLabel": "丧假",
-              "oprionSort": 9
-            }
-          ]
-        },
-        {
-          "id": 57,
-          "fieldId": 2,
-          "fieldTitle": "请假开始时间",
-          "fieldType": "datetime",
-          "fieldSort": 2,
-          "validationRule": [
-            {
-              "required": true,
-              "message": "请假开始时间不能为空",
-              "trigger": "blur"
-            }
-          ],
-          "isRequired": 1,
-          "formItemType": "datetime_piker",
-          "defaultValue": "请选择日期",
-          "isSummary": 1,
-          "isVisible": 1,
-          "fieldValue": "2024-11-21 09:00:00",
-          "fieldOptions": null
-        },
-        {
-          "id": 58,
-          "fieldId": 3,
-          "fieldTitle": "请假结束时间",
-          "fieldType": "datetime",
-          "fieldSort": 3,
-          "validationRule": [
-            {
-              "required": true,
-              "message": "请假结束时间不能为空",
-              "trigger": "blur"
-            }
-          ],
-          "isRequired": 1,
-          "formItemType": "datetime_piker",
-          "defaultValue": "请选择日期",
-          "isSummary": 1,
-          "isVisible": 1,
-          "fieldValue": "2024-11-22 17:30:00",
-          "fieldOptions": null
-        },
-        {
-          "id": 59,
-          "fieldId": 4,
-          "fieldTitle": "请假时长（天）",
-          "fieldType": "int",
-          "fieldSort": 4,
-          "validationRule": [
-            {
-              "required": true,
-              "message": "请假时长不能为空",
-              "trigger": "blur"
-            }
-          ],
-          "isRequired": 1,
-          "formItemType": "input",
-          "defaultValue": "自动计算",
-          "isSummary": 0,
-          "isVisible": 0,
-          "fieldValue": 2,
-          "fieldOptions": null
-        },
-        {
-          "id": 60,
-          "fieldId": 5,
-          "fieldTitle": "请假事由",
-          "fieldType": "longtext",
-          "fieldSort": 5,
-          "validationRule": [
-            {
-              "required": true,
-              "message": "请假事由不能为空",
-              "trigger": "blur"
-            }
-          ],
-          "isRequired": 1,
-          "formItemType": "text-input",
-          "defaultValue": "请输入",
-          "isSummary": 1,
-          "isVisible": 1,
-          "fieldValue": "感冒生病打点滴",
-          "fieldOptions": null
-        },
-        {
-          "id": 61,
-          "fieldId": 6,
-          "fieldTitle": "测试用多选项",
-          "fieldType": "multi-varchar",
-          "fieldSort": 6,
-          "validationRule": [
-            {
-              "required": true,
-              "message": "测试用多选项不能为空",
-              "trigger": "change"
-            }
-          ],
-          "isRequired": 1,
-          "formItemType": "multiple_select",
-          "defaultValue": "请选择多选项",
-          "isSummary": 0,
-          "isVisible": 1,
-          "fieldValue": [
-            "多选项1",
-            "多选项2",
-            "多选项3"
-          ],
-          "fieldOptions": [
-            {
-              "id": 10,
-              "templateFieldId": 6,
-              "optionValue": "多选项1",
-              "optionLabel": "多选项1",
-              "oprionSort": 1
-            },
-            {
-              "id": 11,
-              "templateFieldId": 6,
-              "optionValue": "多选项2",
-              "optionLabel": "多选项2",
-              "oprionSort": 2
-            },
-            {
-              "id": 12,
-              "templateFieldId": 6,
-              "optionValue": "多选项3",
-              "optionLabel": "多选项3",
-              "oprionSort": 3
-            },
-            {
-              "id": 13,
-              "templateFieldId": 6,
-              "optionValue": "多选项4",
-              "optionLabel": "多选项4",
-              "oprionSort": 4
-            },
-            {
-              "id": 14,
-              "templateFieldId": 6,
-              "optionValue": "多选项5",
-              "optionLabel": "多选项5",
-              "oprionSort": 5
-            }
-          ]
-        },
-        {
-          "id": 62,
-          "fieldId": 7,
-          "fieldTitle": "测试多选用户数据",
-          "fieldType": "multi-bigint",
-          "fieldSort": 7,
-          "validationRule": [
-            {
-              "required": true,
-              "message": "测试多选用户数据不能为空",
-              "trigger": "change"
-            }
-          ],
-          "isRequired": 1,
-          "formItemType": "user_select",
-          "defaultValue": "请选择用户",
-          "isSummary": 0,
-          "isVisible": 0,
-          "fieldValue": [
-            1,
-            2,
-            3,
-            7,
-            8,
-            9
-          ],
-          "fieldOptions": null
-        }
+    const loading = ref(false); // 是否正在加载
+
+    const allLoaded = ref(false); // 是否加载完所有数据
+
+    const dialogVisible = ref(false);
+
+    const currentActiveIndex = ref(0); // 当前选中的菜单项索引
+
+    let toolbarsForUpdate = [
+      [
+        "fullscreen",
+        "fontfamily",
+        "fontsize",
+        "|",
+        "bold",
+        "italic",
+        "underline",
+        "strikethrough",
+        "|",
+        "forecolor",
+        "backcolor",
+        "|",
+        "removeformat",
+        "formatmatch",
+        "autotypeset",
+        "|",
+        "indent",
+        "justifyleft",
+        "justifycenter",
+        "justifyright",
+        "justifyjustify",
+        "insertorderedlist",
+        "insertunorderedlist",
+        "|",
+        "undo",
+        "redo",
+        "|",
+        "print",
+        "source",
+        "preview",
+        "searchreplace",
+        "help",
+        "|",
       ],
+      [
+        "simpleupload",
+        "insertimage",
+        "imagenone",
+        "imageleft",
+        "imageright",
+        "imagecenter",
+        "|",
+        "insertvideo",
+        "attachment",
+        "insertcode",
+        "formula",
+        "|",
+        "date",
+        "time",
+        "wordimage",
+        "|",
+        "inserttable",
+        "deletetable",
+        "insertparagraphbeforetable",
+        "insertrow",
+        "deleterow",
+        "insertcol",
+        "deletecol",
+        "mergecells",
+        "mergeright",
+        "mergedown",
+        "splittocells",
+        "splittorows",
+        "splittocols",
+        "contentimport",
+        "|",
+      ]
+    ];
+
+    const currentReportShareUsers = ref([]);
+
+    const editorConfig = computed(() => ({
+      // 后端服务地址，后端处理参考
+      serverUrl: 'http://192.168.0.132:5173/api/ueditor',
+      UEDITOR_HOME_URL: '/static/UEditorPlus/dist-min/',
+      UEDITOR_CORS_URL: '/static/UEditorPlus/dist-min/',
+      toolbars: isUpdate.value ? toolbarsForUpdate : [],
+      readonly: !isUpdate.value,
+      wordCount: isUpdate.value, // 默认为 true，表示启用字数统计
+    }));
+
+    // const reportTypes = ref([
+    //   {typeName: '日报'},
+    //   {typeName: '周报'},
+    //   {typeName: '月报'},
+    // ]);
+
+    const formSearch = reactive({
+      reportId: null,
+      reportName: null,
+      type: null,
+      reportDate: null,
+      content: null,
+      reportUserId: null,
+      userName: null,
+      departNam: null,
+    });
+    const pageSearch = reactive({
+      pageNum: 1,
+      pageSize: 30,
+      total: null,
+      data: formSearch,
     });
 
-    let formData = reactive({
-      "formId": null,
-      "formName": null,
-      "formTemplateId": null,
-      "formRouter": null,
-      "isScheduled": null,
-      "sendTime": null,
-      "status": null,
-      "formValues": [
-        {
-          "id": null,
-          "fieldId": null,
-          "fieldValue": null,
-        },
-      ],
+    const personalReports = ref([]);
+
+    const createReportShareUsers = ref([]);
+
+    const createReport = reactive({
+      reportId: null,
+      reportUserId: null,
+      reportName: null,
+      type: null,
+      reportDate: null,
+      upDate: null,
+      ctDate: null,
+      filePath: null,
+      content: null,
+      userName: null,
+      departName: null,
+      fileUrls: null
     });
 
-    const setupDynamicWatchers = () => {
-      formTemplate.formFieldValues.forEach((field) => {
-        if (field.formItemType === "multiple_select") {
-          watch(
-              () => formModel[`field_${field.fieldId}`], // 监听动态绑定的 model 值
-              (newVal) => {
-                const totalOptions = field.fieldOptions.map((opt) => opt.optionValue);
-                if (!Array.isArray(newVal)) {
-                  field.checkAll = false;
-                  field.indeterminate = false;
-                } else {
-                  const selectedCount = newVal.length;
-                  if (selectedCount === 0) {
-                    field.checkAll = false;
-                    field.indeterminate = false;
-                  } else if (selectedCount === totalOptions.length) {
-                    field.checkAll = true;
-                    field.indeterminate = false;
-                  } else {
-                    field.checkAll = false;
-                    field.indeterminate = true;
-                  }
-                }
-              },
-              {immediate: true} // 初始化时触发
-          );
-        }
-      });
-    };
-
-    const handleCheckAll = (field, value) => {
-      const allOptions = field.fieldOptions.map(option => option.optionValue);
-      formModel[`field_${field.fieldId}`] = value ? allOptions : [];
-      field.indeterminate = false;
-    };
-
-    // const setupDynamicCalculations = () => {
-    //   formTemplate.formFieldValues.forEach((field) => {
-    //     if (field.autoCalculationExpression) {
-    //       // 提取依赖字段
-    //       const dependentFields = field.autoCalculationExpression.match(/field_\d+/g) || [];
-    //
-    //       // 动态监听所有依赖字段
-    //       dependentFields.forEach((dependentField) => {
-    //         const targetField = formTemplate.formFieldValues.find(
-    //             (f) => `field_${f.id}` === dependentField
-    //         );
-    //
-    //         if (targetField) {
-    //           watch(
-    //               () => targetField.fieldValue,
-    //               () => {
-    //                 calculateFieldValue(field);
-    //               }
-    //           );
-    //         }
-    //       });
-    //     }
-    //   });
-    // };
-
-    // 计算字段的值
-    // const calculateFieldValue = (field) => {
-    //   if (!field.autoCalculationExpression) return;
-    //
-    //   try {
-    //     // 动态生成计算函数
-    //     const calculationFunc = new Function(
-    //         ...formTemplate.formFieldValues.map((f) => `field_${f.id}`),
-    //         `return ${field.autoCalculationExpression};`
-    //     );
-    //
-    //     // 提取当前字段值
-    //     const args = formTemplate.formFieldValues.map((f) => {
-    //       if (f.fieldType === 'datetime') {
-    //         // 转换 datetime 为时间戳
-    //         return new Date(f.fieldValue).getTime();
-    //       }
-    //       return f.fieldValue;
-    //     });
-    //
-    //     // 执行计算
-    //     let result = calculationFunc(...args);
-    //
-    //
-    //     // 如果字段类型为 "int"，向下取整
-    //     if (field.fieldType === 'int') {
-    //       result = Math.floor(result);
-    //     }
-    //
-    //     // 将结果精确到 0.5 天
-    //     result = Math.round(result * 2)/ 2;
-    //
-    //     // 更新字段值
-    //     field.fieldValue = result;
-    //   } catch (error) {
-    //     console.error('计算表达式错误:', error);
-    //   }
-    // };
-
-    function transformToFormData(formTemplate) {
-      // 从原始数据提取需要的字段
-      const {formId, formName, templateId, formRouter, isScheduled, sendTime, status, formFieldValues} = formTemplate;
-
-      // 返回目标格式的数据
-      formData = {
-        formId: formId || null,
-        formName: formModel[`formName`] || null,
-        templateId: templateId || null,
-        formRouter: formRouter || null,
-        isScheduled: isScheduled || "0",
-        sendTime: sendTime || null,
-        status: status || "1",
-        // formValues,
-        formValues: formTemplate.formFieldValues.map((field) => ({
-          id: field.id,
-          fieldId: field.fieldId,
-          fieldTitle: field.fieldTitle,
-          fieldValue: formModel[`field_${field.fieldId}`],
-        })),
-      };
-
-    }
+    const currentReport = computed(() => {
+      // 如果不是在新建的情况下，返回当前选中的条目，否则返回空
+      return isCreate.value ? createReport : personalReports.value[currentActiveIndex.value] || createReport;
+    });
 
     const {proxy} = getCurrentInstance();
-    const handleSubmit = async () => {
-      transformToFormData(formTemplate);
-      console.log(formData);
-      await proxy.$api.updateForm(formData);
-    }
 
-    const initFormModel = () => {
-      formModel[`formName`] = formTemplate.formName;
-      formTemplate.formFieldValues.forEach((field) => {
-        formModel[`field_${field.fieldId}`] = field.fieldValue;
-      });
-    }
+    const handleCreateReport = () => {
+      ElMessageBox.confirm(
+          '确认前往新建报告？',
+          '新建报告',
+          {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            // type: 'info',
+          }
+      ).then(() => {
 
-    const parseRegexPatterns = (formTemplate) => {
-      // 遍历 formFieldValues 数组
-      formTemplate.formFieldValues.forEach(field => {
-        if (field.validationRule && Array.isArray(field.validationRule)) {
-          // 遍历 validationRule 数组
-          field.validationRule.forEach(rule => {
-            // 检查是否存在 pattern 字段，并且其值是字符串
-            if (rule.pattern && typeof rule.pattern === 'string') {
-              // 正则表达式字符串以 "/" 包围，去除前后的 "/"
-              const regexStr = rule.pattern.slice(1, -1); // 去掉 "/"
-              try {
-                // 创建 RegExp 对象
-                rule.pattern = new RegExp(regexStr);
-              } catch (error) {
-                console.error("无效的正则表达式:", rule.pattern);
-              }
-            }
-          });
+        ElMessage({
+          type: 'success',
+          message: '新建成功',
+        })
+
+        // 在此处向personalReports.value添加一条数据
+        isCreate.value = true;
+        isUpdate.value = true;
+        currentReportShareUsers.value = [];
+        getReportShareUserList();
+        console.log(currentReport.value);
+      }).catch(() => {
+        // 要优化处理
+        getReportShareUserList();
+        ElMessage({
+          type: 'success',
+          message: '新建已取消',
+        })
+      })
+    };
+
+    // 编写点击修改时的方法
+    const handleToUpdate = () => {
+      ElMessageBox.confirm(
+          '是否对当前报告进行编辑？',
+          '编辑报告',
+          {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            // type: 'info',
+          }
+      ).then(() => {
+
+        isUpdate.value = true;
+        isCreate.value = false;
+      }).catch(() => {
+        ElMessage({
+          type: 'success',
+          message: '编辑已取消',
+        })
+      })
+    };
+
+    const handleSaveUpdate = () => {
+      // 提交修改
+      ElMessageBox.confirm(
+          '是否保存当前报告？',
+          '保存报告',
+          {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            // type: 'info',
+          }
+      ).then(() => {
+        // 执行保存逻辑
+
+        ElMessage({
+          type: 'success',
+          message: '当前报告已保存',
+        });
+
+        console.log("当前报告数据：", currentReport);
+        //虚假的保存
+
+        // 重置 currentReport
+      }).catch(() => {
+        ElMessage({
+          type: 'success',
+          message: '保存已取消',
+        });
+      })
+    };
+
+    const handleSubmitUpdate = () => {
+
+      // 提交修改
+      ElMessageBox.confirm(
+          '是否提交当前报告？',
+          '提交报告',
+          {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            // type: 'info',
+          }
+      ).then(() => {
+        // 执行保存逻辑
+
+        ElMessage({
+          type: 'success',
+          message: '当前报告已提交',
+        })
+
+        isUpdate.value = false;
+        isCreate.value = false;
+
+        // personalReports.value = [];
+        // pageSearch.pageNum = 1;
+        // getRecipientReport();
+        // 重置 currentReport
+      }).catch(() => {
+        ElMessage({
+          type: 'success',
+          message: '提交已取消',
+        })
+      })
+    };
+
+    const handleCancelUpdate = () => {
+      ElMessageBox.confirm(
+          '请确认取消编辑？当前的修改将不被保存',
+          '取消编辑',
+          {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'error',
+          }
+      ).then(() => {
+        ElMessage({
+          type: 'success',
+          message: '编辑已取消',
+        })
+
+        dialogVisible.value = false; // 关闭弹窗
+        isUpdate.value = false;
+        isCreate.value = false;
+        // 重新获取一次个人报告
+        personalReports.value = [];
+        pageSearch.pageNum = 1;
+        getRecipientReport();
+        // 重置 currentReport
+      }).catch(() => {
+        // ElMessage({
+        //   type: 'success',
+        //   message: '已取消',
+        // })
+      })
+    };
+
+    const handleDeleteReport = () => {
+      ElMessageBox.confirm(
+          '请确认删除当前报告？',
+          '删除报告',
+          {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            type: 'error',
+          }
+      ).then(() => {
+        // 重新获取一次个人报告
+
+        ElMessage({
+          type: 'success',
+          message: '报告已删除',
+        })
+
+        isUpdate.value = false;
+        isCreate.value = false;
+
+        // 重置 currentReport
+        currentActiveIndex.value = currentActiveIndex.value > 0 ? currentActiveIndex.value - 1 : 0;
+
+      }).catch(() => {
+        ElMessage({
+          type: 'success',
+          message: '删除已取消',
+        })
+      })
+    };
+
+    // 获取选中的菜单项对应的报告
+    const handleSelectUpdate = (index) => {
+      console.log(index);
+      currentActiveIndex.value = index;
+      getReportShareUserList();
+    };
+
+    const getReportShareUserList = async () => {
+      try {
+        // 先去除 [ 和 ] 再按,拆分
+        let userIds = currentReport.value.shareUserId.replace(/[\[\]]/g, '').split(',').map(Number);
+        currentReportShareUsers.value = await proxy.$api.getReportShareUserList(userIds);
+
+        // 确保返回数据有效
+        if (!Array.isArray(currentReportShareUsers.value) || currentReportShareUsers.value.length === 0) {
+          console.warn("用户列表为空");
         }
+      } catch (error) {
+        console.error("获取用户列表失败:", error);
+      }
+    }
+
+
+    // 获取个人日报的请求方法
+    const getRecipientReport = async () => {
+      let res = await proxy.$api.getRecipientReport(pageSearch);
+
+      // 保持 userDataTest 的数据不变
+      pageSearch.total = res.total;
+      pageSearch.pageSize = res.size;
+      pageSearch.pageNum = res.current;
+
+      // 创建一个新的数据集合，不直接修改返回数据
+      return res.records.map((item) => {
+        let newItem = {...item}; // 克隆一份数据
+        // newItem.timeIn = newItem.ctDate ? formatTime(newItem.ctDate) : '-'; // 格式化创建时间
+        // newItem.timeOut = newItem.upDate ? formatTime(newItem.upDate) : '-'; // 格式化创建时间
+        return newItem; // 返回新的对象
       });
-    }
+    };
 
-    const handleCancel = () => {
+    // 滚动加载更多数据
+    const loadScrollPage = async () => {
+      if (loading.value || allLoaded.value) return;
 
-    }
+      loading.value = true;
+      console.log("当前加载的页：" + pageSearch.pageNum);
 
-    onBeforeMount(() => {
-      setupDynamicWatchers();
-      // setupDynamicCalculations();
-      initFormModel();
-      parseRegexPatterns(formTemplate);
-      console.log(formData);
-      // console.log(formData)
-      // console.log(JSON.stringify(formData, null, 2));
+      // 获取新数据并追加到显示列表中
+      const newReports = await getRecipientReport();
+
+      pageSearch.pageNum += 1;
+
+      if (newReports.length > 0) {
+        personalReports.value = [...personalReports.value, ...newReports];
+        // ElMessage.success(`成功加载 ${newReports.length} 条新数据`);
+      } else {
+        allLoaded.value = true; // 标记所有数据已加载完
+        ElMessage.warning('所有报告已加载');
+      }
+
+      loading.value = false;
+    };
+
+    const handleImageError = (event) => {
+      console.log("图片加载失败");
+      event.target.src = defaultAvatar; // 本地默认图片路径
+      console.log("当前图片地址：" + event.target.src);
+    };
+
+    onMounted(async () => {
+      console.log("默认用户图片地址：", defaultAvatar);
+      await loadScrollPage();
+      await getReportShareUserList();
     });
 
     return {
-      formModel,
-      formData,
-      checkAll,
-      indeterminate,
-      formTemplate,
-      handleCancel,
-      handleCheckAll,
-      handleSubmit,
+      defaultAvatar,
+      currentContent,
+      editorConfig,
+      // reportTypes,
+      isUpdate,
+      personalReports,
+      currentReport,
+      isCreate,
+      loading,
+      allLoaded,
+      dialogVisible,
+      currentActiveIndex,
+      currentReportShareUsers,
+      loadScrollPage,
+      handleToUpdate,
+      handleCancelUpdate,
+      handleSelectUpdate,
+      handleSubmitUpdate,
+      handleSaveUpdate,
+      handleCreateReport,
+      handleDeleteReport,
+      handleImageError,
+      formatDateTime,
+      formatDate,
     }
   }
 }
@@ -685,7 +612,6 @@ export default {
   height: calc(100% - 230px);
   //height: 100%;
   padding: 0;
-
   :deep(#editor.edui-default) {
     height: 100% !important;
   }
@@ -796,12 +722,11 @@ export default {
 
 }
 
-.el-menu-item {
-  overflow: hidden;
-  transition: transform 0.3s ease; /* 添加动画效果，使放大平滑 */
-}
-
-.el-menu-item:hover {
-  transform: scale(1.05); /* 只放大高度，不放大宽度 */
-}
+//.el-menu-item {
+//  overflow: hidden;
+//  transition: transform 0.3s ease; /* 添加动画效果，使放大平滑 */
+//}
+//.el-menu-item:hover {
+//  transform: scale(1.05); /* 只放大高度，不放大宽度 */
+//}
 </style>

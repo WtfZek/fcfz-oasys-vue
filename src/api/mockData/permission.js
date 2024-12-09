@@ -7,18 +7,17 @@ export default {
     if (username === '2424389790' && password === '123456') {
       return {
         code: "200",
-        data: {
-          menu: [
+        data: [
             {
-              "path": "/",
-              "name": "index",
-              "label": "首页",
-              "icon": "House",  // 对应 Element Plus 的 House 图标
-              "url": "Home/Home",
-              "children": []
+                "path": "/",
+                "name": "index",
+                "label": "首页",
+                "icon": "House",  // 对应 Element Plus 的 House 图标
+                "url": "Home/Home",
+                "children": []
             },
             {
-              "path": "/enterprise",
+                "path": "/enterprise",
               "name": "enterpriseManagement",
               "label": "企业管理",
               "icon": "Suitcase",  // 对应 Suitcase 图标
@@ -168,11 +167,7 @@ export default {
               ]
             }
           ],
-          token:
-              Mock.Random.guid(),
-          // "",
-          message: '获取成功'
-        }
+          msg: '获取成功'
       }
     } else if (username === '20221107040' && password === '123456') {
       return {

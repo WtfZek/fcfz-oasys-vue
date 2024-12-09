@@ -1,93 +1,170 @@
 <template>
   <div class="user-header">
     <el-form :inline="true" :model="formSearch">
-      <!--      <el-form-item label="用户名">-->
-      <!--        <el-input clearable v-model="formSearch.userName" placeholder="请输入用户名" />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="工号">-->
-      <!--        <el-input clearable v-model="formSearch.empNum" placeholder="请输入工号" />-->
-      <!--      </el-form-item>-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="入职日期">-->
-      <!--        &lt;!&ndash;        <el-input v-model="formSearch.userName" placeholder="请选择出生日期" />&ndash;&gt;-->
-      <!--        <el-date-picker-->
-      <!--            clearable-->
-      <!--            v-model="formSearch.timeIn"-->
-      <!--            type="date"-->
-      <!--            label="入职日期"-->
-      <!--            placeholder="请输入入职日期"-->
-      <!--            style="width: 100%"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
-      <el-form-item label="查找">
-        <el-input
-            clearable
-            @clear="handleClear"
-            v-model="formSearch[selectedField]"
-            placeholder="请输入查询内容"
-            class="input-with-select"
-        >
-          <template #prepend>
-            <el-select v-model="selectedField" placeholder="Select" style="width: 120px" @change="handleSelectedFieldChange">
-              <el-option label="用户名" value="userName" />
-              <el-option label="工号" value="empNum" />
-              <el-option label="部门" value="departmentName" />
-              <el-option label="入职日期" value="timeIn" />
-            </el-select>
+      <el-collapse>
+        <el-collapse-item name="1" :icon="CaretRight" :is-active="false">
+          <!--      <el-form-item label="用户名">-->
+          <!--        <el-input clearable v-model="formSearch.userName" placeholder="请输入用户名" />-->
+          <!--      </el-form-item>-->
+          <!--      <el-form-item label="工号">-->
+          <!--        <el-input clearable v-model="formSearch.empNum" placeholder="请输入工号" />-->
+          <!--      </el-form-item>-->
+          <!--      </el-form-item>-->
+          <!--      <el-form-item label="入职日期">-->
+          <!--        &lt;!&ndash;        <el-input v-model="formSearch.userName" placeholder="请选择出生日期" />&ndash;&gt;-->
+          <!--        <el-date-picker-->
+          <!--            clearable-->
+          <!--            v-model="formSearch.timeIn"-->
+          <!--            type="date"-->
+          <!--            label="入职日期"-->
+          <!--            placeholder="请输入入职日期"-->
+          <!--            style="width: 100%"-->
+          <!--        />-->
+          <!--      </el-form-item>-->
+          <template #title>
+            <el-form-item label="查找用户名">
+              <el-input
+                  clearable
+                  @clear="handleClear"
+                  v-model="formSearch['userName']"
+                  placeholder="请输入查询内容"
+                  class="input-with-select"
+              >
+                <!--          <template #prepend>-->
+                <!--            <el-select v-model="selectedField" placeholder="Select" style="width: 120px" @change="handleSelectedFieldChange">-->
+                <!--              <el-option label="用户名" value="userName" />-->
+                <!--              <el-option label="工号" value="empNum" />-->
+                <!--              <el-option label="部门" value="departmentName" />-->
+                <!--              <el-option label="入职日期" value="timeIn" />-->
+                <!--            </el-select>-->
+                <!--          </template>-->
+                <!--          <template #prefix>-->
+                <!--            <el-button >-->
+                <!--              <el-icon ><Plus/></el-icon>-->
+                <!--            </el-button>-->
+                <!--          </template>-->
+                <template #append>
+                  <el-button @click="handleSearch">
+                    <el-icon>
+                      <Search/>
+                    </el-icon>
+                  </el-button>
+                </template>
+              </el-input>
+            </el-form-item>
+            <el-form-item label="查找部门">
+              <el-input
+                  clearable
+                  @clear="handleClear"
+                  v-model="formSearch['departmentName']"
+                  placeholder="请输入查询内容"
+                  class="input-with-select"
+              >
+                <template #append>
+                  <el-button @click="handleSearch">
+                    <el-icon>
+                      <Search/>
+                    </el-icon>
+                  </el-button>
+                </template>
+              </el-input>
+            </el-form-item>
+            <el-form-item label="查找工号">
+              <el-input
+                  clearable
+                  @clear="handleClear"
+                  v-model="formSearch['empNum']"
+                  placeholder="请输入查询内容"
+                  class="input-with-select"
+              >
+                <template #append>
+                  <el-button @click="handleSearch">
+                    <el-icon>
+                      <Search/>
+                    </el-icon>
+                  </el-button>
+                </template>
+              </el-input>
+            </el-form-item>
+            <el-form-item label="查找手机号">
+              <el-input
+                  clearable
+                  @clear="handleClear"
+                  v-model="formSearch['telephone']"
+                  placeholder="请输入查询内容"
+                  class="input-with-select"
+              >
+                <template #append>
+                  <el-button @click="handleSearch">
+                    <el-icon>
+                      <Search/>
+                    </el-icon>
+                  </el-button>
+                </template>
+              </el-input>
+            </el-form-item>
           </template>
-          <!--          <template #prefix>-->
-          <!--            <el-button >-->
-          <!--              <el-icon ><Plus/></el-icon>-->
-          <!--            </el-button>-->
-          <!--          </template>-->
-          <template #append>
-            <el-button @click="handleSearch">
-              <el-icon ><Search/></el-icon>
-            </el-button>
-          </template>
-        </el-input>
-      </el-form-item>
-      <el-form-item label="">
-        <el-select v-model="selectedDateModel" placeholder="Select" style="width: 100px" @change="handleSelectedDateModelChange">
-          <el-option label="精确查找" value="jq" />
-          <el-option label="区间查找" value="qj" />
-        </el-select>
-        <el-select v-model="selectedDateField" placeholder="Select" style="width: 120px" @change="handleSelectedDateFieldChange">
-          <el-option label="入职日期" value="timeIn" />
-          <el-option label="创建日期" value="ctTime" />
-          <el-option label="修改日期" value="upTime" />
-        </el-select>
-        <span>
-          <el-date-picker
-              clearable
-              @clear="handleClear"
-              v-if="selectedDateModel === 'jq'"
-              v-model="formSearch[selectedDateField]"
-              type="date"
-              label="出生日期"
-              placeholder="请输入出生日期"
-              style="width: 100%"
-          />
-          <el-date-picker
-              clearable
-              @clear="handleClear"
-              v-if="selectedDateModel === 'qj'"
-              v-model="formSearch[selectedDateField+selectedDateModel]"
-              type="daterange"
-              unlink-panels
-              range-separator="到"
-              start-placeholder="开始时间"
-              end-placeholder="结束时间"
-              :shortcuts="shortcuts"
-              :size="size"
-          />
-        </span>
-        <span>
-          <el-button @click="handleSearch">
-              <el-icon ><Search/></el-icon>
-          </el-button>
-        </span>
-      </el-form-item>
+
+          <el-form-item label="查找邮箱">
+            <el-input
+                clearable
+                @clear="handleClear"
+                v-model="formSearch['email']"
+                placeholder="请输入查询内容"
+                class="input-with-select"
+            >
+              <template #append>
+                <el-button @click="handleSearch">
+                  <el-icon>
+                    <Search/>
+                  </el-icon>
+                </el-button>
+              </template>
+            </el-input>
+          </el-form-item>
+          <!--      <el-form-item label="">-->
+          <!--        <el-select v-model="selectedDateModel" placeholder="Select" style="width: 100px" @change="handleSelectedDateModelChange">-->
+          <!--          <el-option label="精确查找" value="jq" />-->
+          <!--          <el-option label="区间查找" value="qj" />-->
+          <!--        </el-select>-->
+          <!--        <el-select v-model="selectedDateField" placeholder="Select" style="width: 120px" @change="handleSelectedDateFieldChange">-->
+          <!--          <el-option label="入职日期" value="timeIn" />-->
+          <!--          <el-option label="创建日期" value="ctTime" />-->
+          <!--          <el-option label="修改日期" value="upTime" />-->
+          <!--        </el-select>-->
+          <!--        <span>-->
+          <!--          <el-date-picker-->
+          <!--              clearable-->
+          <!--              @clear="handleClear"-->
+          <!--              v-if="selectedDateModel === 'jq'"-->
+          <!--              v-model="formSearch[selectedDateField]"-->
+          <!--              type="date"-->
+          <!--              label="出生日期"-->
+          <!--              placeholder="请输入出生日期"-->
+          <!--              style="width: 100%"-->
+          <!--          />-->
+          <!--          <el-date-picker-->
+          <!--              clearable-->
+          <!--              @clear="handleClear"-->
+          <!--              v-if="selectedDateModel === 'qj'"-->
+          <!--              v-model="formSearch[selectedDateField+selectedDateModel]"-->
+          <!--              type="daterange"-->
+          <!--              unlink-panels-->
+          <!--              range-separator="到"-->
+          <!--              start-placeholder="开始时间"-->
+          <!--              end-placeholder="结束时间"-->
+          <!--              :shortcuts="shortcuts"-->
+          <!--              :size="size"-->
+          <!--          />-->
+          <!--        </span>-->
+          <!--        <span>-->
+          <!--          <el-button @click="handleSearch">-->
+          <!--              <el-icon ><Search/></el-icon>-->
+          <!--          </el-button>-->
+          <!--        </span>-->
+          <!--      </el-form-item>-->
+        </el-collapse-item>
+      </el-collapse>
     </el-form>
     <!-- 右侧按钮区域 -->
     <div class="right-container">
@@ -145,112 +222,211 @@
           />
         </template>
         </el-table-column>
-        <el-table-column class="last-column" fixed="right" label="操作" min-width="180" header-align="center" align="center">
-          <template #default="scope">
-            <el-button size="small" @click="handleEdit(scope.row)">
-              编辑
-            </el-button>
-            <el-button type="danger" size="small" @click="handleDelete(scope.row)">
-              删除
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
+      <el-table-column class="last-column" fixed="right" label="操作" min-width="180" header-align="center"
+                       align="center">
+        <template #default="scope">
+          <el-button size="small" @click="handleEdit(scope.row)">
+            编辑
+          </el-button>
+          <el-button type="danger" size="small" @click="handleDelete(scope.row)">
+            删除
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!--    <el-pagination-->
+    <!--        small-->
+    <!--        background-->
+    <!--        layout="prev, pager, next"-->
+    <!--        :total="pageSearch.total"-->
+    <!--        :page-size="pageSearch.pageSize"-->
+    <!--        :current-page="pageSearch.pageNum"-->
+    <!--        @current-change="changePage"-->
+    <!--        class="pager"-->
+    <!--    />-->
     <el-pagination
         small
         background
-        layout="prev, pager, next"
+        @size-change="changeSizePage"
         :total="pageSearch.total"
-        :page-size="pageSearch.pageSize"
         :current-page="pageSearch.pageNum"
-        @current-change="changePage"
+        :page-size="pageSearch.pageSize"
+        :page-sizes="[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]"
+        layout="sizes, prev, pager, next, jumper, total"
+        @current-change="changeCurrentPage"
         class="pager"
     />
   </div>
-  <el-dialog
+  <!--  <el-dialog-->
+  <!--      v-model="dialogVisible"-->
+  <!--      :title="action == 'add' ? '新增用户' : '编辑用户'"-->
+  <!--      width="35%"-->
+  <!--      :before-close="handleClose"-->
+  <!--  >-->
+  <!--  </el-dialog>-->
+
+  <el-drawer
       v-model="dialogVisible"
-      :title="action == 'add' ? '新增用户' : '编辑用户'"
-      width="35%"
+      :show-close="false"
       :before-close="handleClose"
+      style="min-width: 600px"
   >
-    <el-form :inline="true" :model="formUser" ref="userForm">
+    <template #header="{ close, titleId, titleClass }">
+      <h4 v-if="action === 'edit'" :id="titleId" :class="titleClass">编辑用户</h4>
+      <h4 v-if="action === 'add'" :id="titleId" :class="titleClass">新增用户</h4>
+      <el-button type="danger" @click="close">
+        <el-icon class="el-icon--left">
+          <CircleCloseFilled/>
+        </el-icon>
+        关闭
+      </el-button>
+    </template>
+    <el-form :inline="true" :model="formUserInfo" ref="userInfoForm">
       <el-row>
         <el-col :span="12">
           <el-form-item
               label="姓名"
-              prop="name"
+              prop="userName"
               :rules="[{ required: true, message: '姓名是必填项' }]"
+              style="width: 90%"
           >
-            <el-input v-model="formUser.name" placeholder="请输入姓名" />
+            <el-input v-model="formUserInfo.userName" placeholder="请输入姓名"/>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item
-              label="年龄"
-              prop="age"
-              :rules="[
-              { required: true, message: '年龄是必填项' },
-              { type: 'number', message: '年龄必须是数字' },
-            ]"
+              label="部门"
+              prop="departmentId"
+              :rules="[{ required: true, message: '部门是必选项' }]"
+              style="width: 90%"
           >
-            <el-input v-model.number="formUser.age" placeholder="请输入年龄" />
+            <el-select v-model="formUserInfo.departmentId" placeholder="请选择部门">
+              <el-option
+                  v-for="item in tableLabel[2].filters"
+                  :label="item.text"
+                  :value="item.value"
+              />
+            </el-select>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="12">
           <el-form-item
-              label="性别"
-              prop="sex"
-              :rules="[{ required: true, message: '性别是必选项' }]"
+              label="系统角色"
+              prop="roleId"
+              :rules="[
+                { required: true, message: '角色是必填项' },
+              ]"
+              style="width: 90%"
           >
-            <el-select v-model="formUser.sex" placeholder="请选择">
-              <el-option label="男" value="0" />
-              <el-option label="女" value="1" />
+            <el-select :disabled="opsUserRole !== 1" v-model="formUserInfo.roleId" placeholder="请选择系统角色">
+              <el-option
+                  v-for="role in formRoles"
+                  :key="role.value"
+                  :label="role.label"
+                  :value="role.value"
+              />
             </el-select>
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item
-              label="出生日期"
-              prop="birth"
-              :rules="[{ required: true, message: '出生日期是必选项' }]"
+              label="工号"
+              prop="empNum"
+              :rules="[{ required: true, message: '工号是必填项' }]"
+              style="width: 90%"
+          >
+            <el-input v-model="formUserInfo.empNum" placeholder="请输入工号"/>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item
+              label="手机号"
+              prop="telephone"
+              :rules="[{ pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号' }]"
+              style="width: 90%"
+          >
+            <el-input v-model="formUserInfo.telephone" placeholder="请输入手机号"/>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item
+              label="邮箱"
+              prop="email"
+              :rules="[{ type: 'email', message: '请输入正确的邮箱地址' }]"
+              style="width: 90%"
+          >
+            <el-input v-model="formUserInfo.email" placeholder="请输入电子邮箱"/>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="12">
+          <el-form-item
+              label="状态"
+              prop="status"
+              :rules="[{ required: true, message: '状态是必填项' }]"
+              style="width: 90%"
+          >
+            <el-select v-model="formUserInfo.status" placeholder="请选择状态">
+              <el-option
+                  v-for="status in formStatuses"
+                  :key="status.value"
+                  :label="status.label"
+                  :value="status.label"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item
+              label="入职时间"
+              prop="timeIn"
+              :rules="[{ required: true, message: '日志时间是必填项' }]"
+              style="width: 90%"
           >
             <el-date-picker
-                v-model="formUser.birth"
-                type="date"
-                label="出生日期"
-                placeholder="请输入"
-                style="width: 100%"
+                v-model="formUserInfo.timeIn"
+                type="datetime"
+                placeholder="选择日期"
+                format="YYYY-MM-DD HH:mm:ss"
+                value-format="YYYY-MM-DD HH:mm:ss"
             />
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
-        <el-form-item
-            label="地址"
-            prop="addr"
-            :rules="[{ required: true, message: '地址是必填项' }]"
-        >
-          <el-input v-model="formUser.addr" placeholder="请输入地址" />
-        </el-form-item>
+        <el-col :span="12">
+          <el-form-item
+              label="身份证号"
+              prop="birthdayNum"
+              :rules="[{}]"
+              style="width: 90%"
+          >
+            <el-input v-model="formUserInfo.birthdayNum" placeholder="请输入身份证号码"/>
+          </el-form-item>
+        </el-col>
       </el-row>
-      <el-row style="justify-content: flex-end">
-        <el-form-item>
-          <el-button type="primary" @click="handleCancel">取消</el-button>
-          <el-button type="primary" @click="onSubmit">确定</el-button>
-        </el-form-item>
-      </el-row>
+      <!--      <el-row style="justify-content: flex-end">-->
+      <!--        <el-form-item>-->
+      <!--          <el-button type="primary" @click="handleCancel">取消</el-button>-->
+      <!--          <el-button type="primary" @click="onSubmit">确定</el-button>-->
+      <!--        </el-form-item>-->
+      <!--      </el-row>-->
     </el-form>
-    <!-- <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="dialogVisible = false"
-          >确定</el-button
-        >
-      </span>
-    </template> -->
-  </el-dialog>
+    <!-- 使用 footer 插槽放置按钮 -->
+    <template #footer>
+      <div style="text-align: right; ">
+        <el-button @click="handleCancel">取消</el-button>
+        <el-button type="primary" @click="onSubmit">确定</el-button>
+      </div>
+    </template>
+  </el-drawer>
+
+  <!--  </el-dialog>-->
 </template>
 
 <script>
@@ -261,13 +437,17 @@ import {
   ref,
   reactive, computed,
 } from "vue";
-import {formatDateTime} from '@/utils/format';
+import {CaretRight} from '@element-plus/icons-vue'
+import {formatDateTime, parseToISO8601} from '@/utils/format';
 import {Plus} from "@element-plus/icons-vue";
 import defaultAvatar from '@/assets/images/defaultUser.png';
 
 export default defineComponent({
   components: {Plus},
   setup() {
+
+    const userInfoForm = ref({});
+
     // const tableLayout = ref<TableInstance['tableLayout']>('fixed')
     const {proxy} = getCurrentInstance();
     const dataList = ref([]);
@@ -297,14 +477,14 @@ export default defineComponent({
         fixed: 'left',
         disabled: false,
         filters: [
-          {text: '销售部', value: '销售部'},
-          {text: '人事部', value: '人事部'},
-          {text: '综合部', value: '综合部'},
-          {text: '财务部', value: '财务部'},
-          {text: '行政部', value: '行政部'},
-          {text: '技术部', value: '技术部'},
-          {text: '市场部', value: '市场部'},
-          {text: '运营部', value: '运营部'},
+          {text: '销售部', value: 1},
+          {text: '人事部', value: 2},
+          {text: '综合部', value: 3},
+          {text: '财务部', value: 4},
+          {text: '技术部', value: 5},
+          {text: '行政部', value: 6},
+          {text: '市场部', value: 7},
+          {text: '运营部', value: 8},
         ]
       },
       {
@@ -428,18 +608,29 @@ export default defineComponent({
       pages: 1
     });
 
-    onMounted(() => {
-      getUserDataList(pageSearch);
-    });
+    const opsUserRole = ref(3);
+
+    const formStatuses = ([
+      {label: '在职', value: 1},
+      {label: '出差', value: 2},
+      {label: '离职', value: 0},
+    ]);
+
+    const formRoles = ([
+      {label: '管理员', value: 2},
+      {label: '普通员工', value: 3},
+      {label: '超级管理员', value: 1},
+    ]);
+
     const formSearch = reactive({
       userName: null,
       empNum: null,
       departmentName: null,
-      birth: null,
-      timeIn: null,
-      timeInqj: null,
       telephone: null,
       email: null,
+      timeIn: null,
+      timeInqj: null,
+      birthdayNum: null,
     });
     const pageSearch = reactive({
       pageNum: 1,
@@ -467,7 +658,7 @@ export default defineComponent({
       dataList.value = res.records.map((item) => {
         let newItem = {...item}; // 克隆一份数据
         newItem.roleName = newItem.roleName === "admin" ? "管理员" :
-            (newItem.roleName === "boss" ? "老板" :
+            (newItem.roleName === "boss" ? "超级管理员" :
                 (newItem.roleName === "user" ? "普通用户" : "其他用户"));
         newItem.timeIn = newItem.timeIn ? formatDateTime(newItem.timeIn) : '-'; // 格式化创建时间
         newItem.ctTime = newItem.ctTime ? formatDateTime(newItem.ctTime) : '-'; // 格式化创建时间
@@ -481,24 +672,35 @@ export default defineComponent({
       });
       tableLoading.value = false;
     };
-    const changePage = (page) => {
+    const changeSizePage = (sizePage) => {
       // console.log(page);
-      pageSearch.pageNum = page;
+      pageSearch.pageNum = 1;
+      pageSearch.pageSize = sizePage;
+      getUserDataList(pageSearch);
+    };
+    const changeCurrentPage = (currentPage) => {
+      // console.log(page);
+      pageSearch.pageNum = currentPage;
       getUserDataList(pageSearch);
     };
     // 添加用户的form数据
-    const fromUserInfo = reactive({
-      userId: "",
-      userName: "",
-      roleName: "",
-      departmentName: "",
-      userImage: "",
-      empNum: "",
-      telephone: "",
-      email: "",
-      status: "",
-      ctTime: "",
-      upTime: "",
+    const formUserInfo = reactive({
+      userId: null,
+      userName: null,
+      roleId: null,
+      roleName: null,
+      departmentId: null,
+      userImage: null,
+      empNum: null,
+      telephone: null,
+      email: null,
+      status: null,
+      timeIn: null,
+      ctTime: null,
+      upTime: null,
+      userPassword: null,
+      birthdayNum: null,
+      deleted: 0
     });
 
     const handleSearch = async () => {
@@ -508,9 +710,9 @@ export default defineComponent({
     // 控制模态框的显示隐藏
     const dialogVisible = ref(false);
     const handleClose = (done) => {
-      ElMessageBox.confirm("确定关闭吗?")
+      ElMessageBox.confirm("确认未提交前关闭吗?")
           .then(() => {
-            proxy.$refs.userForm.resetFields();
+            proxy.$refs.userInfoForm.resetFields();
             done();
           })
           .catch(() => {
@@ -523,33 +725,51 @@ export default defineComponent({
       var year = time.getFullYear();
       var month = time.getMonth() + 1;
       var date = time.getDate();
+
       function add(m) {
         return m < 10 ? "0" + m : m;
       }
+
       return year + "-" + add(month) + "-" + add(date);
     };
     // 添加用户
-    const onSubmit = () => {
-      proxy.$refs.userForm.validate(async (valid) => {
+    const onSubmit = async () => {
+      console.log('formUserInfo', formUserInfo)
+      proxy.$refs.userInfoForm.validate(async (valid) => {
         if (valid) {
-          if (action.value == "add") {
-            fromUserInfo.birth = timeFormat(fromUserInfo.birth);
-            let res = await proxy.$api.addUser(fromUserInfo);
+          if (action.value === "add") {
+            // formUserInfo.birth = timeFormat(formUserInfo.birth);
+            console.log('formatBeforFormUserInfo', formUserInfo)
+            formUserInfo.status === "在职" ? formUserInfo.status = 1 : (formUserInfo.status === "出差" ? formUserInfo.status = 2 : formUserInfo.status = 0);
+            formUserInfo.upTime = formUserInfo.upTime && formUserInfo.upTime !== '-' ? parseToISO8601(formatDateTime(formUserInfo.upTime)) : null;
+            formUserInfo.ctTime = formUserInfo.upTime && formUserInfo.upTime !== '-' ? parseToISO8601(formatDateTime(formUserInfo.ctTime)) : null;
+            formUserInfo.timeIn = formUserInfo.upTime && formUserInfo.upTime !== '-' ? parseToISO8601(formatDateTime(formUserInfo.timeIn)) : null;
+            console.log('formUserInfo', formUserInfo)
+            let res = await proxy.$api.saveUser(formUserInfo);
+            console.log('res', res)
             if (res) {
               // console.log(proxy.$refs);
               dialogVisible.value = false;
-              proxy.$refs.userForm.resetFields();
+              proxy.$refs.userInfoForm.resetFields();
               getUserDataList(pageSearch);
+              getOpsUserRole();
             }
-          } else {
+          } else if (action.value === "edit") {
             // 编辑的接口
-            fromUserInfo.sex == "男" ? (fromUserInfo.sex = 1) : (fromUserInfo.sex = 0);
-            let res = await proxy.$api.editUser(fromUserInfo);
+            console.log('formatBeforFormUserInfo', formUserInfo)
+            formUserInfo.status === "在职" ? formUserInfo.status = 1 : (formUserInfo.status === "出差" ? formUserInfo.status = 2 : formUserInfo.status = 0);
+            formUserInfo.upTime = formUserInfo.upTime && formUserInfo.upTime !== '-' ? parseToISO8601(formatDateTime(formUserInfo.upTime)) : null;
+            formUserInfo.ctTime = formUserInfo.upTime && formUserInfo.upTime !== '-' ? parseToISO8601(formatDateTime(formUserInfo.ctTime)) : null;
+            formUserInfo.timeIn = formUserInfo.upTime && formUserInfo.upTime !== '-' ? parseToISO8601(formatDateTime(formUserInfo.timeIn)) : null;
+            console.log('formUserInfo', formUserInfo)
+            let res = await proxy.$api.updateUser(formUserInfo);
+            console.log('res', res)
             if (res) {
               // console.log(proxy.$refs);
               dialogVisible.value = false;
-              proxy.$refs.userForm.resetFields();
+              proxy.$refs.userInfoForm.resetFields();
               getUserDataList(pageSearch);
+              getOpsUserRole();
             }
           }
         } else {
@@ -561,22 +781,43 @@ export default defineComponent({
         }
       });
     };
+
+    // const handleClose = (done) => {
+    //   if (loading.value) {
+    //     return
+    //   }
+    //   ElMessageBox.confirm('Do you want to submit?')
+    //       .then(() => {
+    //         loading.value = true
+    //         timer = setTimeout(() => {
+    //           done()
+    //           // 动画关闭需要一定的时间
+    //           setTimeout(() => {
+    //             loading.value = false
+    //           }, 400)
+    //         }, 2000)
+    //       })
+    //       .catch(() => {
+    //         // catch error
+    //       })
+    // }
+
     // 取消
     const handleCancel = () => {
       dialogVisible.value = false;
-      proxy.$refs.userForm.resetFields();
+      proxy.$refs.userInfoForm.resetFields();
     };
     // 区分编辑和新增
     const action = ref("add");
     // 编辑用户
     const handleEdit = (row) => {
       // 浅拷贝
-
       action.value = "edit";
       dialogVisible.value = true;
-      row.sex === "1" ? (row.sex = "男") : (row.sex = "女");
       proxy.$nextTick(() => {
-        Object.assign(fromUserInfo, row);
+        Object.assign(formUserInfo, row);
+        console.log('row', row);
+        console.log('formUserInfo', formUserInfo);
       });
     };
     // 新增用户
@@ -602,6 +843,37 @@ export default defineComponent({
           .catch(() => {
             // catch error
           });
+    };
+
+    // 删除用户
+    const handleDeleteAll = (row) => {
+      // 如果selectedIds为空弹出提示“当前没有任何选中的记录”
+      if (selectedIds.value.length === 0) {
+        ElMessage({
+          showClose: true,
+          message: "当前没有任何选中的记录",
+          type: "warning",
+        });
+        return;
+      } else {
+        ElMessageBox.confirm("你确定要批量删除吗?")
+            .then(async () => {
+              await proxy.$api.deleteUser({
+                id: row.id,
+              });
+
+              ElMessage({
+                showClose: true,
+                message: "删除成功",
+                type: "success",
+              });
+              getUserDataList(pageSearch);
+            })
+            .catch(() => {
+              // catch error
+            });
+      }
+
     };
 
     // 复选框勾选状态改变时的处理函数
@@ -669,22 +941,39 @@ export default defineComponent({
       event.target.src = defaultAvatar; // 本地默认图片路径
     };
 
+    const getOpsUserRole = async () => {
+      let userInfo = await proxy.$api.getUserInfo();
+      if (userInfo) {
+        opsUserRole.value = userInfo.roleId;
+      }
+      console.log('opsUserRole', opsUserRole.value)
+    }
+
+    onMounted(() => {
+      getUserDataList(pageSearch);
+      getOpsUserRole();
+    });
+
     return {
       defaultAvatar,
       list: dataList,
       tableLabel,
       // tableLayout,
+      userInfoForm,
       pageSearch,
       selectedField,
       selectedDateField,
       selectedDateModel,
       tableLoading,
-      changePage,
+      changeCurrentPage,
+      changeSizePage,
+      formStatuses,
+      formRoles,
       formSearch,
       handleSearch,
       dialogVisible,
       handleClose,
-      formUser: fromUserInfo,
+      formUserInfo,
       onSubmit,
       handleCancel,
       action,
@@ -700,7 +989,9 @@ export default defineComponent({
       handleClear,
       handleImageError,
       // formatDateTime,
-      // handleDeleteAll,
+      handleDeleteAll,
+      opsUserRole,
+      CaretRight,
     };
   },
 });
@@ -710,7 +1001,7 @@ export default defineComponent({
 .table {
   background-color: #fafafa;
   position: relative;
-  height: calc(100% - 70px);
+  height: calc(100% - 75px);
   min-width: 1200px;
   //max-height: 80%;
   .el-table {
@@ -763,9 +1054,20 @@ export default defineComponent({
   justify-content: space-between;
   min-width: 1200px;
 
+
+  :deep(.el-collapse-item__content) {
+    padding: 0;
+  }
+
   .el-form-item {
-    margin-right: 18px;
-    margin-bottom: 12px;
+
+    // 水平居中
+    align-items: center;
+    justify-content: space-between;
+    margin: 18px;
+    //margin-right: 18px;
+    //margin-bottom: 12px;
+
 
     span {
       display: flex;
@@ -778,6 +1080,7 @@ export default defineComponent({
 
     .el-button {
       min-width: 75px;
+      margin: 8px;
       //transition: transform 0.3s ease; /* 添加动画效果，使放大平滑 */
     }
 

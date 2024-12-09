@@ -21,7 +21,7 @@
     <div class="r-content">
       <el-dropdown>
         <span class="el-dropdown-link" @click="toPersonalInfo">
-          <img class="userImage" :src="getImagSrc('user')" alt=""/>
+          <el-avatar class="userImage" :src="userImg" size="default"/>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
@@ -35,9 +35,11 @@
 </template>
 
 <script>
-import {computed, defineComponent, getCurrentInstance} from "vue";
+import {ref, onMounted, computed, defineComponent, getCurrentInstance} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from 'vuex'
+import defaultAvatar from '@/assets/images/defaultUser.png';
+
 export default defineComponent({
   setup() {
     const getImagSrc = (user) => {
@@ -60,8 +62,19 @@ export default defineComponent({
       return store.state.currentMenu;
     });
 
+    const userImg = ref(defaultAvatar);
 
     const {proxy} = getCurrentInstance();
+
+    const getUserImg = async () => {
+      let userInfo = await proxy.$api.getUserInfo();
+      if (userInfo) {
+        console.log('userInfo.userImage', userInfo.userImage)
+        userImg.value = userInfo.userImage;
+      } else {
+        userImg.value = defaultAvatar;
+      }
+    }
 
     const logout = async () => {
       await proxy.$api.logout();
@@ -72,7 +85,13 @@ export default defineComponent({
       })
     };
 
+    onMounted(() => {
+      getUserImg();
+    })
+
     return {
+      userImg,
+      getUserImg,
       getImagSrc,
       toPersonalInfo,
       handleCollapse,
@@ -91,6 +110,7 @@ header {
   width: 100%;
   background: #333;
 }
+
 .r-content {
   .userImage {
     width: 40px;

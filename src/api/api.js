@@ -66,14 +66,13 @@ export default {
     })
   },
   // 根据用户的用户名不同 返回不一样的菜单列表
-  getMenu(params) {
-    return request({
-      url: '/permission/getMenu',
-      method: 'post',
-      // 这个mock如果是true的话 用的就是线上fastmock的数据
-      mock: false,
-      data: params
-    })
+  getMenu() {
+      return request({
+          url: '/menu/getMenuTree',
+          method: 'get',
+          // 这个mock如果是true的话 用的就是线上fastmock的数据
+          mock: false,
+      })
   },
 
   // 登录验证逻辑
@@ -176,25 +175,36 @@ export default {
     });
   },
 
-  getPersonalReport(params) {
-    return request({
-      url: `report/list-self`,
-      method: 'post',
-      mock: false,
-      data: {
-        ...params
-      },
-    });
-  },
+    getPersonalReport(params) {
+        return request({
+            url: `report/list-self`,
+            method: 'post',
+            mock: false,
+            data: {
+                ...params
+            },
+        });
+    },
 
-  getReportShareUserList(params) {
-    return request({
-      url: `report/shareReportToUser`,
-      method: 'post',
-      mock: false,
-      data: params
-    });
-  },
+    getRecipientReport(params) {
+        return request({
+            url: `report/shareReport`,
+            method: 'post',
+            mock: false,
+            data: {
+                ...params
+            },
+        });
+    },
+
+    getReportShareUserList(params) {
+        return request({
+            url: `report/shareReportToUser`,
+            method: 'post',
+            mock: false,
+            data: params
+        });
+    },
 
   logout() {
     return request({
@@ -235,6 +245,58 @@ export default {
             url: `form/template/${id}`,
             method: 'get',
             mock: false,
+        })
+    },
+
+    saveUser(params) {
+        return request({
+            url: `user/save`,
+            method: 'post',
+            mock: false,
+            data: params
+        })
+    },
+
+    getUeditor(params) {
+        return request({
+            url: `ueditor`,
+            method: 'get',
+            mock: false
+        })
+    },
+
+    updateReport(params) {
+        return request({
+            url: `report/updateReport`,
+            method: 'post',
+            mock: false,
+            data: params
+        })
+    },
+
+    updateUser(params) {
+        return request({
+            url: `user/updateUserInfo`,
+            method: 'post',
+            mock: false,
+            data: params
+        })
+    },
+
+    getShareUserList() {
+        return request({
+            url: `user/shareUserList`,
+            method: 'get',
+            mock: false,
+        });
+    },
+
+    addReport(params) {
+        return request({
+            url: `report/addReport`,
+            method: 'post',
+            mock: false,
+            data: params
         })
     },
 

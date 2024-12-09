@@ -2,33 +2,50 @@
   <div class="personal-info">
     <el-card shadow="hover" class="info-card">
       <div class="header">
-        <el-avatar :src="userInfoData.userImageUrl" size="large" />
+        <el-avatar :src="userInfoData.userImage" size="large"/>
         <div class="header-info">
-          <h3>{{ userInfoData.userName }} - {{ userInfoData.sex === "1" ? '男' : '女'}}</h3>
+          <h3 v-if="userInfoData.sex==='1'||userInfoData.sex==='2'">{{ userInfoData.userName }} -
+            {{ userInfoData.sex === "1" ? '男' : '女' }}</h3>
+          <h3 v-if="userInfoData.sex===1||userInfoData.sex===2">{{ userInfoData.userName }} -
+            {{ userInfoData.sex === 1 ? '男' : '女' }}</h3>
+          <h3 v-if="userInfoData.sex==='男'||userInfoData.sex==='女'">{{ userInfoData.userName }} - {{
+              userInfoData.sex
+            }}</h3>
           <p style="margin-top: 10px">{{ userInfoData.roleName }} - {{ userInfoData.departmentName }}</p>
         </div>
       </div>
       <el-form :model="userInfoData" label-width="120px" class="info-form">
         <el-form-item label="工号">
-          <el-input v-model="userInfoData.empNum" disabled></el-input>
+          <el-input v-model="userInfoData.empNum" :disabled="formDisabled"></el-input>
         </el-form-item>
         <el-form-item label="电话">
-          <el-input v-model="userInfoData.telephone" disabled></el-input>
+          <el-input v-model="userInfoData.telephone" :disabled="formDisabled"></el-input>
         </el-form-item>
         <el-form-item label="电子邮箱">
-          <el-input v-model="userInfoData.email" disabled></el-input>
+          <el-input v-model="userInfoData.email" :disabled="formDisabled"></el-input>
         </el-form-item>
         <el-form-item label="状态">
-          <el-tag :type="userInfoData.status === 0 ? 'success' : 'info'">
-            {{ userInfoData.status === 0 ? '在职' : '离职' }}
+          <el-select v-if="!formDisabled" style="width: 150px" :disabled="formDisabled" v-model="userInfoData.status"
+                     placeholder="请选择状态">
+            <el-option
+                v-for="status in formStatuses"
+                :key="status.value"
+                :label="status.label"
+                :value="status.value"
+            />
+          </el-select>
+          <el-tag v-if="formDisabled"
+                  :type="userInfoData.status === 1 ? 'success' : (userInfoData.status === 2 ? 'primary' : 'info')">
+            {{ userInfoData.status === 1 ? '在职' : (userInfoData.status === 2 ? '出差' : '离职') }}
           </el-tag>
         </el-form-item>
         <el-form-item label="入职时间">
-          <el-input v-model="formattedCtTime" disabled></el-input> <!-- 使用计算属性 -->
+          <el-input v-model="formattedTimeIn" disabled></el-input> <!-- 使用计算属性 -->
         </el-form-item>
       </el-form>
       <div class="actions">
-        <el-button type="primary" @click="handleEdit">编辑信息</el-button>
+        <el-button v-if="formDisabled" type="primary" @click="handleEdit">编辑信息</el-button>
+        <el-button v-if="!formDisabled" type="success" @click="handleSave">保存</el-button>
         <el-button type="danger" plain @click="handleLogout">退出登录</el-button>
       </div>
     </el-card>
@@ -36,13 +53,12 @@
 </template>
 
 <script>
-import {reactive, computed, getCurrentInstance} from 'vue';
+import {ref, reactive, computed, getCurrentInstance} from 'vue';
 import {useRouter} from "vue-router";
 import { useStore } from 'vuex'
 // import { ElMessage } from 'element-plus';
 
 export default {
-  name: 'PersonalInfo',
   setup() {
     const userInfoData = reactive({
       // "userId": 8,
@@ -61,7 +77,15 @@ export default {
       // "upTime": null
     });
 
-    const { proxy } = getCurrentInstance();
+    const formDisabled = ref(true);
+
+    const formStatuses = ([
+      {label: '在职', value: 1},
+      {label: '出差', value: 2},
+      {label: '离职', value: 0},
+    ]);
+
+    const {proxy} = getCurrentInstance();
 
     const getUserInfo = async () => {
       const userInfoResData = await proxy.$api.getUserInfo();
@@ -70,8 +94,8 @@ export default {
     }
 
     // 计算属性格式化日期
-    const formattedCtTime = computed(() => {
-      const options = { year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric' };
+    const formattedTimeIn = computed(() => {
+      const options = {year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric'};
       return new Date(userInfoData.timeIn).toLocaleDateString(undefined, options);
     });
 
@@ -80,12 +104,46 @@ export default {
     const store = useStore();
 
     const handleEdit = () => {
+      formDisabled.value = false;
       ElMessage({
         message: '编辑功能未实现',
         type: 'warning',
       });
     };
 
+    const handleSave = () => {
+      // 提交修改
+      ElMessageBox.confirm(
+          '是否保存信息？',
+          '保存信息',
+          {
+            confirmButtonText: '确认',
+            cancelButtonText: '取消',
+            // type: 'info',
+          }
+      ).then(() => {
+        // 执行保存逻辑
+        let resData = proxy.$api.updateUser(userInfoData);
+        if (resData) {
+          ElMessage({
+            type: 'success',
+            message: '当前信息已保存',
+          });
+          formDisabled.value = true;
+        } else {
+        }
+
+        //虚假的保存
+
+        // 重置 currentReport
+      }).catch(() => {
+        ElMessage({
+          type: 'success',
+          message: '已取消保存',
+        });
+      })
+
+    };
 
     const handleLogout = async () => {
       await proxy.$api.logout();
@@ -104,9 +162,12 @@ export default {
     getUserInfo();
 
     return {
+      formDisabled,
+      formStatuses,
       userInfoData,
-      formattedCtTime, // 使用计算属性
+      formattedTimeIn, // 使用计算属性
       handleEdit,
+      handleSave,
       handleLogout,
     };
   },

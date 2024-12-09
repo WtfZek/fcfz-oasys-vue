@@ -101,6 +101,7 @@ export default createStore({
             }
             // 从 localStorage 中解析出菜单。
             const menu = JSON.parse(localStorage.getItem('menu'));
+            console.log('menu', menu)
             state.menu = menu;
 
             const menuArray = [];
@@ -121,6 +122,8 @@ export default createStore({
 
             // 开始构建菜单数组
             buildMenuArray(menu);
+
+            console.log('menuArray', menuArray)
 
             // 将构建的菜单项添加到路由中。
             menuArray.forEach(item => {

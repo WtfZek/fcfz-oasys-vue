@@ -40,22 +40,30 @@
             <b v-if="!isCreate && !isUpdate" style="font-size: 18px; margin-right: 10px">
               {{ currentReport.reportName }}
             </b>
-            <el-form :inline="true" ref="reportForm">
+            <el-form :inline="true" ref="reportFormRef">
               <el-form-item v-if="isCreate || isUpdate" label="报告标题" prop="reportName" style="margin: 10px">
                 <el-input v-model="currentReport.reportName" style="width: 300px;">placeholder="请输入标题"></el-input>
                 <el-divider direction="vertical" style="height: 100%"></el-divider>
               </el-form-item>
-              <el-form-item label="报告类型" prop="reportType" style="margin: 10px">
-                <el-input :disabled="!isCreate && !isUpdate" v-model="currentReport.type" style="width: 80px;">
-                  placeholder="请选择报告类型">
-                </el-input>
+              <el-form-item
+                  label="报告类型"
+                  prop="type"
+                  style="margin: 10px;"
+              >
+                <el-select :disabled="!isCreate && !isUpdate" v-model="currentReport.type" placeholder="请选择报告类型"
+                           style="width: 160px;">
+                  <el-option label="月报" value="月报"/>
+                  <el-option label="日报" value="日报"/>
+                  <el-option label="周报" value="周报"/>
+                </el-select>
               </el-form-item>
               <el-form-item label="报告日期" prop="reportDate" style="margin: 10px">
                 <!--                <el-input v-model="currentReport.reportDate" style="width: 200px;">placeholder="请选择报告类型"></el-input>-->
                 <el-date-picker :disabled="!isCreate && !isUpdate" v-model="currentReport.reportDate" type="date"
-                                placeholder="请选择日期"></el-date-picker>
+                                value-format="YYYY-MM-DD" placeholder="请选择日期"></el-date-picker>
               </el-form-item>
-              <el-form-item label="编辑日期" prop="reportDateTime" style="margin: 10px">
+              <el-form-item v-if="!isCreate || isUpdate && !isCreate" label="编辑日期" prop="reportDate"
+                            style="margin: 10px">
                 <el-text>{{
                     formatDateTime(currentReport.upDate ? currentReport.upDate : currentReport.ctDate)
                   }}
@@ -90,19 +98,20 @@
               >
                 <el-tooltip v-for="user in currentReportShareUsers" :content="user.userName" placement="top"
                             :hide-after="150">
-                  <el-image
+                  <img
                       class="userImage"
                       :src="user.userImage || defaultAvatar"
                       @error="handleImageError"
                       :alt="user.userName"
                   />
                 </el-tooltip>
-                <el-tooltip :content="'添加共享人'" placement="top" :hide-after="500">
+                <el-tooltip v-if="!isUpdate || isCreate" :content="'添加共享人'" placement="top" :hide-after="500">
                   <!-- 添加报告分享人 -->
-                  <div v-if="isUpdate || isCreate" class="userImage add-share-user-box" @click="handleAddSharer">
+                  <div v-if="isUpdate || isCreate" class="userImage add-share-user-box" @click="handleAddSharer()">
                     <span style="font-size: 24px; color: #999;">+</span>
                   </div>
                 </el-tooltip>
+
               </el-form-item>
             </el-form>
           </el-row>
@@ -114,7 +123,7 @@
               <el-button type="danger" @click="handleDeleteReport">删除</el-button>
             </el-col>
             <el-col v-if="isUpdate || isCreate">
-              <el-button type="success" @click="handleSaveUpdate">保存</el-button>
+              <!--              <el-button type="success" @click="handleSaveUpdate">保存</el-button>-->
               <el-button type="primary" @click="handleSubmitUpdate">提交</el-button>
               <el-button type="danger" @click="handleCancelUpdate">取消</el-button>
             </el-col>
@@ -124,6 +133,55 @@
       </el-container>
     </el-container>
   </el-card>
+
+  <el-dialog v-model="dialogVisible" title="选择分享人" style="min-width: 900px">
+
+
+    <el-select v-model="submitReport.userIDS"
+               clearable
+               @clear="multiSelectUser.checkAll = false"
+               multiple
+               filterable
+               collapse-tags
+               :max-collapse-tags="10"
+               placeholder="选择用户"
+               :append-to="'.select-options'">
+      <template #header>
+        <el-checkbox
+            v-model="multiSelectUser.checkAll"
+            :indeterminate="multiSelectUser.indeterminate"
+            @change="handleCheckAll"
+        >
+          全部
+        </el-checkbox>
+      </template>
+      <div>
+        <el-option ref="selectRef" style="margin: 10px; height: 50px" v-for="user in shareUsers" :key="user.userId"
+                   :label="user.userName" :value="user.userId">
+        <span style="float: left">
+  <!--                        用户头像-->
+          <img class="userImage" @error="handleImageError" :src="user.userImage || defaultAvatar"/>
+        </span>
+          <span style="margin: 10px;"> {{ user.userName }} - {{ user.roleName }} </span>
+        </el-option>
+      </div>
+    </el-select>
+
+    <!--    填充一些空白-->
+    <div style="height: 380px"></div>
+
+
+    <span style="color: rgba(243,54,19,0.87); font-size: 14px; margin: 10px">* 单击上方多选框选择用户</span>
+
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="handleSelectShareUserSubmit">
+          提交
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 
 
   <div v-if="false">
@@ -137,7 +195,7 @@
 </template>
 
 <script>
-import {ref, reactive, computed, getCurrentInstance, onMounted} from 'vue';
+import {ref, reactive, computed, nextTick, getCurrentInstance, onMounted, watch} from 'vue';
 import {formatDateTime, formatDate} from '@/utils/format';
 import defaultAvatar from '@/assets/images/defaultUser.png';
 
@@ -230,6 +288,10 @@ export default {
 
     const currentReportShareUsers = ref([]);
 
+    const {proxy} = getCurrentInstance();
+
+    const token = localStorage.getItem('tokenValue');
+
     const editorConfig = computed(() => ({
       // 后端服务地址，后端处理参考
       serverUrl: 'http://192.168.0.132:5173/api/ueditor',
@@ -238,6 +300,9 @@ export default {
       toolbars: isUpdate.value ? toolbarsForUpdate : [],
       readonly: !isUpdate.value,
       wordCount: isUpdate.value, // 默认为 true，表示启用字数统计
+      serverHeaders: {
+        'Satoken': token
+      }
     }));
 
     // const reportTypes = ref([
@@ -273,13 +338,10 @@ export default {
       reportName: null,
       type: null,
       reportDate: null,
-      upDate: null,
-      ctDate: null,
       filePath: null,
       content: null,
       userName: null,
       departName: null,
-      fileUrls: null
     });
 
     const currentReport = computed(() => {
@@ -287,7 +349,33 @@ export default {
       return isCreate.value ? createReport : personalReports.value[currentActiveIndex.value] || createReport;
     });
 
-    const {proxy} = getCurrentInstance();
+    const submitReport = reactive({
+      "reportId": null,
+      "reportName": null,
+      "type": null,
+      "reportDate": null,
+      "filePath": [
+        null
+      ],
+      "content": null,
+      "reportUserId": null,
+      "userName": null,
+      "departName": null,
+      "userIDS": [],
+      "share": null,
+      "params": {
+        "property1": {},
+        "property2": {}
+      }
+    });
+
+    // 对多选框的控制
+    const multiSelectUser = reactive({
+      checkAll: false,           // 全选框是否被选中
+      indeterminate: false,      // 用于控制是否显示不确定状态
+    });
+
+    const shareUsers = ref([]);
 
     const handleCreateReport = () => {
       ElMessageBox.confirm(
@@ -353,13 +441,16 @@ export default {
             cancelButtonText: '取消',
             // type: 'info',
           }
-      ).then(() => {
+      ).then(async () => {
         // 执行保存逻辑
+        if (resData) {
 
-        ElMessage({
-          type: 'success',
-          message: '当前报告已保存',
-        });
+        } else {
+          ElMessage({
+            type: 'success',
+            message: '当前报告已保存',
+          });
+        }
 
         console.log("当前报告数据：", currentReport);
         //虚假的保存
@@ -373,8 +464,7 @@ export default {
       })
     };
 
-    const handleSubmitUpdate = () => {
-
+    const handleSubmitUpdate = async () => {
       // 提交修改
       ElMessageBox.confirm(
           '是否提交当前报告？',
@@ -384,27 +474,58 @@ export default {
             cancelButtonText: '取消',
             // type: 'info',
           }
-      ).then(() => {
-        // 执行保存逻辑
+      ).then(async () => { // 改为 async，确保异步代码的执行顺序
+        try {
+          // 执行保存逻辑，等待 API 请求结果
+          console.log("currentReport", currentReport)
+          // 将currentReport拷贝到submitReport
+          Object.assign(submitReport, currentReport.value);
+          console.log("submitReport", submitReport)
+          let resData
+          if (isUpdate.value === true) {
+            resData = proxy.$api.updateReport(submitReport); // 使用 await 等待异步请求完成
+          } else if (isCreate.value === true) {
+            resData = proxy.$api.addReport(submitReport); // 使用 await 等待异步请求完成
+          }
+          console.log("resData", resData);
 
-        ElMessage({
-          type: 'success',
-          message: '当前报告已提交',
-        })
+          if (resData) {
+            // 提交成功
+            ElMessage({
+              type: 'success',
+              message: '当前报告已提交',
+            });
+          } else {
+            ElMessage({
+              type: 'error',
+              message: '提交失败，请稍后再试',
+            });
+          }
 
-        isUpdate.value = false;
-        isCreate.value = false;
+          isUpdate.value = false;
+          isCreate.value = false;
 
-        // personalReports.value = [];
-        // pageSearch.pageNum = 1;
-        // getPersonalReport();
-        // 重置 currentReport
+          // 清空或重置其他变量和状态
+          // personalReports.value = [];
+          // pageSearch.pageNum = 1;
+          // getPersonalReport();
+          // 重置 currentReport
+
+        } catch (error) {
+          console.error('提交报告时出错：', error);
+          // 处理请求失败的情况
+          ElMessage({
+            type: 'error',
+            message: '提交报告时出错，请稍后再试',
+          });
+        }
       }).catch(() => {
+        // 用户取消了提交
         ElMessage({
           type: 'success',
           message: '提交已取消',
-        })
-      })
+        });
+      });
     };
 
     const handleCancelUpdate = () => {
@@ -477,9 +598,27 @@ export default {
     };
 
     const getReportShareUserList = async () => {
+      // 如果currentReport.value.shareUserId是空数组或空或者undefined，则不执行后续操作
+      if (currentReport.value.shareUserId === [] || currentReport.value.shareUserId === null || currentReport.value.shareUserId === undefined) {
+        return
+      }
       try {
-        let userIds = currentReport.value.shareUserId.split(',').map(Number);
+        // 先去除 [ 和 ] 再按,拆分
+        let userIds = currentReport.value.shareUserId.replace(/[\[\]]/g, '').split(',').map(Number);
         currentReportShareUsers.value = await proxy.$api.getReportShareUserList(userIds);
+
+        // 确保返回数据有效
+        if (!Array.isArray(currentReportShareUsers.value) || currentReportShareUsers.value.length === 0) {
+          console.warn("用户列表为空");
+        }
+      } catch (error) {
+        console.error("获取用户列表失败:", error);
+      }
+    }
+    const getReportShareUserListByIds = async (ids) => {
+      try {
+        // 先去除 [ 和 ] 再按,拆分
+        currentReportShareUsers.value = await proxy.$api.getReportShareUserList(ids);
 
         // 确保返回数据有效
         if (!Array.isArray(currentReportShareUsers.value) || currentReportShareUsers.value.length === 0) {
@@ -514,11 +653,12 @@ export default {
       if (loading.value || allLoaded.value) return;
 
       loading.value = true;
-      pageSearch.pageNum += 1;
       console.log("当前加载的页：" + pageSearch.pageNum);
 
       // 获取新数据并追加到显示列表中
       const newReports = await getPersonalReport();
+
+      pageSearch.pageNum += 1;
 
       if (newReports.length > 0) {
         personalReports.value = [...personalReports.value, ...newReports];
@@ -532,15 +672,72 @@ export default {
     };
 
     const handleImageError = (event) => {
-      console.log("图片加载失败");
       event.target.src = defaultAvatar; // 本地默认图片路径
-      console.log("当前图片地址：" + event.target.src);
+    };
+
+    const getShareUserList = async () => {
+      // 获取当前用户信息
+      // 获取当前用户的分享用户列表，把shareUserList拷贝给shareUsers
+      shareUsers.value = await proxy.$api.getShareUserList();
+    }
+
+    const handleAddSharer = () => {
+      dialogVisible.value = true;
+      console.log('dialogVisible', dialogVisible)
+    }
+
+    const handleSelectShareUserSubmit = () => {
+      dialogVisible.value = false;
+      getReportShareUserListByIds(submitReport.userIDS);
+    }
+
+    // 处理全选框的变化
+    const handleCheckAll = () => {
+      // 如果是全选状态
+      if (multiSelectUser.checkAll) {
+        // 全选时，所有用户都选中
+        submitReport.userIDS = shareUsers.value.map(user => user.userId);
+        console.log('全选时，所有用户都选中', submitReport.userIDS)
+      } else {
+        // 如果取消全选，则清空选中的用户
+        submitReport.userIDS = [];
+      }
+      // 更新不确定状态
+      multiSelectUser.indeterminate = submitReport.userIDS.length > 0 && submitReport.userIDS.length < shareUsers.length;
+    };
+
+    const setupDynamicWatchers = () => {
+      watch(
+          () => submitReport.userIDS, // 监听动态绑定的 model 值
+          (newVal) => {
+            const totalOptions = shareUsers.value.map((opt) => opt.userId);
+            if (!Array.isArray(newVal)) {
+              multiSelectUser.checkAll = false;
+              multiSelectUser.indeterminate = false;
+            } else {
+              const selectedCount = newVal.length;
+              if (selectedCount === 0) {
+                multiSelectUser.checkAll = false;
+                multiSelectUser.indeterminate = false;
+              } else if (selectedCount === totalOptions.length) {
+                multiSelectUser.checkAll = true;
+                multiSelectUser.indeterminate = false;
+              } else {
+                multiSelectUser.checkAll = false;
+                multiSelectUser.indeterminate = true;
+              }
+            }
+          },
+          {immediate: true} // 初始化时触发
+      );
     };
 
     onMounted(async () => {
       console.log("默认用户图片地址：", defaultAvatar);
       await loadScrollPage();
       await getReportShareUserList();
+      await getShareUserList();
+      setupDynamicWatchers();
     });
 
     return {
@@ -566,8 +763,15 @@ export default {
       handleCreateReport,
       handleDeleteReport,
       handleImageError,
+      handleAddSharer,
       formatDateTime,
       formatDate,
+      shareUsers,
+      submitReport,
+      multiSelectUser,
+      handleCheckAll,
+      handleSelectShareUserSubmit,
+      // selectRef,
     }
   }
 }
@@ -718,6 +922,7 @@ export default {
 .el-menu-scroll-item {
 
 }
+
 
 //.el-menu-item {
 //  overflow: hidden;

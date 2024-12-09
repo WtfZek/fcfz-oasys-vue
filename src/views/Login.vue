@@ -128,17 +128,23 @@ export default {
             const tokenName = loginResponseData.tokenName;
             const tokenValue = loginResponseData.tokenValue;
 
+            console.log(tokenName, tokenValue)
+
+            store.commit('setToken', {tokenName, tokenValue});
+
             // // 将 token 信息存入 localStorage
             // store.commit('setToken', tokenName, tokenValue)
 
-            const res = await proxy.$api.getMenu({
-              username: formData.empNum,
-              password: formData.password
+            const menu = await proxy.$api.getMenu({
+              // username: formData.empNum,
+              // password: formData.password
             });
 
-            store.commit("setMenu", res.menu);
+
+            console.log('menu', menu)
+
+            store.commit("setMenu", menu);
             store.commit("addMenu", router);
-            store.commit('setToken', {tokenName, tokenValue});
             await router.push({name: "index"});
             ElMessage.success("登录成功！");
           } else {

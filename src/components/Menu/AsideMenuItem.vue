@@ -81,20 +81,20 @@ export default {
   align-items: center;
   justify-content: space-between;
   overflow: hidden;
-  z-index: 1;
-  transition: all 0.3s ease-in-out;
+  /*z-index: 1;*/
+  /*transition: all 0.3s ease-in-out;*/
 }
 
 .sub-menu-item-badge {
-  z-index: 1;
-  transition: all 0.2s ease;
+  /*z-index: 1;*/
+  /*transition: all 0.2s ease;*/
 }
 
 .sub-menu-item-badge:hover {
-  transform: scale(1.1) translate3d(0, 0, 0) translateZ(0); /* 只放大高度，不放大宽度 */;
+  /*transform: scale(1.1) translate3d(0, 0, 0) translateZ(0); !* 只放大高度，不放大宽度 *!;*/
 }
 
 .menu-item-badge:hover {
-  transform: scale(1.1) translate3d(0, 0, 0) translateZ(0); /* 只放大高度，不放大宽度 */;
+  /*transform: scale(1.1) translate3d(0, 0, 0) translateZ(0); !* 只放大高度，不放大宽度 *!;*/
 }
 </style>

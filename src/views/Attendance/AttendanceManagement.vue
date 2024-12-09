@@ -139,14 +139,17 @@
         </template>
       </el-table-column>
     </el-table>
+
     <el-pagination
         small
         background
-        layout="prev, pager, next"
+        @size-change="changeSizePage"
         :total="pageSearch.total"
-        :page-size="pageSearch.pageSize"
         :current-page="pageSearch.pageNum"
-        @current-change="changePage"
+        :page-size="pageSearch.pageSize"
+        :page-sizes="[10, 20, 30, 40, 50, 60, 70, 80, 90, 100]"
+        layout="sizes, prev, pager, next, jumper, total"
+        @current-change="changeCurrentPage"
         class="pager"
     />
   </div>
@@ -362,9 +365,14 @@ export default defineComponent({
         return newItem; // 返回新的对象
       });
     };
-    const changePage = (page) => {
+    const changeSizePage = (sizePage) => {
       // console.log(page);
-      pageSearch.pageNum = page;
+      pageSearch.pageSize = sizePage;
+      getAttendanceDataList(pageSearch);
+    };
+    const changeCurrentPage = (currentPage) => {
+      // console.log(page);
+      pageSearch.pageNum = currentPage;
       getAttendanceDataList(pageSearch);
     };
     // 添加和修改打卡信息的form数据
@@ -556,7 +564,6 @@ export default defineComponent({
       selectedField,
       selectedDateField,
       selectedDateModel,
-      changePage,
       formSearch,
       handleSearch,
       dialogVisible,
@@ -575,6 +582,8 @@ export default defineComponent({
       handleSelectedDateFieldChange,
       handleSelectedDateModelChange,
       handleClear,
+      changeCurrentPage,
+      changeSizePage,
       // formatDateTime,
       // handleDeleteAll,
     };

@@ -45,3 +45,31 @@ export const formatDateTime = (isoString) => {
     // 返回完整的日期+时间格式
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
+
+// 将 YYYY-MM-DD HH:MM:SS 格式的日期时间字符串转换为 ISO8601 格式
+export const parseToISO8601 = (formattedString) => {
+    // 如果已经是 ISO8601 格式，直接返回
+    if (typeof formattedString === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d{3}[Z|+-]\d{2}:\d{2}$/.test(formattedString)) {
+        return formattedString;
+    }
+
+    // 检查是否符合格式 YYYY-MM-DD HH:MM:SS
+    if (typeof formattedString !== 'string' || !/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(formattedString)) {
+        throw new Error('输入的日期格式必须为 YYYY-MM-DD HH:MM:SS 或 ISO8601');
+    }
+
+    // 将字符串分解为日期和时间
+    const [datePart, timePart] = formattedString.split(' ');
+
+    // 拼接为 ISO8601 格式
+    const isoString = `${datePart}T${timePart}.000Z`; // 假设是 UTC 时间，使用 "Z" 表示时区
+
+    // 检查是否有效
+    const parsedDate = new Date(isoString);
+    if (isNaN(parsedDate)) {
+        throw new Error('输入的日期时间无效');
+    }
+
+    return isoString;
+};
+

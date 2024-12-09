@@ -3,9 +3,9 @@
     <el-col :span="8" style="margin-top: 20px">
       <el-card shadow="hover">
         <div class="userImage">
-          <img src="../../assets/images/user.png" alt=""/>
+          <img :src="userImg" alt=""/>
           <div class="user-info">
-            <p class="name">尹嘉豪 - 管理员</p>
+            <p class="name">尹嘉豪 - {{ userDepart }}</p>
             <!--            <p class="role">管理员</p>-->
           </div>
         </div>
@@ -67,15 +67,25 @@ import {
   reactive,
   ref,
 } from "vue";
+
+import {useRouter} from "vue-router";
+import defaultAvatar from '@/assets/images/defaultUser.png';
+
 // import axios from "axios";
 import * as echarts from "echarts";
+
 export default defineComponent({
   setup() {
+    const router = useRouter();
     const {proxy} = getCurrentInstance();
     let tableData = ref([]);
     let countData = ref([]);
 
     let previousDate = ref(""); // 新增的响应式属性
+
+    const userImg = ref(defaultAvatar);
+
+    const userDepart = ref("");
 
     const tableLabel = {
       name: "课程",
@@ -255,11 +265,37 @@ export default defineComponent({
       previousDate.value = today.toLocaleDateString('zh-CN', options).replace(/\//g, '-'); // 格式化日期
     };
 
+    const toPersonalInfo = () => {
+      router.push({
+        name: 'personalInfo'
+      })
+    };
+
+    const getUserImg = async () => {
+      let userInfo = await proxy.$api.getUserInfo();
+      if (userInfo) {
+        console.log('userInfo.userImage', userInfo.userImage)
+        userImg.value = userInfo.userImage;
+        userDepart.value = userInfo.departmentName;
+      } else {
+        userImg.value = defaultAvatar;
+      }
+    }
+
+    onMounted(() => {
+      getChartData();
+      getYesterdayDate();
+      getUserImg();
+    });
+
     return {
       tableData, // 表格显示的数据
       tableLabel, // 表格列的标签
       countData, // 各种指标的计数数据
       previousDate, // 返回前一天的日期
+      userImg,
+      userDepart,
+      toPersonalInfo,
     };
   },
 });

@@ -18,7 +18,7 @@ const routes = [
           {
             path: '/personal-info',
             name: 'personalInfo',
-            component: () => import('../views/Self/PersonalInfo.vue')
+            component: () => import('../views/Personal/PersonalInfo.vue')
           },
         ],
     },
