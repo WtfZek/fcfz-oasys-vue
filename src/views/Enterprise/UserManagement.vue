@@ -1,7 +1,7 @@
 <template>
   <div class="user-header">
     <el-form :inline="true" :model="formSearch">
-      <el-collapse>
+      <el-collapse v-model="activeCollapse" @change="handleCollapseChange">
         <el-collapse-item name="1" :icon="CaretRight" :is-active="false">
           <!--      <el-form-item label="用户名">-->
           <!--        <el-input clearable v-model="formSearch.userName" placeholder="请输入用户名" />-->
@@ -22,87 +22,90 @@
           <!--        />-->
           <!--      </el-form-item>-->
           <template #title>
-            <el-form-item label="查找用户名">
-              <el-input
-                  clearable
-                  @clear="handleClear"
-                  v-model="formSearch['userName']"
-                  placeholder="请输入查询内容"
-                  class="input-with-select"
-              >
-                <!--          <template #prepend>-->
-                <!--            <el-select v-model="selectedField" placeholder="Select" style="width: 120px" @change="handleSelectedFieldChange">-->
-                <!--              <el-option label="用户名" value="userName" />-->
-                <!--              <el-option label="工号" value="empNum" />-->
-                <!--              <el-option label="部门" value="departmentName" />-->
-                <!--              <el-option label="入职日期" value="timeIn" />-->
-                <!--            </el-select>-->
-                <!--          </template>-->
-                <!--          <template #prefix>-->
-                <!--            <el-button >-->
-                <!--              <el-icon ><Plus/></el-icon>-->
-                <!--            </el-button>-->
-                <!--          </template>-->
-                <template #append>
-                  <el-button @click="handleSearch">
-                    <el-icon>
-                      <Search/>
-                    </el-icon>
-                  </el-button>
-                </template>
-              </el-input>
-            </el-form-item>
-            <el-form-item label="查找部门">
-              <el-input
-                  clearable
-                  @clear="handleClear"
-                  v-model="formSearch['departmentName']"
-                  placeholder="请输入查询内容"
-                  class="input-with-select"
-              >
-                <template #append>
-                  <el-button @click="handleSearch">
-                    <el-icon>
-                      <Search/>
-                    </el-icon>
-                  </el-button>
-                </template>
-              </el-input>
-            </el-form-item>
-            <el-form-item label="查找工号">
-              <el-input
-                  clearable
-                  @clear="handleClear"
-                  v-model="formSearch['empNum']"
-                  placeholder="请输入查询内容"
-                  class="input-with-select"
-              >
-                <template #append>
-                  <el-button @click="handleSearch">
-                    <el-icon>
-                      <Search/>
-                    </el-icon>
-                  </el-button>
-                </template>
-              </el-input>
-            </el-form-item>
-            <el-form-item label="查找手机号">
-              <el-input
-                  clearable
-                  @clear="handleClear"
-                  v-model="formSearch['telephone']"
-                  placeholder="请输入查询内容"
-                  class="input-with-select"
-              >
-                <template #append>
-                  <el-button @click="handleSearch">
-                    <el-icon>
-                      <Search/>
-                    </el-icon>
-                  </el-button>
-                </template>
-              </el-input>
-            </el-form-item>
+            <div @click.stop> <!-- 这个 @click.stop 很有用 -->
+
+              <el-form-item label="查找用户名">
+                <el-input
+                    clearable
+                    @clear="handleClear"
+                    v-model="formSearch['userName']"
+                    placeholder="请输入查询内容"
+                    class="input-with-select"
+                >
+                  <!--          <template #prepend>-->
+                  <!--            <el-select v-model="selectedField" placeholder="Select" style="width: 120px" @change="handleSelectedFieldChange">-->
+                  <!--              <el-option label="用户名" value="userName" />-->
+                  <!--              <el-option label="工号" value="empNum" />-->
+                  <!--              <el-option label="部门" value="departmentName" />-->
+                  <!--              <el-option label="入职日期" value="timeIn" />-->
+                  <!--            </el-select>-->
+                  <!--          </template>-->
+                  <!--          <template #prefix>-->
+                  <!--            <el-button >-->
+                  <!--              <el-icon ><Plus/></el-icon>-->
+                  <!--            </el-button>-->
+                  <!--          </template>-->
+                  <template #append>
+                    <el-button @click="handleSearch">
+                      <el-icon>
+                        <Search/>
+                      </el-icon>
+                    </el-button>
+                  </template>
+                </el-input>
+              </el-form-item>
+              <el-form-item label="查找部门">
+                <el-input
+                    clearable
+                    @clear="handleClear"
+                    v-model="formSearch['departmentName']"
+                    placeholder="请输入查询内容"
+                    class="input-with-select"
+                >
+                  <template #append>
+                    <el-button @click="handleSearch">
+                      <el-icon>
+                        <Search/>
+                      </el-icon>
+                    </el-button>
+                  </template>
+                </el-input>
+              </el-form-item>
+              <el-form-item label="查找工号">
+                <el-input
+                    clearable
+                    @clear="handleClear"
+                    v-model="formSearch['empNum']"
+                    placeholder="请输入查询内容"
+                    class="input-with-select"
+                >
+                  <template #append>
+                    <el-button @click="handleSearch">
+                      <el-icon>
+                        <Search/>
+                      </el-icon>
+                    </el-button>
+                  </template>
+                </el-input>
+              </el-form-item>
+              <el-form-item label="查找手机号">
+                <el-input
+                    clearable
+                    @clear="handleClear"
+                    v-model="formSearch['telephone']"
+                    placeholder="请输入查询内容"
+                    class="input-with-select"
+                >
+                  <template #append>
+                    <el-button @click="handleSearch">
+                      <el-icon>
+                        <Search/>
+                      </el-icon>
+                    </el-button>
+                  </template>
+                </el-input>
+              </el-form-item>
+            </div>
           </template>
 
           <el-form-item label="查找邮箱">
@@ -172,7 +175,7 @@
       <el-button type="primary" @click="handleAdd">+ 新增</el-button>
     </div>
   </div>
-  <div class="table">
+  <div class="table" :style="tableStyle">
     <el-table v-loading="tableLoading" :data="list" style="width: 100%" table-layout="fixed"
               :default-sort="{ prop: 'ctTime', order: 'descending' }" @selection-change="handleSelectionChange">
       <el-table-column cell-class-name="first-column" fixed type="selection" width="55" align="center"/>
@@ -320,14 +323,48 @@
               ]"
               style="width: 90%"
           >
-            <el-select :disabled="opsUserRole !== 1" v-model="formUserInfo.roleId" placeholder="请选择系统角色">
+            <el-select v-if="opsUserRole = 1"
+                       :disabled="!(opsUserRole === 1 || opsUserRole === 2) || formUserInfo.userId === opsUserId && action !== 'add'"
+                       v-model="formUserInfo.roleId" placeholder="请选择系统角色">
               <el-option
                   v-for="role in formRoles"
-                  :key="role.value"
+                  :key="role.label"
                   :label="role.label"
                   :value="role.value"
               />
             </el-select>
+            <el-select v-if="opsUserRole === 2 && formUserInfo.roleId !== 1"
+                       :disabled="!(opsUserRole === 1 || opsUserRole === 2) || formUserInfo.userId === opsUserId && action !== 'add'"
+                       v-model="formUserInfo.roleId" placeholder="请选择系统角色">
+              <el-option
+                  v-for="role in lowFormRoles"
+                  :key="role.label"
+                  :label="role.label"
+                  :value="role.value"
+              />
+            </el-select>
+            <el-input
+                v-if="formUserInfo.roleId === 1 && opsUserRole !== 1 "
+                :placeholder="'超级管理员'"
+                default-value="'超级管理员'"
+                :disabled="true"
+            />
+            <!--            <el-select v-if="!(opsUserRole === 1 || opsUserRole === 2) || formUserInfo.userId === opsUserId"-->
+            <!--                       placeholder="请选择系统角色">-->
+            <!--              <el-option-->
+            <!--                  v-for="role in formRoles.filter(role => opsUserRole !== 2 || role.value !== 1)"-->
+            <!--                  :key="role.label"-->
+            <!--                  :label="role.label"-->
+            <!--                  :value="role.value"-->
+            <!--              />-->
+            <!--            </el-select>-->
+            <!--            <el-input-->
+            <!--                v-model="formUserInfo.roleId"-->
+            <!--                default-value="'fw'"-->
+            <!--                :disabled="false"-->
+            <!--                v-if="!(opsUserRole !== 1 && opsUserRole !== 2 || formUserInfo.userId === opsUserId)"-->
+            <!--            />-->
+
           </el-form-item>
         </el-col>
         <el-col :span="12">
@@ -399,7 +436,7 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="12">
+        <el-col v-if="action === 'add'" :span="12">
           <el-form-item
               label="身份证号"
               prop="birthdayNum"
@@ -445,6 +482,8 @@ import defaultAvatar from '@/assets/images/defaultUser.png';
 export default defineComponent({
   components: {Plus},
   setup() {
+
+    const activeCollapse = ref([]);
 
     const userInfoForm = ref({});
 
@@ -610,13 +649,20 @@ export default defineComponent({
 
     const opsUserRole = ref(3);
 
+    const opsUserId = ref();
+
     const formStatuses = ([
       {label: '在职', value: 1},
       {label: '出差', value: 2},
       {label: '离职', value: 0},
     ]);
 
-    const formRoles = ([
+    const lowFormRoles = ref([
+      {label: '管理员', value: 2},
+      {label: '普通员工', value: 3}
+    ]);
+
+    const formRoles = ref([
       {label: '管理员', value: 2},
       {label: '普通员工', value: 3},
       {label: '超级管理员', value: 1},
@@ -632,12 +678,14 @@ export default defineComponent({
       timeInqj: null,
       birthdayNum: null,
     });
+
     const pageSearch = reactive({
       pageNum: 1,
       pageSize: 20,
       total: null,
       data: formSearch,
     });
+
     const getUserDataList = async (pageParams) => {
       // 通过 mock 或请求获取用户数据
       // let res = await proxy.$api.getUserData(config);
@@ -745,6 +793,7 @@ export default defineComponent({
             formUserInfo.ctTime = formUserInfo.upTime && formUserInfo.upTime !== '-' ? parseToISO8601(formatDateTime(formUserInfo.ctTime)) : null;
             formUserInfo.timeIn = formUserInfo.upTime && formUserInfo.upTime !== '-' ? parseToISO8601(formatDateTime(formUserInfo.timeIn)) : null;
             console.log('formUserInfo', formUserInfo)
+            formUserInfo.userId = null;
             let res = await proxy.$api.saveUser(formUserInfo);
             console.log('res', res)
             if (res) {
@@ -752,7 +801,7 @@ export default defineComponent({
               dialogVisible.value = false;
               proxy.$refs.userInfoForm.resetFields();
               getUserDataList(pageSearch);
-              getOpsUserRole();
+              getOpsUser();
             }
           } else if (action.value === "edit") {
             // 编辑的接口
@@ -769,7 +818,7 @@ export default defineComponent({
               dialogVisible.value = false;
               proxy.$refs.userInfoForm.resetFields();
               getUserDataList(pageSearch);
-              getOpsUserRole();
+              getOpsUser();
             }
           }
         } else {
@@ -827,11 +876,10 @@ export default defineComponent({
     };
     // 删除用户
     const handleDelete = (row) => {
+      console.log("row.id", row.userId)
       ElMessageBox.confirm("你确定删除吗?")
           .then(async () => {
-            await proxy.$api.deleteUser({
-              id: row.id,
-            });
+            await proxy.$api.deleteUser([row.userId]);
 
             ElMessage({
               showClose: true,
@@ -858,9 +906,7 @@ export default defineComponent({
       } else {
         ElMessageBox.confirm("你确定要批量删除吗?")
             .then(async () => {
-              await proxy.$api.deleteUser({
-                id: row.id,
-              });
+              await proxy.$api.deleteUser(selectedIds.value);
 
               ElMessage({
                 showClose: true,
@@ -941,17 +987,40 @@ export default defineComponent({
       event.target.src = defaultAvatar; // 本地默认图片路径
     };
 
-    const getOpsUserRole = async () => {
+    const getOpsUser = async () => {
       let userInfo = await proxy.$api.getUserInfo();
       if (userInfo) {
         opsUserRole.value = userInfo.roleId;
+        opsUserId.value = userInfo.userId;
       }
       console.log('opsUserRole', opsUserRole.value)
+      console.log('opsUserId', opsUserId.value)
     }
+
+    // 监听 table 的动态样式
+    const tableStyle = computed(() => {
+      // 判断是否展开
+      return activeCollapse.value.includes("1")
+          ? {height: "calc(100% - 75px - 44px)"}
+          : {height: "calc(100% - 75px)"};
+    });
+
+    // Collapse 状态改变时的回调
+    const handleCollapseChange = (names) => {
+      activeCollapse.value = names;
+    };
+
+    const filteredRoles = computed(() => {
+      // 如果 `opsUserRole === 2`，过滤掉 `超级管理员`
+      if (opsUserRole.value === 2) {
+        return formRoles.value.filter(role => role.value !== 1);
+      }
+      return formRoles;
+    });
 
     onMounted(() => {
       getUserDataList(pageSearch);
-      getOpsUserRole();
+      getOpsUser();
     });
 
     return {
@@ -991,7 +1060,13 @@ export default defineComponent({
       // formatDateTime,
       handleDeleteAll,
       opsUserRole,
+      opsUserId,
+      filteredRoles,
       CaretRight,
+      tableStyle,
+      activeCollapse,
+      lowFormRoles,
+      handleCollapseChange,
     };
   },
 });
@@ -1001,7 +1076,7 @@ export default defineComponent({
 .table {
   background-color: #fafafa;
   position: relative;
-  height: calc(100% - 75px);
+  //height: calc(100% - 75px);
   min-width: 1200px;
   //max-height: 80%;
   .el-table {
@@ -1059,13 +1134,17 @@ export default defineComponent({
     padding: 0;
   }
 
+  .el-form {
+    //display: flex;
+    width: 100%;
+  }
+
   .el-form-item {
 
     // 水平居中
     align-items: center;
     justify-content: space-between;
-    margin: 18px;
-    //margin-right: 18px;
+    margin: 6px 6px 6px 12px;
     //margin-bottom: 12px;
 
 

@@ -352,7 +352,7 @@ export default {
 
     const createReportShareUsers = ref([]);
 
-    const createReport = reactive({
+    let createReport = reactive({
       reportId: null,
       reportUserId: null,
       reportName: null,
@@ -414,8 +414,11 @@ export default {
         })
 
         // 在此处向personalReports.value添加一条数据
+        allLoaded.value = false;
         isCreate.value = true;
         isUpdate.value = false;
+        personalReports.value = [];
+        pageSearch.pageNum = 1;
         currentReportShareUsers.value = [];
         getReportShareUserList();
         console.log(currentReport.value);
@@ -441,6 +444,7 @@ export default {
           }
       ).then(() => {
 
+        allLoaded.value = false;
         isUpdate.value = true;
         isCreate.value = false;
       }).catch(() => {
@@ -472,6 +476,7 @@ export default {
           });
         }
 
+
         console.log("当前报告数据：", currentReport);
         //虚假的保存
 
@@ -499,13 +504,23 @@ export default {
           // 执行保存逻辑，等待 API 请求结果
           console.log("currentReport", currentReport)
           // 将currentReport拷贝到submitReport
-          Object.assign(submitReport, currentReport.value);
+          submitReport.reportId = currentReport.value.reportId;
+          submitReport.reportName = currentReport.value.reportName;
+          submitReport.type = currentReport.value.type;
+          submitReport.reportDate = currentReport.value.reportDate;
+          submitReport.filePath = (currentReport.value.filePath ? (currentReport.value.filePath.match(/\d+/g) || []) : []).map(Number);
+          submitReport.content = currentReport.value.content;
+          submitReport.reportUserId = currentReport.value.reportUserId;
+          submitReport.userName = currentReport.value.userName;
+          submitReport.departName = currentReport.value.departName;
+          // submitReport.userIDS = currentReport.value.userIDS;
+          // Object.assign(submitReport, currentReport.value);
           console.log("submitReport", submitReport)
           let resData
           if (isUpdate.value === true) {
-            resData = proxy.$api.updateReport(submitReport); // 使用 await 等待异步请求完成
+            resData = await proxy.$api.updateReport(submitReport); // 使用 await 等待异步请求完成
           } else if (isCreate.value === true) {
-            resData = proxy.$api.addReport(submitReport); // 使用 await 等待异步请求完成
+            resData = await proxy.$api.addReport(submitReport); // 使用 await 等待异步请求完成
           }
 
           console.log("resData", resData);
@@ -513,9 +528,26 @@ export default {
           if (resData) {
             // 提交成功
             // 清空数据
-            currentReport.value = {};
+
+            // 清空或重置其他变量和状态
+            createReport = {
+              reportId: null,
+              reportUserId: null,
+              reportName: null,
+              type: null,
+              reportDate: null,
+              filePath: null,
+              content: null,
+              userName: null,
+              departName: null,
+            }
             personalReports.value = [];
+            console.log("personalReports 应为空", personalReports.value)
             pageSearch.pageNum = 1;
+            await loadScrollPage();
+            allLoaded.value = false;
+            isUpdate.value = false;
+            isCreate.value = false;
             // await getReportShareUserList();
             // await getShareUserList();
             ElMessage({
@@ -529,13 +561,7 @@ export default {
             });
           }
 
-          isUpdate.value = false;
-          isCreate.value = false;
 
-          // 清空或重置其他变量和状态
-          // personalReports.value = [];
-          // pageSearch.pageNum = 1;
-          // getPersonalReport();
           // 重置 currentReport
 
         } catch (error) {
@@ -576,7 +602,7 @@ export default {
         // 重新获取一次个人报告
         personalReports.value = [];
         pageSearch.pageNum = 1;
-        getPersonalReport();
+        loadScrollPage();
         // 重置 currentReport
       }).catch(() => {
         // ElMessage({
@@ -595,16 +621,22 @@ export default {
             cancelButtonText: '取消',
             type: 'error',
           }
-      ).then(() => {
+      ).then(async () => {
         // 重新获取一次个人报告
+        await proxy.$api.deleteReport([currentReport.value.reportId]);
 
         ElMessage({
           type: 'success',
           message: '报告已删除',
         })
 
+        dialogVisible.value = false; // 关闭弹窗
         isUpdate.value = false;
         isCreate.value = false;
+        // 重新获取一次个人报告
+        personalReports.value = [];
+        pageSearch.pageNum = 1;
+        loadScrollPage();
 
         // 重置 currentReport
         currentActiveIndex.value = currentActiveIndex.value > 0 ? currentActiveIndex.value - 1 : 0;
@@ -711,6 +743,7 @@ export default {
 
     const handleAddSharer = () => {
       dialogVisible.value = true;
+      // getShareUserList();
       console.log('dialogVisible', dialogVisible)
     }
 
@@ -764,7 +797,7 @@ export default {
       // Remove user logic
       submitReport.userIDS = submitReport.userIDS.filter(id => id !== user.userId);
       console.log('删除后的 userIDS', submitReport.userIDS)
-      shareUsers.value = shareUsers.value.filter(user => submitReport.userIDS.includes(user.userId));
+      // shareUsers.value = shareUsers.value.filter(user => submitReport.userIDS.includes(user.userId));
       console.log('删除后的 shareUsers', currentReportShareUsers.value)
       console.log('删除前的 currentReportShareUsers', currentReportShareUsers.value)
       currentReportShareUsers.value = currentReportShareUsers.value.filter(item => item.userId !== user.userId);

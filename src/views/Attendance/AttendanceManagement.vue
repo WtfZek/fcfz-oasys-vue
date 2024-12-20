@@ -28,10 +28,11 @@
             class="input-with-select"
         >
           <template #prepend>
-            <el-select v-model="selectedField" placeholder="Select" style="width: 120px" @change="handleSelectedFieldChange">
-              <el-option label="用户名" value="attendanceUserName" />
-              <el-option label="部门" value="attendanceDepartName" />
-              <el-option label="打卡地址" value="address" />
+            <el-select v-model="selectedField" placeholder="Select" style="width: 120px"
+                       @change="handleSelectedFieldChange">
+              <el-option label="用户名" value="userName"/>
+              <el-option label="部门" value="departName"/>
+              <el-option label="打卡地址" value="address"/>
             </el-select>
           </template>
           <template #append>
@@ -42,13 +43,13 @@
         </el-input>
       </el-form-item>
       <el-form-item label="">
-        <el-select v-model="selectedDateModel" placeholder="Select" style="width: 100px" @change="handleSelectedDateModelChange">
-          <el-option label="精确查找" value="jq" />
-          <el-option label="区间查找" value="qj" />
-        </el-select>
+        <!--        <el-select v-model="selectedDateModel" placeholder="Select" style="width: 100px" @change="handleSelectedDateModelChange">-->
+        <!--          <el-option label="精确查找" value="jq" />-->
+        <!--          <el-option label="区间查找" value="qj" />-->
+        <!--        </el-select>-->
         <el-select v-model="selectedDateField" placeholder="Select" style="width: 120px" @change="handleSelectedDateFieldChange">
-          <el-option label="签到时间" value="timeIn" />
-          <el-option label="签退时间" value="timeOut" />
+          <!--          <el-option label="签到时间" value="timeIn" />-->
+          <!--          <el-option label="签退时间" value="timeOut" />-->
           <el-option label="签到日期" value="date" />
         </el-select>
         <span>
@@ -57,9 +58,11 @@
               @clear="handleClear"
               v-if="selectedDateModel === 'jq'"
               v-model="formSearch[selectedDateField]"
-              type="date"
-              label="出生日期"
-              placeholder="请输入出生日期"
+              format="YYYY-MM-DD"
+              value-format="YYYY-MM-DD"
+              type="datetime"
+              label="日期"
+              placeholder="请输入签到日期"
               style="width: 100%"
           />
           <el-date-picker
@@ -85,8 +88,8 @@
     </el-form>
     <!-- 右侧按钮区域 -->
     <div class="right-container">
-      <el-button type="danger" @click="handleDeleteAll">× 批量删除</el-button>
-      <el-button type="primary" @click="handleAdd">+ 新增</el-button>
+      <el-button disabled type="danger" @click="handleDeleteAll">× 批量删除</el-button>
+      <!--      <el-button type="primary" @click="handleAdd">+ 新增</el-button>-->
     </div>
   </div>
   <div class="table">
@@ -130,10 +133,10 @@
       </el-table-column>
       <el-table-column class="last-column" fixed="right" label="操作" min-width="180" header-align="center" align="center">
         <template #default="scope">
-          <el-button size="small" @click="handleEdit(scope.row)">
+          <el-button disabled size="small" @click="handleEdit(scope.row)">
             编辑
           </el-button>
-          <el-button type="danger" size="small" @click="handleDelete(scope.row)">
+          <el-button disabled type="danger" size="small" @click="handleDelete(scope.row)">
             删除
           </el-button>
         </template>
@@ -253,7 +256,7 @@ export default defineComponent({
   setup() {
     const { proxy } = getCurrentInstance();
     const list = ref([]);
-    const selectedField = ref('attendanceUserName');
+    const selectedField = ref('userName');
     const selectedDateField = ref('date');
     const selectedDateModel = ref('jq');
     const tableLabel = reactive([
@@ -331,8 +334,8 @@ export default defineComponent({
     });
 
     const formSearch = reactive({
-      attendanceUserName: null,
-      attendanceDepartName: null,
+      userName: null,
+      departName: null,
       timeIn: null,
       timeOut: null,
       date: null,
@@ -361,7 +364,7 @@ export default defineComponent({
         let newItem = {...item}; // 克隆一份数据
         newItem.timeIn = newItem.timeIn ? formatTime(newItem.timeIn) : '-'; // 格式化创建时间
         newItem.timeOut = newItem.timeOut ? formatTime(newItem.timeOut) : '-'; // 格式化创建时间
-        newItem.status = newItem.status || '' ? newItem.status : '暂无'; // 格式化创建时间
+        newItem.status = newItem.status || '' ? newItem.status : '缺卡'; // 格式化创建时间
         return newItem; // 返回新的对象
       });
     };

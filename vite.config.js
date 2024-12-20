@@ -25,7 +25,7 @@ export default defineConfig({
         '/api': {
             target: 'http://localhost:8088',
             changeOrigin: true,
-            rewrite: path => path.replace(/^\/api/, '')
+            // rewrite: path => path.replace(/^\/api/, '')
         },
         // '/res': {
         //   target: 'https://fcfz-oa.oss-cn-shanghai.aliyuncs.com/',

@@ -21,7 +21,7 @@
     <div class="r-content">
       <el-dropdown>
         <span class="el-dropdown-link" @click="toPersonalInfo">
-          <el-avatar class="userImage" :src="userImg" size="default"/>
+          <img class="userImage" :src="userImg || defaultAvatar" @error="handleImageError" size="default"/>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
@@ -85,6 +85,10 @@ export default defineComponent({
       })
     };
 
+    const handleImageError = (event) => {
+      event.target.src = defaultAvatar; // 本地默认图片路径
+    };
+
     onMounted(() => {
       getUserImg();
     })
@@ -97,6 +101,8 @@ export default defineComponent({
       handleCollapse,
       logout,
       current,
+      defaultAvatar,
+      handleImageError,
     };
   }
 })

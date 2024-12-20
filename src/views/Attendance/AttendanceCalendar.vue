@@ -40,9 +40,16 @@
             <el-divider></el-divider>
             <el-form-item label="打卡状态：">
               <el-tag
+                  v-if="record.status"
                   :type="record.status === '打卡成功' ? 'primary' : 'danger'"
                   disable-transitions
               >{{ record.status }}
+              </el-tag>
+              <el-tag
+                  v-if="!record.status"
+                  :type="'danger'"
+                  disable-transitions
+              >打卡失败
               </el-tag>
             </el-form-item>
           </div>
@@ -51,7 +58,13 @@
 
       <el-card v-if="filteredAttendanceRecords.length <= 0" class="punch-info">
         <div class="attendance-record">
-          <p><strong>今日未打卡</strong></p>
+          <!--          <p><strong>今日未打卡</strong></p>-->
+          <el-tag
+              size="large"
+              :type="'danger'"
+              disable-transitions
+          >今日未打卡
+          </el-tag>
           <el-divider></el-divider>
         </div>
       </el-card>

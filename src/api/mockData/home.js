@@ -56,10 +56,10 @@ export default {
       data: {
         countData: [
           {
-            name: "打卡总次数", // Clock-in Total Count
-            value: 1234,
-            icon: "SuccessFilled", // 修改为“Clock”图标
-            color: "#2ec7c9",
+              name: "本年度打卡", // Clock-in Total Count
+              value: 1234,
+              icon: "SuccessFilled", // 修改为“Clock”图标
+              color: "#2ec7c9",
           },
           {
             name: "日志总数", // Total Logs

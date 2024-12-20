@@ -15,7 +15,7 @@ if (config.env === 'development') {
     // Mock.mock(/user\/getUser/, 'get', userApi.getUserList);
     Mock.mock(/user\/add/, 'post', userApi.createUser);
     // Mock.mock(/user\/edit/, 'post', userApi.updateUser);
-    Mock.mock(/user\/delete/, 'get', userApi.deleteUser);
+    // Mock.mock(/user\/delete/, 'get', userApi.deleteUser);
 
     // 获取权限菜单
     // Mock.mock(/permission\/getMenu/, 'post', permissionApi.getMenu);

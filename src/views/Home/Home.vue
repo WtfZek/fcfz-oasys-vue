@@ -3,9 +3,9 @@
     <el-col :span="8" style="margin-top: 20px">
       <el-card shadow="hover">
         <div class="userImage">
-          <img :src="userImg" alt=""/>
+          <img :src="userImg || defaultAvatar" @error="handleImageError" alt=""/>
           <div class="user-info">
-            <p class="name">尹嘉豪 - {{ userDepart }}</p>
+            <p class="name">{{ userName }} - {{ userDepart }}</p>
             <!--            <p class="role">管理员</p>-->
           </div>
         </div>
@@ -40,7 +40,7 @@
               :style="{ background: item.color }"
           ></component>
           <div class="detail">
-            <p class="num">{{ item.value }}</p>
+            <p class="num">{{ item.value }} 次</p>
             <p class="txt">{{ item.name }}</p>
           </div>
         </el-card>
@@ -87,6 +87,10 @@ export default defineComponent({
 
     const userDepart = ref("");
 
+    const userName = ref("");
+
+    const userRole = ref("");
+
     const tableLabel = {
       name: "课程",
       todayBuy: "今日购买",
@@ -106,18 +110,29 @@ export default defineComponent({
     // 获取首页count数据
     const getCountData = async () => {
       let res = await proxy.$api.getCountData();
+      // let reportRes = await proxy.$api.getReportCount();
       countData.value = res.countData;
     };
-    onMounted(() => {
-      getYesterdayDate();
-      // 调用获取前一天日期的函数
-      getTableList();
-      // 获取count数据
-      getCountData();
-      // 获取echarts表格数据
-      getChartData();
 
+    const getAttendanceCountData = async () => {
+      // 传入第一个参数是今年年份的整数，第二个参数是本月月份的整数
+      let attendanceRes = await proxy.$api.getAttendanceCount(new Date().getFullYear(), 0);
+      // 获取数组countData.value的第一个元素
+      countData.value[0].value = attendanceRes.success + attendanceRes.fail;
+      countData.value[0].name = countData.value[0].name + "（包含打卡失败 " + attendanceRes.fail + " 次）";
+    };
+
+    onMounted(async () => {
+      await getYesterdayDate();
+      // 调用获取前一天日期的函数
+      await getTableList();
+      // 获取count数据
+      await getCountData();
+      await getAttendanceCountData();
+      // 获取echarts表格数据
+      await getChartData();
     });
+
     // 关于 echarts 表格的渲染部分
     let xOptions = reactive({
       // 图例文字颜色
@@ -277,10 +292,16 @@ export default defineComponent({
         console.log('userInfo.userImage', userInfo.userImage)
         userImg.value = userInfo.userImage;
         userDepart.value = userInfo.departmentName;
+        userName.value = userInfo.userName;
+        userRole.value = userInfo.roleName;
       } else {
         userImg.value = defaultAvatar;
       }
     }
+
+    const handleImageError = (event) => {
+      event.target.src = defaultAvatar; // 本地默认图片路径
+    };
 
     onMounted(() => {
       getChartData();
@@ -295,6 +316,9 @@ export default defineComponent({
       previousDate, // 返回前一天的日期
       userImg,
       userDepart,
+      userName,
+      defaultAvatar,
+      handleImageError,
       toPersonalInfo,
     };
   },

@@ -28,6 +28,9 @@ service.interceptors.request.use((req) => {
 
 // 在请求之后做一些事情
 service.interceptors.response.use((res) => {
+  // if (res.config.url.includes('/captcha/get')) {
+  //   return res;
+  // }
   const {code, data, msg} = res.data
   console.log('res', res)
   console.log('code', code)

@@ -41,12 +41,12 @@
             class="captcha-input"
         >
         </el-input>
-        <img class="captcha" :src="captchaUrl" alt="验证码" @click="refreshCaptcha"/>
+<!--        <img class="captcha" :src="captchaUrl" alt="验证码" @click="refreshCaptcha"/>-->
       </el-form-item>
 
       <el-form-item>
         <el-button type="primary" @click="handleSubmit"> {{ isLogin ? '登录' : '注册' }} </el-button>
-        <el-button type="text" @click="toggleForm"> {{ isLogin ? '去注册' : '去登录' }} </el-button>
+        <el-button disabled type="text" @click="toggleForm"> {{ isLogin ? '去注册' : '去登录' }}</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -110,15 +110,15 @@ export default {
       const valid = await formRef.value.validate();
       if (valid) {
         try {
-          const captchaResponseData = await proxy.$api.validateCaptcha({
-            captcha: formData.captcha,
-          });
-
-          if (!captchaResponseData) { // 验证码校验失败
-            ElMessage.error("验证码无效，请重新输入。");
-            await refreshCaptcha(); // 刷新验证码
-            return;
-          }
+          // const captchaResponseData = await proxy.$api.validateCaptcha({
+          //   captcha: formData.captcha,
+          // });
+          //
+          // if (!captchaResponseData) { // 验证码校验失败
+          //   ElMessage.error("验证码无效，请重新输入。");
+          //   await refreshCaptcha(); // 刷新验证码
+          //   return;
+          // }
 
           if (isLogin.value) {
             // 正常登录逻辑
@@ -173,8 +173,9 @@ export default {
       formData.confirmPassword = "";
     };
 
+
     const refreshCaptcha = async () => {
-      captchaUrl.value = `api/captcha/get?${new Date().getTime()}`;
+      captchaUrl.value = await proxy.$api.getCaptcha(new Date().getTime());
       formData.captcha = ""; // 清空验证码输入框
       console.log(captchaUrl)
     };

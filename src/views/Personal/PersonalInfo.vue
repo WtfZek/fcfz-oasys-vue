@@ -2,7 +2,8 @@
   <div class="personal-info">
     <el-card shadow="hover" class="info-card">
       <div class="header">
-        <el-avatar :src="userInfoData.userImage" size="large"/>
+        <img class="userImage" :src="userInfoData.userImage || defaultAvatar" @error="handleImageError" size="large"
+             alt=""/>
         <div class="header-info">
           <h3 v-if="userInfoData.sex==='1'||userInfoData.sex==='2'">{{ userInfoData.userName }} -
             {{ userInfoData.sex === "1" ? '男' : '女' }}</h3>
@@ -23,6 +24,9 @@
         </el-form-item>
         <el-form-item label="电子邮箱">
           <el-input v-model="userInfoData.email" :disabled="formDisabled"></el-input>
+        </el-form-item>
+        <el-form-item label="身份证">
+          <el-input v-model="userInfoData.birthdayNum" disabled></el-input>
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-if="!formDisabled" style="width: 150px" :disabled="formDisabled" v-model="userInfoData.status"
@@ -55,7 +59,8 @@
 <script>
 import {ref, reactive, computed, getCurrentInstance} from 'vue';
 import {useRouter} from "vue-router";
-import { useStore } from 'vuex'
+import {useStore} from 'vuex'
+import defaultAvatar from '@/assets/images/defaultUser.png';
 // import { ElMessage } from 'element-plus';
 
 export default {
@@ -105,10 +110,6 @@ export default {
 
     const handleEdit = () => {
       formDisabled.value = false;
-      ElMessage({
-        message: '编辑功能未实现',
-        type: 'warning',
-      });
     };
 
     const handleSave = () => {
@@ -121,10 +122,12 @@ export default {
             cancelButtonText: '取消',
             // type: 'info',
           }
-      ).then(() => {
+      ).then(async () => {
         // 执行保存逻辑
-        let resData = proxy.$api.updateUser(userInfoData);
+        userInfoData.birthdayNum = null;
+        let resData = await proxy.$api.updateUser(userInfoData);
         if (resData) {
+          await getUserInfo();
           ElMessage({
             type: 'success',
             message: '当前信息已保存',
@@ -159,6 +162,10 @@ export default {
       // });
     };
 
+    const handleImageError = (event) => {
+      event.target.src = defaultAvatar; // 本地默认图片路径
+    };
+
     getUserInfo();
 
     return {
@@ -166,6 +173,8 @@ export default {
       formStatuses,
       userInfoData,
       formattedTimeIn, // 使用计算属性
+      defaultAvatar,
+      handleImageError,
       handleEdit,
       handleSave,
       handleLogout,
@@ -224,5 +233,18 @@ export default {
   /* 让按钮区域始终贴底部 */
   display: flex;
   justify-content: flex-end;
+}
+
+.userImage {
+  display: flex;
+  align-items: center;
+  //padding-bottom: 20px;
+  border-bottom: 1px solid #ccc;
+  //margin-bottom: 20px;
+
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+
 }
 </style>
