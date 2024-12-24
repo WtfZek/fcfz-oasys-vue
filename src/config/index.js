@@ -23,6 +23,8 @@ const EnvConfig = {
     },
 }
 
+console.log(env);
+
 export default {
     env,
     // mock的总开关,

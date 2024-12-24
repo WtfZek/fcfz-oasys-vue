@@ -33,16 +33,16 @@
         </el-input>
       </el-form-item>
 
-      <el-form-item prop="captcha">
-        <el-input
-            type="input"
-            placeholder="请输入验证码"
-            v-model="formData.captcha"
-            class="captcha-input"
-        >
-        </el-input>
-<!--        <img class="captcha" :src="captchaUrl" alt="验证码" @click="refreshCaptcha"/>-->
-      </el-form-item>
+      <!--      <el-form-item prop="captcha">-->
+      <!--        <el-input-->
+      <!--            type="input"-->
+      <!--            placeholder="请输入验证码"-->
+      <!--            v-model="formData.captcha"-->
+      <!--            class="captcha-input"-->
+      <!--        >-->
+      <!--        </el-input>-->
+      <!--        <img class="captcha" :src="captchaUrl" alt="验证码" @click="refreshCaptcha"/>-->
+      <!--      </el-form-item>-->
 
       <el-form-item>
         <el-button type="primary" @click="handleSubmit"> {{ isLogin ? '登录' : '注册' }} </el-button>
@@ -62,8 +62,8 @@ export default {
   setup() {
     const formRef = ref(null); // 用于表单引用
     const formData = reactive({
-      empNum: "2424389790",
-      password: "123456",
+      empNum: "",
+      password: "",
       device: "PC",
       confirmPassword: "", // 注册时需要确认密码
       captcha: "", // 验证码
@@ -110,15 +110,15 @@ export default {
       const valid = await formRef.value.validate();
       if (valid) {
         try {
-          // const captchaResponseData = await proxy.$api.validateCaptcha({
-          //   captcha: formData.captcha,
-          // });
-          //
-          // if (!captchaResponseData) { // 验证码校验失败
-          //   ElMessage.error("验证码无效，请重新输入。");
-          //   await refreshCaptcha(); // 刷新验证码
-          //   return;
-          // }
+          const captchaResponseData = await proxy.$api.validateCaptcha({
+            captcha: formData.captcha,
+          });
+
+          if (!captchaResponseData) { // 验证码校验失败
+            ElMessage.error("验证码无效，请重新输入。");
+            await refreshCaptcha(); // 刷新验证码
+            return;
+          }
 
           if (isLogin.value) {
             // 正常登录逻辑
@@ -175,7 +175,7 @@ export default {
 
 
     const refreshCaptcha = async () => {
-      captchaUrl.value = await proxy.$api.getCaptcha(new Date().getTime());
+      // captchaUrl.value = await proxy.$api.getCaptcha(new Date().getTime());
       formData.captcha = ""; // 清空验证码输入框
       console.log(captchaUrl)
     };

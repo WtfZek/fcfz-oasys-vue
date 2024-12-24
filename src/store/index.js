@@ -94,40 +94,64 @@ export default createStore({
          * @param {Object} state - Vuex 的状态。
          * @param {Object} router - Vue Router 实例。
          */
+        // 动态添加路由
         addMenu(state, router) {
-            // 如果 localStorage 中没有菜单，则直接返回。
-            if (!localStorage.getItem('menu')) {
+            const storedMenu = localStorage.getItem('menu');
+            if (!storedMenu) {
                 return;
             }
-            // 从 localStorage 中解析出菜单。
-            const menu = JSON.parse(localStorage.getItem('menu'));
-            console.log('menu', menu)
+
+            const menu = JSON.parse(storedMenu);
             state.menu = menu;
 
             const menuArray = [];
 
-            // 递归构建路由组件
             const buildMenuArray = (items) => {
                 items.forEach(item => {
-                    let url = `../views/${item.url}.vue`;
-                    item.component = () => import(/* @vite-ignore */ url);
+                    // 这里的路径使用了 Vite 的别名 '@' 对应的路径
+                    const componentPath = `../views/${item.url}.vue`;  // 使用别名路径
+                    console.log('componentPath', componentPath);
+
+                    // 使用 import.meta.glob 动态加载组件
+                    const importRoute = import.meta.glob('../views/**/*.vue');  // 使用正确的路径模式
+
+                    console.log('importRoute', importRoute);
+
+                    // 匹配路径，注意 importRoute 里面的路径已经不带 '/src' 了
+                    const component = importRoute[componentPath];
+
+                    console.log('component', component);
+
+                    if (component) {
+                        // 使用动态 import() 来异步加载组件
+                        item.component = () => component();
+                    } else {
+                        console.warn(`No component found for path: ${componentPath}`);
+                    }
+
                     menuArray.push(item);
 
-                    // 如果有子菜单，递归处理
+                    // 递归处理子菜单
                     if (item.children && item.children.length > 0) {
                         buildMenuArray(item.children);
                     }
                 });
             };
 
-            // 开始构建菜单数组
             buildMenuArray(menu);
 
-            console.log('menuArray', menuArray)
-
-            // 将构建的菜单项添加到路由中。
+            // 将构建的菜单项添加到路由中
             menuArray.forEach(item => {
-                router.addRoute('home', item);
+                if (item.component) {
+                    router.addRoute('home', {
+                        path: item.path,
+                        name: item.name,  // 确保指定了 name
+                        component: item.component,
+                        children: item.children || []
+                    });
+                } else {
+                    console.warn(`Menu item with path "${item.path}" is missing a component.`);
+                }
             });
         },
 
