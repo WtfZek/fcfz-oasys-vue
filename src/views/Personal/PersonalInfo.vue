@@ -396,14 +396,12 @@ export default {
 .info-container {
   height: 100%;
 }
-
 .personal-info {
   margin-bottom: 20px;
   //display: flex;
   //justify-content: flex-start; /* 靠左对齐 */
   //align-items: flex-start; /* 靠上对齐 */
 }
-
 .update-password {
 
   margin-bottom: 20px;
