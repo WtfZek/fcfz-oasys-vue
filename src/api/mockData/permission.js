@@ -1,4 +1,4 @@
-import Mock from 'mockjs'
+// import Mock from 'mockjs'
 export default {
   getMenu: config => {
     const { username, password } = JSON.parse(config.body)

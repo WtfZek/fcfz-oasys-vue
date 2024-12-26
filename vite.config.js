@@ -20,19 +20,19 @@ export default defineConfig({
   ],
   server: {
     host:
-        '192.168.0.132',
+        'localhost',
     // 'localhost',
-    port: 5173,
+    port: 80,
     proxy: {
-        '/api': {
-            target: 'http://localhost:8088',
-            changeOrigin: true,
-          rewrite: path => path.replace(/^\/api/, '')
-        },
-        // '/res': {
-        //   target: 'https://fcfz-oa.oss-cn-shanghai.aliyuncs.com/',
-        //   changeOrigin: true,
-        //   rewrite: path => path.replace(/^\/api/, '').replace(/^\/res/, '')
+      '/api': {
+        target: 'http://localhost:8088',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, '')
+      },
+      // '/res': {
+      //   target: 'https://fcfz-oa.oss-cn-shanghai.aliyuncs.com/',
+      //   changeOrigin: true,
+      //   rewrite: path => path.replace(/^\/api/, '').replace(/^\/res/, '')
         // }
     }
   },

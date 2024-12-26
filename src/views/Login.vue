@@ -33,19 +33,19 @@
         </el-input>
       </el-form-item>
 
-      <!--      <el-form-item prop="captcha">-->
-      <!--        <el-input-->
-      <!--            type="input"-->
-      <!--            placeholder="请输入验证码"-->
-      <!--            v-model="formData.captcha"-->
-      <!--            class="captcha-input"-->
-      <!--        >-->
-      <!--        </el-input>-->
-      <!--        <img class="captcha" :src="captchaUrl" alt="验证码" @click="refreshCaptcha"/>-->
-      <!--      </el-form-item>-->
+      <el-form-item prop="captcha">
+        <el-input
+            type="input"
+            placeholder="请输入验证码"
+            v-model="formData.captcha"
+            class="captcha-input"
+        >
+        </el-input>
+        <img class="captcha" :src="captchaUrl" alt="验证码" @click="refreshCaptcha"/>
+      </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" @click="handleSubmit"> {{ isLogin ? '登录' : '注册' }} </el-button>
+        <el-button type="primary" @click="handleSubmit"> {{ isLogin ? '登录' : '注册' }}</el-button>
         <el-button disabled type="text" @click="toggleForm"> {{ isLogin ? '去注册' : '去登录' }}</el-button>
       </el-form-item>
     </el-form>
@@ -176,6 +176,7 @@ export default {
 
     const refreshCaptcha = async () => {
       // captchaUrl.value = await proxy.$api.getCaptcha(new Date().getTime());
+      captchaUrl.value = `http://8.129.26.229/api/captcha/get?${new Date().getTime()}`;
       formData.captcha = ""; // 清空验证码输入框
       console.log(captchaUrl)
     };

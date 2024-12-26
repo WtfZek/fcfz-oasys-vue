@@ -1,24 +1,6 @@
 <template>
   <div class="attendance-header">
-    <el-form :inline="true" :model="formSearch">
-      <!--      <el-form-item label="用户名">-->
-      <!--        <el-input clearable v-model="formSearch.userName" placeholder="请输入用户名" />-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="工号">-->
-      <!--        <el-input clearable v-model="formSearch.empNum" placeholder="请输入工号" />-->
-      <!--      </el-form-item>-->
-      <!--      </el-form-item>-->
-      <!--      <el-form-item label="入职日期">-->
-      <!--        &lt;!&ndash;        <el-input v-model="formSearch.userName" placeholder="请选择出生日期" />&ndash;&gt;-->
-      <!--        <el-date-picker-->
-      <!--            clearable-->
-      <!--            v-model="formSearch.timeIn"-->
-      <!--            type="date"-->
-      <!--            label="入职日期"-->
-      <!--            placeholder="请输入入职日期"-->
-      <!--            style="width: 100%"-->
-      <!--        />-->
-      <!--      </el-form-item>-->
+    <el-form :inline="true" :model="formSearch" style="min-width: 1300px">
       <el-form-item label="查找">
         <el-input
             clearable
@@ -37,7 +19,32 @@
           </template>
           <template #append>
             <el-button @click="handleSearch">
-              <el-icon ><Search/></el-icon>
+              <el-icon>
+                <Search/>
+              </el-icon>
+            </el-button>
+          </template>
+        </el-input>
+      </el-form-item>
+      <el-form-item label="">
+        <el-input
+            clearable
+            @clear="handleClear"
+            v-model="formSearch[selectedFieldTwo]"
+            placeholder="请输入查询内容"
+            class="input-with-select"
+        >
+          <template #prepend>
+            <el-select v-model="selectedFieldTwo" placeholder="Select" style="width: 120px"
+                       @change="handleSelectedFieldChange">
+              <el-option label="打卡状态" value="status"/>
+            </el-select>
+          </template>
+          <template #append>
+            <el-button @click="handleSearch">
+              <el-icon>
+                <Search/>
+              </el-icon>
             </el-button>
           </template>
         </el-input>
@@ -47,10 +54,11 @@
         <!--          <el-option label="精确查找" value="jq" />-->
         <!--          <el-option label="区间查找" value="qj" />-->
         <!--        </el-select>-->
-        <el-select v-model="selectedDateField" placeholder="Select" style="width: 120px" @change="handleSelectedDateFieldChange">
+        <el-select v-model="selectedDateField" placeholder="Select" style="width: 120px"
+                   @change="handleSelectedDateFieldChange">
           <!--          <el-option label="签到时间" value="timeIn" />-->
           <!--          <el-option label="签退时间" value="timeOut" />-->
-          <el-option label="签到日期" value="date" />
+          <el-option label="签到日期" value="date"/>
         </el-select>
         <span>
           <el-date-picker
@@ -113,7 +121,8 @@
           <!-- 切换锁定状态按钮 -->
           <el-tooltip :content="item.fixed ? '取消固定' : '将该列固定到左侧'" placement="top" :hide-after="500">
               <span @click="toggleFixed(item)"
-                    style=" margin-left: 5px;">
+                    style=" margin-left: 5px;"
+                    v-if="item.haveLock">
                 <el-icon v-if="item.fixed" color="#289eea"> <!-- 如果已固定，显示Unlock图标 -->
                   <Unlock/>
                 </el-icon>
@@ -257,6 +266,7 @@ export default defineComponent({
     const { proxy } = getCurrentInstance();
     const list = ref([]);
     const selectedField = ref('userName');
+    const selectedFieldTwo = ref('status');
     const selectedDateField = ref('date');
     const selectedDateModel = ref('jq');
     const tableLabel = reactive([
@@ -264,12 +274,14 @@ export default defineComponent({
         prop: "userName",
         label: "姓名",
         width: 100,
+        haveLock: false,
         // fixed: 'left',
       },
       {
         prop: "departName",
         label: "部门",
         width: 150,
+        haveLock: false,
         // fixed: 'left',
         filters: [
           {text: '销售部', value: '销售部'},
@@ -283,6 +295,7 @@ export default defineComponent({
         prop: "date",
         label: "签到日期",
         width: 150,
+        haveLock: false,
         fixed: false,
         sortable: true,
       },
@@ -290,6 +303,7 @@ export default defineComponent({
         prop: "timeIn",
         label: "签到时间",
         width: 180,
+        haveLock: false,
         fixed: false,
         sortable: true,
       },
@@ -297,6 +311,7 @@ export default defineComponent({
         prop: "timeOut",
         label: "签退时间",
         width: 180,
+        haveLock: false,
         fixed: false,
         sortable: true,
       },
@@ -304,26 +319,29 @@ export default defineComponent({
         prop: "status",
         label: "状态",
         width: 120,
+        haveLock: false,
         fixed: false,
         filters: [
-          { text: '打卡成功', value: '打卡成功' },
-          { text: '打卡失败', value: '打卡失败' },
+          {text: '打卡成功', value: '打卡成功'},
+          {text: '打卡失败', value: '打卡失败'},
         ]
       },
       {
         prop: "type",
         label: "打卡类型",
         width: 120,
+        haveLock: false,
         fixed: false,
         filters: [
-          { text: '打卡成功', value: '打卡成功' },
-          { text: '打卡失败', value: '打卡失败' },
+          {text: '打卡成功', value: '打卡成功'},
+          {text: '打卡失败', value: '打卡失败'},
         ]
       },
       {
         prop: "address",
         label: "打卡地址",
-        width: 220,
+        width: 260,
+        haveLock: false,
         fixed: false,
       },
     ]);
@@ -555,13 +573,17 @@ export default defineComponent({
     };
 
     const handleClear = () => {
-      // 清空搜索表单数据
+      // 清空搜索表单数据 formSearch
+      Object.keys(formSearch).forEach((key) => {
+        formSearch[key] = null;
+      });
       handleSearch(pageSearch);
     };
 
     return {
       list,
       tableLabel,
+      selectedFieldTwo,
       // tableLayout,
       pageSearch,
       selectedField,
@@ -600,7 +622,7 @@ export default defineComponent({
   background-color: #fafafa;
   position: relative;
   height: calc(100% - 70px);
-  min-width: 1120px;
+  min-width: 1400px;
   //max-height: 80vh; /* 使用视口高度作为参考 */
   .el-table {
     --el-table-border-color: #c1c1c1b0;
@@ -608,8 +630,8 @@ export default defineComponent({
     --el-table-header-text-color: #333;
     --el-table-header-bg-color: #e5e5e5;
     --el-table-tr-bg-color: #f3f3f3;
-    --el-table-fixed-left-column: inset 10px 0 10px -10px rgba(0,0,0,0.15);
-    --el-table-fixed-right-column: inset -10px 0 10px -10px rgba(0,0,0,0.15);
+    --el-table-fixed-left-column: inset 10px 0 10px -10px rgba(0, 0, 0, 0.15);
+    --el-table-fixed-right-column: inset -10px 0 10px -10px rgba(0, 0, 0, 0.15);
     color: #454545;
     //min-height: auto !important;
     height: 100%;

@@ -1,6 +1,6 @@
 <template>
   <div class="user-header">
-    <el-form :inline="true" :model="formSearch">
+    <el-form :inline="true" :model="formSearch" style="min-width: 1400px">
       <el-collapse v-model="activeCollapse" @change="handleCollapseChange">
         <el-collapse-item name="1" :icon="CaretRight" :is-active="false">
           <!--      <el-form-item label="用户名">-->
@@ -58,7 +58,7 @@
                 <el-input
                     clearable
                     @clear="handleClear"
-                    v-model="formSearch['departmentName']"
+                    v-model="formSearch['departName']"
                     placeholder="请输入查询内容"
                     class="input-with-select"
                 >
@@ -323,7 +323,7 @@
               ]"
               style="width: 90%"
           >
-            <el-select v-if="opsUserRole = 1"
+            <el-select v-if="opsUserRole === 1"
                        :disabled="!(opsUserRole === 1 || opsUserRole === 2) || formUserInfo.userId === opsUserId && action !== 'add'"
                        v-model="formUserInfo.roleId" placeholder="请选择系统角色">
               <el-option
@@ -485,7 +485,7 @@ export default defineComponent({
 
     const activeCollapse = ref([]);
 
-    const userInfoForm = ref({});
+    const userInfoForm = reactive({});
 
     // const tableLayout = ref<TableInstance['tableLayout']>('fixed')
     const {proxy} = getCurrentInstance();
@@ -618,7 +618,7 @@ export default defineComponent({
           userId: 7,
           userName: "涂子航",
           roleName: "admin",
-          departmentName: "人事部",
+          departName: "人事部",
           userImage: "ssss",
           empNum: "20221107040",
           telephone: "13094295529",
@@ -631,7 +631,7 @@ export default defineComponent({
           userId: 8,
           userName: "小尹",
           roleName: "admin",
-          departmentName: "综合部",
+          departName: "综合部",
           userImage: "sdasdsa",
           empNum: "2424389790",
           telephone: "2313231",
@@ -671,7 +671,7 @@ export default defineComponent({
     const formSearch = reactive({
       userName: null,
       empNum: null,
-      departmentName: null,
+      departName: null,
       telephone: null,
       email: null,
       timeIn: null,
@@ -979,7 +979,10 @@ export default defineComponent({
     };
 
     const handleClear = () => {
-      // 清空搜索表单数据
+      // 清空搜索表单数据 formSearch
+      Object.keys(formSearch).forEach((key) => {
+        formSearch[key] = null;
+      });
       handleSearch(pageSearch);
     };
 
@@ -1077,7 +1080,7 @@ export default defineComponent({
   background-color: #fafafa;
   position: relative;
   //height: calc(100% - 75px);
-  min-width: 1200px;
+  min-width: 1600px;
   //max-height: 80%;
   .el-table {
     --el-table-border-color: #c1c1c1b0;

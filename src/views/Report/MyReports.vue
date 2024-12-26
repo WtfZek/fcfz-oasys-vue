@@ -314,7 +314,7 @@ export default {
 
     const editorConfig = computed(() => ({
       // 后端服务地址，后端处理参考
-      serverUrl: 'http://192.168.0.132:5173/api/ueditor',
+      serverUrl: '/api/ueditor',
       UEDITOR_HOME_URL: '/static/UEditorPlus/dist-min/',
       UEDITOR_CORS_URL: '/static/UEditorPlus/dist-min/',
       toolbars: isUpdate.value || isCreate.value ? toolbarsForUpdate : [],
@@ -630,13 +630,13 @@ export default {
           message: '报告已删除',
         })
 
-        dialogVisible.value = false; // 关闭弹窗
+        personalReports.value = [];
+        console.log("personalReports 应为空", personalReports.value)
+        pageSearch.pageNum = 1;
+        await loadScrollPage();
+        allLoaded.value = false;
         isUpdate.value = false;
         isCreate.value = false;
-        // 重新获取一次个人报告
-        personalReports.value = [];
-        pageSearch.pageNum = 1;
-        loadScrollPage();
 
         // 重置 currentReport
         currentActiveIndex.value = currentActiveIndex.value > 0 ? currentActiveIndex.value - 1 : 0;

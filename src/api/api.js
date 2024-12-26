@@ -124,25 +124,34 @@ export default {
 
   // 获取个人信息逻辑
   getUserList(params) {
-    return request({
-      url: '/user/list',
-      method: 'post',
-      mock: false,
-      data: {
-        ...params
-      },
-    });
+      return request({
+          url: '/user/list',
+          method: 'post',
+          mock: false,
+          data: {
+              ...params
+          },
+      });
   },
 
-  getAttendanceDataList(params) {
-    return request({
-      url: '/attendance/getAllAttendance',
-      method: 'post',
-      mock: false,
-      data: {
-        ...params
-      },
-    });
+    // 获取个人信息逻辑
+    getUserById(params) {
+        return request({
+            url: `/user/info/${params}`,
+            method: 'get',
+            mock: false,
+        });
+    },
+
+    getAttendanceDataList(params) {
+        return request({
+            url: '/attendance/getAllAttendance',
+            method: 'post',
+            mock: false,
+            data: {
+                ...params
+            },
+        });
   },
 
   getAttendanceSelfList(params) {
@@ -267,7 +276,7 @@ export default {
 
     getUeditor(params) {
         return request({
-            url: `ueditor`,
+            url: `ueditor?action=` + params,
             method: 'get',
             mock: false
         })
@@ -320,14 +329,6 @@ export default {
         })
     },
 
-    getReportCount() {
-        return request({
-            url: '/home/getCountData',
-            method: 'get',
-            mock: false
-        })
-    },
-
     deleteReport(reportIds) {
         return request({
             url: '/report/deleteReports',
@@ -337,4 +338,25 @@ export default {
         })
     },
 
+    updatePassword(oldPassword, newPassword) {
+        return request({
+            url: `/user/updateSelfPassword?oldPassword=${oldPassword}&newPassword=${newPassword}`,
+            method: 'post',
+            mock: false,
+            // params: {
+            //     ...params
+            // }
+        })
+    },
+
+    getSelfReportCount(year, month) {
+        return request({
+            url: `/report/getSelfReportCount?year=${year}&month=${month}`,
+            method: 'get',
+            mock: false,
+            // params: {
+            //     ...params
+            // }
+        })
+    },
 }

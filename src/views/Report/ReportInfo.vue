@@ -83,22 +83,6 @@
 
         <el-footer class="bottom-footer">
           <el-row type="flex" justify="start" align="middle" class="shared-user-list">
-            <el-form :model="currentReport">
-
-            </el-form>
-          </el-row>
-
-          <el-row type="flex" justify="end">
-            <el-col v-if="!isUpdate">
-              <!--              <el-button type="warning" @click="handleCreateReport">新建</el-button>-->
-              <!--              <el-button type="primary" @click="handleToUpdate">编辑</el-button>-->
-              <!--              <el-button type="danger" @click="handleDeleteReport">删除</el-button>-->
-            </el-col>
-            <el-col v-if="isUpdate || isCreate">
-              <!--              <el-button type="success" @click="handleSaveUpdate">保存</el-button>-->
-              <!--              <el-button type="primary" @click="handleSubmitUpdate">提交</el-button>-->
-              <!--              <el-button type="danger" @click="handleCancelUpdate">取消</el-button>-->
-            </el-col>
             <el-form-item
                 label="该报告已分享至"
                 style="margin: 0; display: flex; align-items: center;"
@@ -119,6 +103,38 @@
                 </div>
               </el-tooltip>
             </el-form-item>
+          </el-row>
+
+          <el-row type="flex" justify="end">
+            <el-form :model="currentReport">
+              <el-form-item
+                  label="汇报人"
+                  style="margin: 0; display: flex; align-items: center; position: relative"
+              >
+                <el-tooltip :content="currentReportUser.userName" placement="top"
+                            :hide-after="150">
+                  <img
+                      class="userImage"
+                      :src="currentReportUser.userImage || defaultAvatar"
+                      @error="handleImageError"
+                      :alt="currentReportUser.userName"
+                  />
+                </el-tooltip>
+              </el-form-item>
+            </el-form>
+
+            <el-col v-if="!isUpdate">
+              <!--              <el-button type="warning" @click="handleCreateReport">新建</el-button>-->
+              <!--              <el-button type="primary" @click="handleToUpdate">编辑</el-button>-->
+              <!--              <el-button type="danger" @click="handleDeleteReport">删除</el-button>-->
+            </el-col>
+            <el-col v-if="isUpdate || isCreate">
+              <!--              <el-button type="success" @click="handleSaveUpdate">保存</el-button>-->
+              <!--              <el-button type="primary" @click="handleSubmitUpdate">提交</el-button>-->
+              <!--              <el-button type="danger" @click="handleCancelUpdate">取消</el-button>-->
+            </el-col>
+
+
           </el-row>
         </el-footer>
 
@@ -231,9 +247,11 @@ export default {
 
     const currentReportShareUsers = ref([]);
 
+    const currentReportUser = ref([]);
+
     const editorConfig = computed(() => ({
       // 后端服务地址，后端处理参考
-      serverUrl: 'http://192.168.0.132:5173/api/ueditor',
+      serverUrl: '/api/ueditor',
       UEDITOR_HOME_URL: '/static/UEditorPlus/dist-min/',
       UEDITOR_CORS_URL: '/static/UEditorPlus/dist-min/',
       toolbars: isUpdate.value ? toolbarsForUpdate : [],
@@ -482,6 +500,7 @@ export default {
         // 先去除 [ 和 ] 再按,拆分
         let userIds = currentReport.value.shareUserId.replace(/[\[\]]/g, '').split(',').map(Number);
         currentReportShareUsers.value = await proxy.$api.getReportShareUserList(userIds);
+        currentReportUser.value = await proxy.$api.getUserById(currentReport.value.reportUserId);
 
         // 确保返回数据有效
         if (!Array.isArray(currentReportShareUsers.value) || currentReportShareUsers.value.length === 0) {
@@ -560,6 +579,7 @@ export default {
       dialogVisible,
       currentActiveIndex,
       currentReportShareUsers,
+      currentReportUser,
       loadScrollPage,
       handleToUpdate,
       handleCancelUpdate,

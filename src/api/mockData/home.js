@@ -62,7 +62,7 @@ export default {
               color: "#2ec7c9",
           },
           {
-            name: "日志总数", // Total Logs
+            name: "提交日志总次数", // Total Logs
             value: 210,
             icon: "Edit", // 修改为“Edit”图标
             color: "#ffb980",

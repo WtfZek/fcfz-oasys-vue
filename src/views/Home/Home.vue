@@ -12,18 +12,22 @@
         <div class="login-info">
           <p>上次登录时间:<span>{{ previousDate }}</span></p>
           <p>上次登录的地点:<span>湖北 - 武汉</span></p>
+          <!--          加一个淡暗红色字备注数据不真实-->
+          <p style="color: rgba(255,0,0,0.68)">注：数据仅供参考</p>
         </div>
       </el-card>
-      <el-card shadow="hover" style="margin-top: 20px" height="450px">
-<!--        <el-table :data="tableData">-->
-<!--          <el-table-column-->
-<!--              v-for="(val, key) in tableLabel"-->
-<!--              :key="key"-->
-<!--              :prop="key"-->
-<!--              :label="val"-->
-<!--          >-->
-<!--          </el-table-column>-->
-<!--        </el-table>-->
+      <el-card shadow="hover" style="margin-top: 20px; ">
+        <!--        <el-table :data="tableData">-->
+        <!--          <el-table-column-->
+        <!--              v-for="(val, key) in tableLabel"-->
+        <!--              :key="key"-->
+        <!--              :prop="key"-->
+        <!--              :label="val"-->
+        <!--          >-->
+        <!--          </el-table-column>-->
+        <!--        </el-table>-->
+        <!--        <ChristmasTree />-->
+
       </el-card>
     </el-col>
     <el-col :span="16" style="margin-top: 20px" class="right-num">
@@ -41,19 +45,27 @@
           ></component>
           <div class="detail">
             <p class="num">{{ item.value }} 次</p>
-            <p class="txt">{{ item.name }}</p>
+            <p v-if="item.name" class="txt">{{ item.name }}</p>
+            <!--          加一个淡暗红色字备注数据不真实-->
+            <p v-if="item.name==='审批申请数'" class="txt" style="color: rgba(255,0,0,0.68)">注：数据仅供参考</p>
           </div>
         </el-card>
       </div>
       <el-card style="height: 280px" shadow="hover">
+        <p class="txt" style="color: rgba(255,0,0,0.68)">注：数据仅供参考</p>
         <div ref="echart" style="height: 280px;"></div>
+        <!--          加一个淡暗红色字备注数据不真实-->
       </el-card>
       <div class="graph">
-        <el-card style="height: 260px" shadow="hover">
+        <el-card style="height: 280px" shadow="hover">
+          <p class="txt" style="color: rgba(255,0,0,0.68)">注：数据仅供参考</p>
           <div ref="userechart" style="height: 240px"></div>
+          <!--          加一个淡暗红色字备注数据不真实-->
         </el-card>
-        <el-card style="height: 260px" shadow="hover">
+        <el-card style="height: 280px" shadow="hover">
+          <p class="txt" style="color: rgba(255,0,0,0.68)">注：数据仅供参考</p>
           <div ref="videoechart" style="height: 240px"></div>
+          <!--          加一个淡暗红色字备注数据不真实-->
         </el-card>
       </div>
     </el-col>
@@ -70,16 +82,57 @@ import {
 
 import {useRouter} from "vue-router";
 import defaultAvatar from '@/assets/images/defaultUser.png';
+import ChristmasTree from '@/views/ChristmasTree.vue'
 
 // import axios from "axios";
 import * as echarts from "echarts";
 
 export default defineComponent({
+  components: {
+    ChristmasTree,
+  },
   setup() {
     const router = useRouter();
     const {proxy} = getCurrentInstance();
     let tableData = ref([]);
-    let countData = ref([]);
+    let countData = ref([
+      {
+        name: "本年度打卡", // Clock-in Total Count
+        value: 1234,
+        icon: "SuccessFilled", // 修改为“Clock”图标
+        color: "#2ec7c9",
+      },
+      {
+        name: "提交日志总次数", // Total Logs
+        value: 210,
+        icon: "Edit", // 修改为“Edit”图标
+        color: "#ffb980",
+      },
+      {
+        name: "审批申请数", // Approval Requests
+        value: 1234,
+        icon: "DocumentChecked", // 修改为“DocumentChecked”图标
+        color: "#5ab1ef",
+      },
+      // {
+      //   name: "本月支付订单",
+      //   value: 1234,
+      //   icon: "SuccessFilled",
+      //   color: "#2ec7c9",
+      // },
+      // {
+      //   name: "本月收藏订单",
+      //   value: 210,
+      //   icon: "StarFilled",
+      //   color: "#ffb980",
+      // },
+      // {
+      //   name: "本月未支付订单",
+      //   value: 1234,
+      //   icon: "GoodsFilled",
+      //   color: "#5ab1ef",
+      // },
+    ]);
 
     let previousDate = ref(""); // 新增的响应式属性
 
@@ -111,26 +164,28 @@ export default defineComponent({
     const getCountData = async () => {
       let res = await proxy.$api.getCountData();
       // let reportRes = await proxy.$api.getReportCount();
-      countData.value = res.countData;
+      // countData.value = res.countData;
     };
 
     const getAttendanceCountData = async () => {
       // 传入第一个参数是今年年份的整数，第二个参数是本月月份的整数
       let attendanceRes = await proxy.$api.getAttendanceCount(new Date().getFullYear(), 0);
+      let reportRes = await proxy.$api.getSelfReportCount(new Date().getFullYear(), 0);
       // 获取数组countData.value的第一个元素
       countData.value[0].value = attendanceRes.success + attendanceRes.fail;
       countData.value[0].name = countData.value[0].name + "（包含打卡失败 " + attendanceRes.fail + " 次）";
+      countData.value[1].value = reportRes.daily + reportRes.weekly + reportRes.monthly;
     };
 
     onMounted(async () => {
       await getYesterdayDate();
       // 调用获取前一天日期的函数
-      await getTableList();
+      // await getTableList();
       // 获取count数据
-      await getCountData();
+      // await getCountData();
       await getAttendanceCountData();
       // 获取echarts表格数据
-      await getChartData();
+      // await getChartData();
     });
 
     // 关于 echarts 表格的渲染部分
@@ -203,13 +258,142 @@ export default defineComponent({
     // 获取数据
     const getChartData = async () => {
       // 异步从 API 获取图表数据
-      let result = await proxy.$api.getChartData();
+      // let result = await proxy.$api.getChartData();
       // console.log(result); // 输出结果以便调试
 
       // 从结果中提取订单数据、用户数据和视频数据
-      let orderRes = result.orderData; // 包含折线图的数据
-      let userRes = result.userData; // 包含柱状图的数据
-      let videoRes = result.videoData; // 包含饼图的数据
+      // let orderRes = result.orderData; // 包含折线图的数据
+      // let userRes = result.userData; // 包含柱状图的数据
+      // let videoRes = result.videoData; // 包含饼图的数据
+
+      const getRandomInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+      let orderRes = {
+        date: ['2024.10.01', '2024.10.02', '2024.10.03', '2024.10.04', '2024.10.05', '2024.10.06', '2024.10.07'],
+        data: [
+          {
+            "采购": getRandomInt(1000, 5000),
+            "驻场": getRandomInt(1000, 5000),
+            "出差": getRandomInt(1000, 5000),
+            "合同": getRandomInt(1000, 5000),
+            "预算": getRandomInt(1000, 5000),
+            "请假": getRandomInt(1000, 5000),
+          },
+          {
+            "采购": getRandomInt(1000, 5000),
+            "驻场": getRandomInt(1000, 5000),
+            "出差": getRandomInt(1000, 5000),
+            "合同": getRandomInt(1000, 5000),
+            "预算": getRandomInt(1000, 5000),
+            "请假": getRandomInt(1000, 5000),
+          },
+          {
+            "采购": getRandomInt(1000, 5000),
+            "驻场": getRandomInt(1000, 5000),
+            "出差": getRandomInt(1000, 5000),
+            "合同": getRandomInt(1000, 5000),
+            "预算": getRandomInt(1000, 5000),
+            "请假": getRandomInt(1000, 5000),
+          },
+          {
+            "采购": getRandomInt(1000, 5000),
+            "驻场": getRandomInt(1000, 5000),
+            "出差": getRandomInt(1000, 5000),
+            "合同": getRandomInt(1000, 5000),
+            "预算": getRandomInt(1000, 5000),
+            "请假": getRandomInt(1000, 5000),
+          },
+          {
+            "采购": getRandomInt(1000, 5000),
+            "驻场": getRandomInt(1000, 5000),
+            "出差": getRandomInt(1000, 5000),
+            "合同": getRandomInt(1000, 5000),
+            "预算": getRandomInt(1000, 5000),
+            "请假": getRandomInt(1000, 5000),
+          },
+          {
+            "采购": getRandomInt(1000, 5000),
+            "驻场": getRandomInt(1000, 5000),
+            "出差": getRandomInt(1000, 5000),
+            "合同": getRandomInt(1000, 5000),
+            "预算": getRandomInt(1000, 5000),
+            "请假": getRandomInt(1000, 5000),
+          },
+          {
+            "采购": getRandomInt(1000, 5000),
+            "驻场": getRandomInt(1000, 5000),
+            "出差": getRandomInt(1000, 5000),
+            "合同": getRandomInt(1000, 5000),
+            "预算": getRandomInt(1000, 5000),
+            "请假": getRandomInt(1000, 5000),
+          }
+        ],
+      }; // 包含折线图的数据
+      let userRes = [
+        {
+          date: '周一',
+          new: 5,
+          active: 200
+        },
+        {
+          date: '周二',
+          new: 10,
+          active: 500
+        },
+        {
+          date: '周三',
+          new: 12,
+          active: 550
+        },
+        {
+          date: '周四',
+          new: 60,
+          active: 800
+        },
+        {
+          date: '周五',
+          new: 65,
+          active: 550
+        },
+        {
+          date: '周六',
+          new: 53,
+          active: 770
+        },
+        {
+          date: '周日',
+          new: 33,
+          active: 170
+        }
+      ]; // 包含柱状图的数据
+      let videoRes = [
+        {
+          name: '驻场',
+          value: 2999
+        },
+        {
+          name: '出差',
+          value: 5999
+        },
+        {
+          name: '请假',
+          value: 1500
+        },
+        {
+          name: '预算',
+          value: 1999
+        },
+        {
+          name: '合同',
+          value: 2200
+        },
+        {
+          name: '采购',
+          value: 4500
+        }
+      ]; // 包含饼图的数据
+
+      console.log("orderRes, userRes, videoRes", orderRes, userRes, videoRes)
 
       // 准备折线图的 x 轴数据
       orderData.xData = orderRes.date; // 设置 x 轴日期数据
