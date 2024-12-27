@@ -403,7 +403,6 @@ export default {
   //align-items: flex-start; /* 靠上对齐 */
 }
 .update-password {
-
   margin-bottom: 20px;
 }
 
@@ -411,7 +410,7 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  min-height: 300px; /* 设置最小高度，使得按钮区位于底部 */
+  min-height: 240px; /* 设置最小高度，使得按钮区位于底部 */
   min-width: 800px;
 }
 

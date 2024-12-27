@@ -790,8 +790,8 @@ export default defineComponent({
             console.log('formatBeforFormUserInfo', formUserInfo)
             formUserInfo.status === "在职" ? formUserInfo.status = 1 : (formUserInfo.status === "出差" ? formUserInfo.status = 2 : formUserInfo.status = 0);
             formUserInfo.upTime = formUserInfo.upTime && formUserInfo.upTime !== '-' ? parseToISO8601(formatDateTime(formUserInfo.upTime)) : null;
-            formUserInfo.ctTime = formUserInfo.upTime && formUserInfo.upTime !== '-' ? parseToISO8601(formatDateTime(formUserInfo.ctTime)) : null;
-            formUserInfo.timeIn = formUserInfo.upTime && formUserInfo.upTime !== '-' ? parseToISO8601(formatDateTime(formUserInfo.timeIn)) : null;
+            formUserInfo.ctTime = formUserInfo.ctTime && formUserInfo.ctTime !== '-' ? parseToISO8601(formatDateTime(formUserInfo.ctTime)) : null;
+            formUserInfo.timeIn = formUserInfo.timeIn && formUserInfo.timeIn !== '-' ? parseToISO8601(formatDateTime(formUserInfo.timeIn)) : null;
             console.log('formUserInfo', formUserInfo)
             formUserInfo.userId = null;
             let res = await proxy.$api.saveUser(formUserInfo);
@@ -808,8 +808,8 @@ export default defineComponent({
             console.log('formatBeforFormUserInfo', formUserInfo)
             formUserInfo.status === "在职" ? formUserInfo.status = 1 : (formUserInfo.status === "出差" ? formUserInfo.status = 2 : formUserInfo.status = 0);
             formUserInfo.upTime = formUserInfo.upTime && formUserInfo.upTime !== '-' ? parseToISO8601(formatDateTime(formUserInfo.upTime)) : null;
-            formUserInfo.ctTime = formUserInfo.upTime && formUserInfo.upTime !== '-' ? parseToISO8601(formatDateTime(formUserInfo.ctTime)) : null;
-            formUserInfo.timeIn = formUserInfo.upTime && formUserInfo.upTime !== '-' ? parseToISO8601(formatDateTime(formUserInfo.timeIn)) : null;
+            formUserInfo.ctTime = formUserInfo.ctTime && formUserInfo.ctTime !== '-' ? parseToISO8601(formatDateTime(formUserInfo.ctTime)) : null;
+            formUserInfo.timeIn = formUserInfo.timeIn && formUserInfo.timeIn !== '-' ? parseToISO8601(formatDateTime(formUserInfo.timeIn)) : null;
             console.log('formUserInfo', formUserInfo)
             let res = await proxy.$api.updateUser(formUserInfo);
             console.log('res', res)
