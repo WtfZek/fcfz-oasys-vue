@@ -123,17 +123,7 @@
               </el-form-item>
             </el-form>
 
-            <el-col v-if="!isUpdate">
-              <!--              <el-button type="warning" @click="handleCreateReport">新建</el-button>-->
-              <!--              <el-button type="primary" @click="handleToUpdate">编辑</el-button>-->
-              <!--              <el-button type="danger" @click="handleDeleteReport">删除</el-button>-->
-            </el-col>
-            <el-col v-if="isUpdate || isCreate">
-              <!--              <el-button type="success" @click="handleSaveUpdate">保存</el-button>-->
-              <!--              <el-button type="primary" @click="handleSubmitUpdate">提交</el-button>-->
-              <!--              <el-button type="danger" @click="handleCancelUpdate">取消</el-button>-->
-            </el-col>
-
+            <el-button type="primary" @click="exportAllReport">导出所有日报</el-button>
 
           </el-row>
         </el-footer>
@@ -559,6 +549,47 @@ export default {
       console.log("当前图片地址：" + event.target.src);
     };
 
+    const exportAllReport = async () => {
+      try {
+        const exportReportRes = await proxy.$api.exportAllReport();
+
+        // 获取响应中的 Blob 数据
+        const blob = exportReportRes.data;
+
+        // 获取文件名（从 Content-Disposition 头部获取）
+        const contentDisposition = exportReportRes.headers['content-disposition'];
+        let fileName = '下载的文件.xlsx';  // 默认文件名
+
+        console.log("contentDisposition", contentDisposition);
+
+        const fileName2 = contentDisposition.split("=")[1].split("\.")[0]
+        fileName = decodeURIComponent(fileName2);
+        // 创建一个 URL 对象，绑定到 Blob 上
+        const url = window.URL.createObjectURL(blob);
+
+        // 创建一个临时的下载链接
+        const link = document.createElement('a');
+        link.href = url;
+
+        // 设置文件名
+        link.download = fileName;
+
+        // 触发点击事件，开始下载
+        document.body.appendChild(link);
+        link.click();
+
+        // 下载完成后移除临时链接
+        document.body.removeChild(link);
+
+        // 释放 Blob 对象创建的 URL
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('下载文件失败:', error);
+        ElMessage.error('下载文件失败，请重试');
+      }
+    };
+
+
     onMounted(async () => {
       console.log("默认用户图片地址：", defaultAvatar);
       await loadScrollPage();
@@ -591,6 +622,7 @@ export default {
       handleImageError,
       formatDateTime,
       formatDate,
+      exportAllReport,
     }
   }
 }

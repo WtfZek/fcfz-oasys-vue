@@ -59,12 +59,14 @@
           <!--          <el-option label="签到时间" value="timeIn" />-->
           <!--          <el-option label="签退时间" value="timeOut" />-->
           <el-option label="签到日期" value="date"/>
+          <el-option label="签到年份" value="year"/>
+          <el-option label="签到月份" value="month"/>
         </el-select>
         <span>
           <el-date-picker
               clearable
               @clear="handleClear"
-              v-if="selectedDateModel === 'jq'"
+              v-if="selectedDateModel === 'jq' && selectedDateField === 'date'"
               v-model="formSearch[selectedDateField]"
               format="YYYY-MM-DD"
               value-format="YYYY-MM-DD"
@@ -76,7 +78,7 @@
           <el-date-picker
               clearable
               @clear="handleClear"
-              v-if="selectedDateModel === 'qj'"
+              v-if="selectedDateModel === 'qj' && selectedDateField === 'date'"
               v-model="formSearch[selectedDateField+selectedDateModel]"
               type="daterange"
               unlink-panels
@@ -85,6 +87,30 @@
               end-placeholder="结束时间"
               :shortcuts="shortcuts"
               :size="size"
+          />
+          <el-date-picker
+              clearable
+              @clear="handleClear"
+              v-if="selectedDateField === 'month'"
+              v-model="formSearch[selectedDateField]"
+              format="YYYY-MM"
+              value-format="YYYY-MM"
+              type="datetime"
+              label="日期"
+              placeholder="请输入签到日期"
+              style="width: 100%"
+          />
+          <el-date-picker
+              clearable
+              @clear="handleClear"
+              v-if="selectedDateField === 'year'"
+              v-model="formSearch[selectedDateField]"
+              format="YYYY"
+              value-format="YYYY"
+              type="datetime"
+              label="日期"
+              placeholder="请输入签到日期"
+              style="width: 100%"
           />
         </span>
         <span>
@@ -96,6 +122,7 @@
     </el-form>
     <!-- 右侧按钮区域 -->
     <div class="right-container">
+      <el-button type="primary" @click="handleExport">导出 Excel</el-button>
       <el-button disabled type="danger" @click="handleDeleteAll">× 批量删除</el-button>
       <!--      <el-button type="primary" @click="handleAdd">+ 新增</el-button>-->
     </div>
@@ -351,6 +378,18 @@ export default defineComponent({
       getAttendanceDataList(pageSearch);
     });
 
+    const exportFormSearch = reactive({
+      userName: null,
+      departName: null,
+      timeIn: null,
+      timeOut: null,
+      date: null,
+      status: null,
+      address: null,
+      type: null,
+      year: null,
+      month: null,
+    });
     const formSearch = reactive({
       userName: null,
       departName: null,
@@ -360,6 +399,8 @@ export default defineComponent({
       status: null,
       address: null,
       type: null,
+      year: null,
+      month: null,
     });
     const pageSearch = reactive({
       pageNum: 1,
@@ -415,6 +456,8 @@ export default defineComponent({
     const handleSearch = async () => {
       pageSearch.pageNum = 1;
       await getAttendanceDataList(pageSearch);
+      // 用Object拷贝pageSearch.data给exportFormSearch
+      Object.assign(exportFormSearch, pageSearch.data);
     };
 
     // 控制模态框的显示隐藏
@@ -580,6 +623,50 @@ export default defineComponent({
       handleSearch(pageSearch);
     };
 
+    const handleExport = async () => {
+      try {
+        const exportAttendanceRes = await proxy.$api.exportAttendance(exportFormSearch);
+
+        // 获取响应中的 Blob 数据
+        const blob = exportAttendanceRes.data;
+
+        // 获取文件名（从 Content-Disposition 头部获取）
+        const contentDisposition = exportAttendanceRes.headers['content-disposition'];
+        let fileName = '下载的文件.xlsx';  // 默认文件名
+
+        console.log("contentDisposition", contentDisposition);
+
+        const fileName2 = contentDisposition.split("=")[1].split("\.")[0]
+        fileName = decodeURIComponent(fileName2);
+        // 创建一个 URL 对象，绑定到 Blob 上
+        const url = window.URL.createObjectURL(blob);
+
+        // 创建一个临时的下载链接
+        const link = document.createElement('a');
+        link.href = url;
+
+        // 设置文件名
+        link.download = fileName;
+
+        // 触发点击事件，开始下载
+        document.body.appendChild(link);
+        link.click();
+
+        // 下载完成后移除临时链接
+        document.body.removeChild(link);
+
+        // 释放 Blob 对象创建的 URL
+        window.URL.revokeObjectURL(url);
+        // 下载完成后刷新页面
+        setTimeout(() => {
+          window.location.reload();
+        }, 500); // 可适当延迟 1 秒，确保文件下载链接被触发
+      } catch (error) {
+        console.error('下载文件失败:', error);
+        ElMessage.error('下载文件失败，请重试');
+      }
+    };
+
     return {
       list,
       tableLabel,
@@ -609,6 +696,7 @@ export default defineComponent({
       handleClear,
       changeCurrentPage,
       changeSizePage,
+      handleExport,
       // formatDateTime,
       // handleDeleteAll,
     };

@@ -343,9 +343,6 @@ export default {
             url: `/user/updateSelfPassword?oldPassword=${oldPassword}&newPassword=${newPassword}`,
             method: 'post',
             mock: false,
-            // params: {
-            //     ...params
-            // }
         })
     },
 
@@ -354,9 +351,25 @@ export default {
             url: `/report/getSelfReportCount?year=${year}&month=${month}`,
             method: 'get',
             mock: false,
-            // params: {
-            //     ...params
-            // }
+        })
+    },
+
+    exportAllReport() {
+        return request({
+            url: `/report/downloadExcel`,
+            method: 'get',
+            mock: false,
+            responseType: 'blob',
+        })
+    },
+
+    exportAttendance(params) {
+        return request({
+            url: `/attendance/exportAttendance`,
+            method: 'get',
+            mock: false,
+            responseType: 'blob',
+            data: params
         })
     },
 }

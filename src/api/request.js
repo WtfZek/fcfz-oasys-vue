@@ -28,9 +28,14 @@ service.interceptors.request.use((req) => {
 
 // 在请求之后做一些事情
 service.interceptors.response.use((res) => {
-  // if (res.config.url.includes('/captcha/get')) {
-  //   return res;
-  // }
+  // 判断是否为下载类的文件响应（根据 Content-Type 判断）
+  const contentType = res.headers['content-type'];
+
+  // 如果是下载文件响应，直接返回 Blob
+  if (contentType.includes('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8')) {
+    return res;  // 返回 Blob 数据
+  }
+
   const {code, data, msg} = res.data
   console.log('res', res)
   console.log('code', code)
