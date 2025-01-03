@@ -123,7 +123,7 @@
               </el-form-item>
             </el-form>
 
-            <el-button type="primary" @click="exportAllReport">导出所有日报</el-button>
+<!--            <el-button type="primary" @click="exportAllReport">导出所有日报</el-button>-->
 
           </el-row>
         </el-footer>

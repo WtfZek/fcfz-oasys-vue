@@ -1,5 +1,4 @@
 <template>
-  <div v-html="htmlContent"></div>
   <el-card class="my-card">
     <div style="width: 100%; display: flex; justify-content: center; align-items: center;">
       <el-form
@@ -216,6 +215,7 @@
 
   </el-card>
 
+  <div v-html="htmlContent"></div>
 
   <div v-if="false">
     <img style="width: 200px" src="http://192.168.0.132:5173/res/611400b0-9354-43ed-8bbc-07fed6c04704.png"

@@ -1,6 +1,6 @@
 <template>
   <div class="user-header">
-    <el-form :inline="true" :model="formSearch" style="min-width: 1400px">
+    <el-form :inline="true" :model="formSearch" style="min-width: 1060px">
       <el-collapse v-model="activeCollapse" @change="handleCollapseChange">
         <el-collapse-item name="1" :icon="CaretRight" :is-active="false">
           <!--      <el-form-item label="用户名">-->
@@ -24,7 +24,7 @@
           <template #title>
             <div @click.stop> <!-- 这个 @click.stop 很有用 -->
 
-              <el-form-item label="查找用户名">
+              <el-form-item label="查找用户名" style="width: 260px">
                 <el-input
                     clearable
                     @clear="handleClear"
@@ -54,7 +54,7 @@
                   </template>
                 </el-input>
               </el-form-item>
-              <el-form-item label="查找部门">
+              <el-form-item label="部门" style="width: 210px">
                 <el-input
                     clearable
                     @clear="handleClear"
@@ -71,7 +71,7 @@
                   </template>
                 </el-input>
               </el-form-item>
-              <el-form-item label="查找工号">
+              <el-form-item label="工号" style="width: 240px">
                 <el-input
                     clearable
                     @clear="handleClear"
@@ -88,7 +88,7 @@
                   </template>
                 </el-input>
               </el-form-item>
-              <el-form-item label="查找手机号">
+              <el-form-item label="手机号" style="width: 240px">
                 <el-input
                     clearable
                     @clear="handleClear"
@@ -108,7 +108,7 @@
             </div>
           </template>
 
-          <el-form-item label="查找邮箱">
+          <el-form-item label="邮箱" style="width: 240px">
             <el-input
                 clearable
                 @clear="handleClear"
@@ -172,7 +172,7 @@
     <!-- 右侧按钮区域 -->
     <div class="right-container">
       <el-button type="danger" @click="handleDeleteAll">× 批量删除</el-button>
-      <el-button type="primary" @click="handleAdd">+ 新增</el-button>
+      <el-button type="primary" @click="handleAdd" style="margin-right: 0">+ 新增</el-button>
     </div>
   </div>
   <div class="table" :style="tableStyle">
@@ -1004,7 +1004,7 @@ export default defineComponent({
     const tableStyle = computed(() => {
       // 判断是否展开
       return activeCollapse.value.includes("1")
-          ? {height: "calc(100% - 75px - 44px)"}
+          ? {height: "calc(100% - 75px - 49px)"}
           : {height: "calc(100% - 75px)"};
     });
 
@@ -1080,7 +1080,7 @@ export default defineComponent({
   background-color: #fafafa;
   position: relative;
   //height: calc(100% - 75px);
-  min-width: 1600px;
+  min-width: 1000px;
   //max-height: 80%;
   .el-table {
     --el-table-border-color: #c1c1c1b0;
@@ -1154,6 +1154,10 @@ export default defineComponent({
     span {
       display: flex;
     }
+  }
+
+  .el-collapse-item {
+    display: inline-block;
   }
 
   .right-container {

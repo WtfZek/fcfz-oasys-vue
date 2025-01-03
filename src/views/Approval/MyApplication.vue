@@ -643,7 +643,7 @@ export default {
       checkAll,
       indeterminate,
       formTemplate,
-      multiSelectUser,
+      // multiSelectUser,
       handleCancel,
       handleCheckAll,
       handleSubmit,

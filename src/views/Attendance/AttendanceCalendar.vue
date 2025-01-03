@@ -4,10 +4,12 @@
     <el-card class="calendar-card">
       <el-calendar v-model="selectedDate" @input="onDateSelect">
         <template #date-cell="{ data }">
-          <p :class="getCellClass(data.day)">
-            {{ data.day.split('-').slice(1).join('-') }}
-            {{ isDayChecked(data.day) ? '⭐' : '' }}
-          </p>
+          <div class="date-cell">
+            <p :class="getCellClass(data.day)">
+              {{ data.day.split('-').slice(1).join('-') }}
+              {{ isDayChecked(data.day) ? '⭐' : '' }}
+            </p>
+          </div>
         </template>
       </el-calendar>
     </el-card>
@@ -253,6 +255,18 @@ export default {
 .time-fail {
   color: red; /* 红色 */
   font-weight: bold;
+}
+
+.date-cell {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  height: 100%; /* 确保父容器有高度 */
+}
+
+.date-cell p {
+  margin: 0; /* 去除 <p> 标签的默认外边距 */
+  text-align: center; /* 确保文本居中 */
 }
 
 </style>

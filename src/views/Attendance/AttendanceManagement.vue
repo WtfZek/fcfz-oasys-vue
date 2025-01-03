@@ -1,7 +1,7 @@
 <template>
   <div class="attendance-header">
-    <el-form :inline="true" :model="formSearch" style="min-width: 1300px">
-      <el-form-item label="查找">
+    <el-form :inline="true" :model="formSearch" style="min-width: 800px">
+      <el-form-item label="查找" style="width: 325px">
         <el-input
             clearable
             @clear="handleClear"
@@ -26,7 +26,7 @@
           </template>
         </el-input>
       </el-form-item>
-      <el-form-item label="">
+      <el-form-item label="" style="width: 285px">
         <el-input
             clearable
             @clear="handleClear"
@@ -49,7 +49,7 @@
           </template>
         </el-input>
       </el-form-item>
-      <el-form-item label="">
+      <el-form-item label="" style="width: 315px">
         <!--        <el-select v-model="selectedDateModel" placeholder="Select" style="width: 100px" @change="handleSelectedDateModelChange">-->
         <!--          <el-option label="精确查找" value="jq" />-->
         <!--          <el-option label="区间查找" value="qj" />-->
@@ -73,7 +73,7 @@
               type="datetime"
               label="日期"
               placeholder="请输入签到日期"
-              style="width: 100%"
+              style="width: 144px"
           />
           <el-date-picker
               clearable
@@ -114,8 +114,8 @@
           />
         </span>
         <span>
-          <el-button @click="handleSearch">
-              <el-icon ><Search/></el-icon>
+          <el-button @click="handleSearch" style="display: inline-block;">
+              <el-icon><Search/></el-icon>
           </el-button>
         </span>
       </el-form-item>
@@ -710,7 +710,7 @@ export default defineComponent({
   background-color: #fafafa;
   position: relative;
   height: calc(100% - 70px);
-  min-width: 1400px;
+  min-width: 800px;
   //max-height: 80vh; /* 使用视口高度作为参考 */
   .el-table {
     --el-table-border-color: #c1c1c1b0;
@@ -757,6 +757,7 @@ export default defineComponent({
       display: flex;
     }
   }
+
   .right-container {
     display: flex;
     //justify-content: space-between; /* 使子元素两端对齐 */
@@ -765,6 +766,10 @@ export default defineComponent({
       min-width: 75px;
     }
   }
+}
+
+.el-collapse-item {
+  display: inline-block;
 }
 
 </style>
